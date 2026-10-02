@@ -1,13 +1,447 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "sqlite"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CARD
+  GCASH
+  MAYA
+  BANK_TRANSFER
+  OTHER
+}
+
+enum TransactionType {
+  PAYMENT
+  REFUND
+  ADJUSTMENT
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+}
+
+enum NfcCardStatus {
+  AVAILABLE
+  ASSIGNED
+  ACTIVE
+  REVOKED
+  LOST
+}
+
+enum NfcAssignmentStatus {
+  ASSIGNED
+  ACTIVE
+  REVOKED
+  EXPIRED
+}
+
+enum DeviceStatus {
+  ONLINE
+  OFFLINE
+  MAINTENANCE
+  DISABLED
+}
+
+enum AccessResult {
+  GRANTED
+  DENIED
+}
+
+// ============================================================
+// USER
+// ============================================================
+
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  username     String? @unique
+  passwordHash String
+
+  firstName String
+  lastName  String
+  phone     String?
+
+  role   UserRole   @default(CUSTOMER)
+  status UserStatus @default(ACTIVE)
+
+  lastLoginAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guestProfile GuestProfile?
+
+  reservations        Reservation[] @relation("GuestReservations")
+  createdReservations Reservation[] @relation("CreatedReservations")
+
+  assignedNfcCards NfcAssignment[] @relation("NfcAssignedBy")
+
+  auditLogs AuditLog[] @relation("AuditActor")
+
+  @@index([role])
+  @@index([status])
+  @@index([lastName, firstName])
+}
+
+// ============================================================
+// GUEST PROFILE
+// ============================================================
+
+model GuestProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  address               String?
+  city                  String?
+  province              String?
+  postalCode            String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ============================================================
+// ROOM
+// ============================================================
+
+model Room {
+  id         String @id @default(cuid())
+  roomNumber String @unique
+
+  name        String
+  roomType    String
+  description String?
+
+  floor    Int?
+  capacity Int  @default(2)
+
+  ratePerNightCentavos Int
+
+  status   RoomStatus @default(AVAILABLE)
+  imageUrl String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservations Reservation[]
+
+  device Device?
+
+  @@index([status])
+  @@index([roomType])
+  @@index([isActive])
+}
+
+// ============================================================
+// RESERVATION
+// ============================================================
+
+model Reservation {
+  id          String @id @default(cuid())
+  referenceNo String @unique
+
+  guestId     String
+  roomId      String
+  createdById String?
+
+  checkIn  DateTime
+  checkOut DateTime
+
+  adults   Int @default(1)
+  children Int @default(0)
+
+  totalAmountCentavos Int
+
+  status ReservationStatus @default(PENDING)
+
+  specialRequests String?
+
+  checkedInAt  DateTime?
+  checkedOutAt DateTime?
+  cancelledAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  guest User @relation("GuestReservations", fields: [guestId], references: [id], onDelete: Restrict)
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Restrict)
+
+  createdBy User? @relation("CreatedReservations", fields: [createdById], references: [id], onDelete: SetNull)
+
+  payments       Payment[]
+  nfcAssignments NfcAssignment[]
+  accessLogs     AccessLog[]
+
+  @@index([guestId])
+  @@index([roomId])
+  @@index([status])
+  @@index([checkIn])
+  @@index([checkOut])
+  @@index([roomId, checkIn, checkOut])
+}
+
+// ============================================================
+// PAYMENT
+// ============================================================
+
+model Payment {
+  id            String @id @default(cuid())
+  reservationId String
+
+  provider String @default("PAYMONGO")
+
+  paymongoCheckoutSessionId String? @unique
+  paymongoPaymentIntentId   String? @unique
+  paymongoPaymentId         String? @unique
+
+  amountCentavos Int
+  currency       String @default("PHP")
+
+  method PaymentMethod?
+  status PaymentStatus  @default(PENDING)
+
+  checkoutUrl String?
+
+  paidAt        DateTime?
+  failureReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Restrict)
+
+  transactions Transaction[]
+
+  @@index([reservationId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================
+// TRANSACTION
+// ============================================================
+
+model Transaction {
+  id        String @id @default(cuid())
+  paymentId String
+
+  type   TransactionType
+  status TransactionStatus
+
+  amountCentavos Int
+
+  providerReference String?
+  description       String?
+
+  occurredAt DateTime @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  @@index([paymentId])
+  @@index([status])
+  @@index([occurredAt])
+}
+
+// ============================================================
+// NFC CARD
+// ============================================================
+
+model NfcCard {
+  id String @id @default(cuid())
+
+  displayCode String @unique
+
+  // Store a hash rather than using the raw UID
+  // as ordinary application data.
+  uidHash String @unique
+
+  status NfcCardStatus @default(AVAILABLE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  assignments NfcAssignment[]
+  accessLogs  AccessLog[]
+
+  @@index([status])
+}
+
+// ============================================================
+// NFC ASSIGNMENT
+// ============================================================
+
+model NfcAssignment {
+  id String @id @default(cuid())
+
+  nfcCardId     String
+  reservationId String
+  assignedById  String
+
+  status NfcAssignmentStatus @default(ASSIGNED)
+
+  assignedAt DateTime @default(now())
+
+  validFrom  DateTime
+  validUntil DateTime
+
+  revokedAt    DateTime?
+  revokeReason String?
+
+  nfcCard NfcCard @relation(fields: [nfcCardId], references: [id], onDelete: Restrict)
+
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Restrict)
+
+  assignedBy User @relation("NfcAssignedBy", fields: [assignedById], references: [id], onDelete: Restrict)
+
+  @@index([nfcCardId])
+  @@index([reservationId])
+  @@index([status])
+  @@index([validFrom, validUntil])
+}
+
+// ============================================================
+// ESP32 / DOOR DEVICE
+// ============================================================
+
+model Device {
+  id       String @id @default(cuid())
+  deviceId String @unique
+
+  roomId String? @unique
+
+  name String
+
+  status DeviceStatus @default(OFFLINE)
+
+  firmwareVersion String?
+  lastHeartbeatAt DateTime?
+
+  // Device AES key encrypted by the backend master key.
+  deviceKeyCiphertext String?
+  deviceKeyIv         String?
+  deviceKeyAuthTag    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  room Room? @relation(fields: [roomId], references: [id], onDelete: SetNull)
+
+  accessLogs AccessLog[]
+
+  @@index([status])
+}
+
+// ============================================================
+// ACCESS LOG
+// ============================================================
+
+model AccessLog {
+  id String @id @default(cuid())
+
+  deviceId      String
+  nfcCardId     String?
+  reservationId String?
+
+  result AccessResult
+
+  reason String?
+
+  // Useful when an unknown/unregistered NFC card is scanned.
+  scannedUidHash String?
+
+  occurredAt DateTime @default(now())
+
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Restrict)
+
+  nfcCard NfcCard? @relation(fields: [nfcCardId], references: [id], onDelete: SetNull)
+
+  reservation Reservation? @relation(fields: [reservationId], references: [id], onDelete: SetNull)
+
+  @@index([deviceId])
+  @@index([nfcCardId])
+  @@index([reservationId])
+  @@index([result])
+  @@index([occurredAt])
+}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  actorId String?
+
+  action     String
+  entityType String
+  entityId   String?
+
+  details String?
+
+  ipAddress String?
+  userAgent String?
+
+  createdAt DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
 }
