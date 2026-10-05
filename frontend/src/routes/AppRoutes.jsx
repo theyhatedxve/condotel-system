@@ -46,6 +46,9 @@ import TransactionsPage from
 import ReportsPage from
   '../pages/admin/ReportsPage';
 
+import SettingsPage from
+  '../pages/admin/SettingsPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -166,9 +169,7 @@ export default function AppRoutes() {
           <Route
             path="settings"
             element={
-              <PlaceholderPage
-                title="Settings"
-              />
+              <SettingsPage />
             }
           />
         </Route>
