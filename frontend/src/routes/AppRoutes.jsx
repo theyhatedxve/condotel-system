@@ -25,6 +25,9 @@ import UnauthorizedPage from
 import ProtectedRoute from
   './ProtectedRoute';
 
+import RoomsPage from
+  '../pages/admin/RoomsPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -92,11 +95,7 @@ export default function AppRoutes() {
 
           <Route
             path="rooms"
-            element={
-              <PlaceholderPage
-                title="Room Management"
-              />
-            }
+            element={<RoomsPage />}
           />
 
           <Route
