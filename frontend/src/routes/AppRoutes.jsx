@@ -28,6 +28,12 @@ import ProtectedRoute from
 import RoomsPage from
   '../pages/admin/RoomsPage';
 
+import PaymentsPage from
+  '../pages/admin/PaymentsPage';
+
+import PaymentResultPage from
+  '../pages/shared/PaymentResultPage';
+
 import GuestsPage from
   '../pages/admin/GuestsPage';
 
@@ -69,6 +75,27 @@ export default function AppRoutes() {
           />
         }
       >
+
+        <Route
+          path="payments"
+          element={
+            <PaymentsPage />
+          }
+        />
+
+        <Route
+          path="/payment/success"
+          element={
+            <PaymentResultPage />
+          }
+        />
+
+        <Route
+          path="/payment/cancelled"
+          element={
+            <PaymentResultPage />
+          }
+        />
         <Route
           path="/admin"
           element={<AdminLayout />}

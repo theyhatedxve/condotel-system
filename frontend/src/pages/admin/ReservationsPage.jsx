@@ -28,6 +28,10 @@ import {
   formatDate,
 } from '../../utils/formatDate';
 
+import {
+  createCheckout,
+} from '../../api/paymentApi';
+
 import '../../styles/reservations.css';
 
 const filters = [
@@ -172,6 +176,40 @@ export default function ReservationsPage() {
       setSubmitting(false);
     }
   }
+
+  async function handlePayment(
+  reservation,
+) {
+  try {
+    const result =
+      await createCheckout(
+        reservation.id,
+      );
+
+    if (!result.checkoutUrl) {
+      window.alert(
+        'Checkout URL was not returned.',
+      );
+
+      return;
+    }
+
+    window.location.assign(
+      result.checkoutUrl,
+    );
+  } catch (error) {
+    const message =
+      error.response?.data
+        ?.message ||
+      'Unable to start payment.';
+
+    window.alert(
+      Array.isArray(message)
+        ? message.join(' ')
+        : message,
+    );
+  }
+}
 
   async function handleStatus(
     reservation,
@@ -340,13 +378,12 @@ export default function ReservationsPage() {
                           <button
                             type="button"
                             onClick={() =>
-                              handleStatus(
+                              handlePayment(
                                 reservation,
-                                'CONFIRMED',
                               )
                             }
                           >
-                            Confirm
+                            Pay
                           </button>
                         )}
 

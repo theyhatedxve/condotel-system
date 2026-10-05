@@ -1,0 +1,102 @@
+.payments-page {
+  width: 100%;
+}
+
+.payments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.payments-header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #172033;
+}
+
+.payments-header p {
+  margin: 6px 0 0;
+  color: #667085;
+}
+
+.payments-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.payments-table th,
+.payments-table td {
+  padding: 14px 16px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.payments-table th {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475467;
+  background: #f8fafc;
+}
+
+.payments-table td {
+  font-size: 14px;
+  color: #344054;
+}
+
+.payments-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.payment-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.payment-status.pending {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.payment-status.paid {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.payment-status.failed {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.payment-status.cancelled,
+.payment-status.expired {
+  color: #475467;
+  background: #f2f4f7;
+}
+
+.payment-status.refunded {
+  color: #3730a3;
+  background: #e0e7ff;
+}
+
+.payments-loading,
+.payments-empty {
+  padding: 40px;
+  text-align: center;
+  color: #667085;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
