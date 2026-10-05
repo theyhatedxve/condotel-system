@@ -261,13 +261,25 @@
   display: grid;
   place-items: center;
 
-  border-radius: 50%;
-
   background:
-    conic-gradient(
-      #0874c9 0 75%,
-      #e6edf4 75% 100%
-    );
+  conic-gradient(
+    #0874c9
+    0
+    var(--occupancy),
+    #e6edf4
+    var(--occupancy)
+    100%
+  );
+}
+
+.dashboard-loading,
+.dashboard-empty {
+  padding: 30px;
+
+  color:
+    var(--color-text-muted);
+
+  text-align: center;
 }
 
 .occupancy-circle::before {
