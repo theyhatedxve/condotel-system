@@ -31,3 +31,14 @@ export async function getReservationPayments(
 
   return response.data;
 }
+
+export async function cancelPendingCheckout(
+  reservationId,
+) {
+  const response =
+    await apiClient.post(
+      `/payments/reservations/${reservationId}/cancel-pending`,
+    );
+
+  return response.data;
+}

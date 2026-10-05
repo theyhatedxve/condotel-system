@@ -4,6 +4,14 @@ import {
 } from 'lucide-react';
 
 import {
+  useEffect,
+} from 'react';
+
+import {
+  cancelPendingCheckout,
+} from '../../api/paymentApi';
+
+import {
   useLocation,
   useNavigate,
   useSearchParams,
@@ -30,6 +38,26 @@ export default function PaymentResultPage() {
   const success =
     location.pathname ===
     '/payment/success';
+
+    useEffect(() => {
+        if (
+          success ||
+          !reservationId
+        ) {
+          return;
+        }
+
+        cancelPendingCheckout(
+          reservationId,
+        ).catch(() => {
+          // The result page should still load
+          // even if checkout cancellation
+          // synchronization fails.
+        });
+      }, [
+        reservationId,
+        success,
+      ]);
 
   function handleReturn() {
     navigate(
