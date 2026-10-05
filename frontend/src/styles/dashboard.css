@@ -1,0 +1,372 @@
+.dashboard-header {
+  margin-bottom: 24px;
+}
+
+.dashboard-header h1 {
+  margin: 0;
+
+  font-size: 26px;
+
+  color:
+    var(--color-navy-950);
+}
+
+.dashboard-header p {
+  margin:
+    7px 0 0;
+
+  color:
+    var(--color-text-muted);
+
+  font-size: 14px;
+}
+
+.stat-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+
+  gap: 16px;
+
+  margin-bottom: 22px;
+}
+
+.stat-card {
+  min-height: 126px;
+
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-start;
+
+  padding: 19px;
+
+  border-radius:
+    var(--radius-md);
+
+  color: #ffffff;
+
+  box-shadow:
+    var(--shadow-card);
+}
+
+.stat-card > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-card strong {
+  margin-top: 12px;
+
+  font-size: 27px;
+}
+
+.stat-card small {
+  margin-top: 14px;
+
+  font-size: 11px;
+
+  opacity: 0.82;
+}
+
+.stat-card svg {
+  opacity: 0.78;
+}
+
+.stat-card.blue {
+  background:
+    linear-gradient(
+      135deg,
+      #0f96ee,
+      #0871da
+    );
+}
+
+.stat-card.green {
+  background:
+    linear-gradient(
+      135deg,
+      #18b97a,
+      #099864
+    );
+}
+
+.stat-card.orange {
+  background:
+    linear-gradient(
+      135deg,
+      #ffb329,
+      #ff9514
+    );
+}
+
+.stat-card.purple {
+  background:
+    linear-gradient(
+      135deg,
+      #9164ed,
+      #7047dc
+    );
+}
+
+.stat-title {
+  font-size: 12px;
+}
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    290px;
+
+  gap: 18px;
+}
+
+.dashboard-panel {
+  padding: 20px;
+
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-md);
+
+  background:
+    var(--color-surface);
+
+  box-shadow:
+    var(--shadow-card);
+}
+
+.panel-heading {
+  display: flex;
+
+  justify-content:
+    space-between;
+
+  align-items: center;
+
+  margin-bottom: 16px;
+}
+
+.dashboard-panel h2 {
+  margin: 0;
+
+  font-size: 15px;
+
+  color:
+    var(--color-navy-950);
+}
+
+.panel-heading button {
+  border: none;
+  background: transparent;
+
+  color:
+    var(--color-blue-700);
+
+  font-size: 12px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.dashboard-table {
+  width: 100%;
+
+  border-collapse:
+    collapse;
+
+  font-size: 12px;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding:
+    13px 9px;
+
+  text-align: left;
+
+  border-bottom:
+    1px solid
+    #edf2f6;
+
+  white-space: nowrap;
+}
+
+.dashboard-table th {
+  color:
+    #63798e;
+
+  font-weight: 600;
+}
+
+.status-badge {
+  display: inline-flex;
+
+  padding:
+    4px 8px;
+
+  border-radius:
+    999px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+}
+
+.status-badge.checked-in {
+  background:
+    #dcf6eb;
+
+  color:
+    #11845b;
+}
+
+.status-badge.confirmed {
+  background:
+    #dceeff;
+
+  color:
+    #1374b9;
+}
+
+.status-badge.pending {
+  background:
+    #fff0d4;
+
+  color:
+    #c97804;
+}
+
+.occupancy-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.occupancy-circle {
+  width: 150px;
+  height: 150px;
+
+  margin:
+    28px auto;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+
+  background:
+    conic-gradient(
+      #0874c9 0 75%,
+      #e6edf4 75% 100%
+    );
+}
+
+.occupancy-circle::before {
+  content: "";
+
+  position: absolute;
+}
+
+.occupancy-circle > div {
+  width: 112px;
+  height: 112px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    #ffffff;
+}
+
+.occupancy-circle strong {
+  font-size: 27px;
+
+  color:
+    var(--color-navy-950);
+}
+
+.occupancy-circle span {
+  color:
+    var(--color-text-muted);
+
+  font-size: 11px;
+}
+
+.occupancy-legend {
+  display: flex;
+  flex-direction: column;
+
+  gap: 11px;
+
+  font-size: 11px;
+}
+
+.occupancy-legend span {
+  display: grid;
+
+  grid-template-columns:
+    10px 1fr auto;
+
+  align-items: center;
+
+  gap: 8px;
+}
+
+.occupancy-legend i {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+}
+
+.occupied-dot {
+  background: #0874c9;
+}
+
+.available-dot {
+  background: #14ae78;
+}
+
+.maintenance-dot {
+  background: #9aaabb;
+}
+
+@media (
+  max-width: 1150px
+) {
+  .stat-grid {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .dashboard-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
+
+@media (
+  max-width: 650px
+) {
+  .stat-grid {
+    grid-template-columns:
+      1fr;
+  }
+}
