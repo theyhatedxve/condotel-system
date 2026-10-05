@@ -77,13 +77,6 @@ export default function AppRoutes() {
       >
 
         <Route
-          path="payments"
-          element={
-            <PaymentsPage />
-          }
-        />
-
-        <Route
           path="/payment/success"
           element={
             <PaymentResultPage />
@@ -146,9 +139,7 @@ export default function AppRoutes() {
           <Route
             path="payments"
             element={
-              <PlaceholderPage
-                title="Payments"
-              />
+              <PaymentsPage />
             }
           />
 
