@@ -32,6 +32,10 @@ import {
   PaymongoService,
 } from './paymongo.service';
 
+import {
+  NotificationsService,
+} from '../notifications/notifications.service';
+
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -40,6 +44,9 @@ export class PaymentsService {
 
     private readonly paymongoService:
       PaymongoService,
+
+    private readonly notificationsService:
+      NotificationsService,
   ) {}
 
   private ensureReservationAccess(
@@ -376,6 +383,10 @@ async cancelPendingPaymentsForReservation(
             'This reservation no longer has a cancellable payment checkout.',
           );
         }
+        return this
+        .cancelPendingPaymentsForReservation(
+          reservationId,
+        );
     }
 
   async findAll() {
@@ -572,6 +583,25 @@ async cancelPendingPaymentsForReservation(
     localPayment.status ===
     PaymentStatus.PAID
   ) {
+
+    await this.notificationsService
+  .notifyPaymentReceived({
+    paymentId:
+      localPayment.id,
+
+    reservationId:
+      localPayment
+        .reservationId,
+
+    referenceNo:
+      localPayment
+        .reservation
+        .referenceNo,
+
+    amountCentavos:
+      localPayment
+        .amountCentavos,
+  });
     return {
       received: true,
 
@@ -667,6 +697,26 @@ async cancelPendingPaymentsForReservation(
    * 6. Perform all local financial updates
    *    atomically.
    */
+
+  await this.notificationsService
+  .notifyPaymentReceived({
+    paymentId:
+      localPayment.id,
+
+    reservationId:
+      localPayment
+        .reservationId,
+
+    referenceNo:
+      localPayment
+        .reservation
+        .referenceNo,
+
+    amountCentavos:
+      localPayment
+        .amountCentavos,
+  });
+  
   await this.prisma
     .$transaction(
       async (transaction) => {

@@ -18,9 +18,14 @@ import {
   PaymentsService,
 } from './payments.service';
 
+import {
+  NotificationsModule,
+} from '../notifications/notifications.module';
+
 @Module({
   imports: [
     AuthModule,
+    NotificationsModule,
   ],
 
   controllers: [

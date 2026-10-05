@@ -26,6 +26,10 @@ import {
   SearchModule,
 } from './search/search.module';
 
+import {
+  NotificationsModule,
+} from './notifications/notifications.module';
+
 
 @Module({
   imports: [
@@ -45,6 +49,7 @@ import {
     ReportsModule,
     SettingsModule,
     SearchModule,
+    NotificationsModule,
   ],
 
   controllers: [AppController],

@@ -40,6 +40,10 @@ import {
   PaymentsService,
 } from '../payments/payments.service';
 
+import {
+  NotificationsService,
+} from '../notifications/notifications.service';
+
 const BLOCKING_STATUSES = [
   ReservationStatus.PENDING,
   ReservationStatus.CONFIRMED,
@@ -54,6 +58,9 @@ export class ReservationsService {
 
   private readonly paymentsService:
     PaymentsService,
+
+  private readonly notificationsService:
+    NotificationsService,
 ) {}
 
   private parseDates(
@@ -447,7 +454,8 @@ export class ReservationsService {
     const referenceNo =
       await this.generateReferenceNo();
 
-    return this.prisma
+    const createdReservation =
+    await this.prisma
       .reservation
       .create({
         data: {
@@ -493,6 +501,26 @@ export class ReservationsService {
           room: true,
         },
       });
+
+      await this.notificationsService
+        .notifyReservationCreated({
+          reservationId:
+            createdReservation.id,
+
+          referenceNo:
+            createdReservation
+              .referenceNo,
+
+          guestName:
+            `${createdReservation.guest.firstName} ${createdReservation.guest.lastName}`,
+
+          roomNumber:
+            createdReservation
+              .room
+              .roomNumber,
+        });
+
+      return createdReservation;
   }
 
   async updateStatus(
@@ -544,7 +572,8 @@ export class ReservationsService {
         );
     }
 
-    return this.prisma
+    const updatedReservation =
+    await this.prisma
       .reservation
       .update({
         where: {
@@ -577,6 +606,25 @@ export class ReservationsService {
           room: true,
         },
       });
+      if (
+          newStatus ===
+          ReservationStatus.CANCELLED
+        ) {
+          await this.notificationsService
+            .notifyReservationCancelled({
+              reservationId:
+                updatedReservation.id,
+
+              referenceNo:
+                updatedReservation
+                  .referenceNo,
+
+              guestName:
+                `${updatedReservation.guest.firstName} ${updatedReservation.guest.lastName}`,
+            });
+        }
+
+        return updatedReservation;
   }
 
   async cancel(
@@ -618,7 +666,8 @@ export class ReservationsService {
     id,
   );
   
-  return this.prisma
+  const cancelledReservation =
+  await this.prisma
     .reservation
     .update({
       where: {
@@ -633,5 +682,19 @@ export class ReservationsService {
           new Date(),
       },
     });
+    await this.notificationsService
+  .notifyReservationCancelled({
+    reservationId:
+      reservation.id,
+
+    referenceNo:
+      reservation
+        .referenceNo,
+
+    guestName:
+      `${reservation.guest.firstName} ${reservation.guest.lastName}`,
+  });
+
+return cancelledReservation;
   }
 }
