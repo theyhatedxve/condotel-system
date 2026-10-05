@@ -2,6 +2,8 @@ import {
   Controller,
   Get,
   Headers,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   Req,
@@ -102,28 +104,29 @@ export class PaymentsController {
       );
   }
 
-  @Post('webhook/paymongo')
-  handlePaymongoWebhook(
-    @Req()
-    request: RequestWithRawBody,
+@Post('webhook/paymongo')
+@HttpCode(HttpStatus.OK)
+    handlePaymongoWebhook(
+      @Req()
+      request: RequestWithRawBody,
 
-    @Headers(
-      'paymongo-signature',
-    )
-    signatureHeader:
-      string | undefined,
-  ) {
-    if (!request.rawBody) {
-      throw new Error(
-        'Raw request body is unavailable.',
-      );
+      @Headers(
+        'paymongo-signature',
+      )
+      signatureHeader:
+        string | undefined,
+    ) {
+      if (!request.rawBody) {
+        throw new Error(
+          'Raw request body is unavailable.',
+        );
+      }
+
+      return this.paymentsService
+        .handlePaymongoWebhook(
+          request.rawBody,
+          signatureHeader,
+          request.body,
+        );
     }
-
-    return this.paymentsService
-      .handlePaymongoWebhook(
-        request.rawBody,
-        signatureHeader,
-        request.body,
-      );
-  }
 }

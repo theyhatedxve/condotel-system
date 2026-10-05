@@ -24,8 +24,8 @@ import type {
 } from '../auth/interfaces/authenticated-user.interface';
 
 import type {
-  PaymongoCheckoutWebhook,
   PaymongoPaymentAttempt,
+  PaymongoWebhookEvent,
 } from './interfaces/paymongo.interface';
 
 import {
@@ -58,22 +58,28 @@ export class PaymentsService {
   }
 
   private mapPaymentMethod(
-    type?: string,
-  ): PaymentMethod {
-    switch (type) {
-      case 'card':
-        return PaymentMethod.CARD;
+  type?: string,
+): PaymentMethod {
+  const normalizedType =
+    type
+      ?.trim()
+      .toLowerCase();
 
-      case 'gcash':
-        return PaymentMethod.GCASH;
+  switch (normalizedType) {
+    case 'card':
+      return PaymentMethod.CARD;
 
-      case 'paymaya':
-        return PaymentMethod.MAYA;
+    case 'gcash':
+      return PaymentMethod.GCASH;
 
-      default:
-        return PaymentMethod.OTHER;
-    }
+    case 'maya':
+    case 'paymaya':
+      return PaymentMethod.MAYA;
+
+    default:
+      return PaymentMethod.OTHER;
   }
+}
 
   async createCheckout(
     reservationId: string,
@@ -365,214 +371,332 @@ export class PaymentsService {
   }
 
   async handlePaymongoWebhook(
-    rawBody: Buffer,
-    signatureHeader: string | undefined,
-    body: unknown,
+  rawBody: Buffer,
+  signatureHeader: string | undefined,
+  body: unknown,
+) {
+  /*
+   * 1. Verify that this request really came
+   *    from PayMongo.
+   */
+  this.paymongoService
+    .verifyWebhookSignature(
+      rawBody,
+      signatureHeader,
+    );
+
+  const webhook =
+    body as PaymongoWebhookEvent;
+
+  /*
+   * Actual PayMongo event-resource structure:
+   *
+   * data.type = "event"
+   *
+   * data.attributes.type =
+   *   "checkout_session.payment.paid"
+   *
+   * data.attributes.data =
+   *   Checkout Session
+   */
+  const eventType =
+    webhook.data
+      ?.attributes
+      ?.type;
+
+  /*
+   * Ignore events that are unrelated
+   * to successful Hosted Checkout payments.
+   */
+  if (
+    eventType !==
+    'checkout_session.payment.paid'
   ) {
-    this.paymongoService
-      .verifyWebhookSignature(
-        rawBody,
-        signatureHeader,
-      );
+    return {
+      received: true,
 
-    const webhook =
-      body as PaymongoCheckoutWebhook;
+      ignored: true,
 
-    const event =
-      webhook.data;
+      eventType:
+        eventType ??
+        'unknown',
+    };
+  }
 
-    if (
-      event?.type !==
-      'checkout_session.payment.paid'
-    ) {
-      return {
-        received: true,
-        ignored: true,
-      };
-    }
+  /*
+   * The actual Checkout Session resource.
+   */
+  const session =
+    webhook.data
+      ?.attributes
+      ?.data;
 
-    const session =
-      event.data;
+  if (!session?.id) {
+    throw new BadRequestException(
+      'PayMongo checkout session is missing.',
+    );
+  }
 
-    if (!session?.id) {
-      throw new BadRequestException(
-        'Webhook checkout session is missing.',
-      );
-    }
-
-    const localPayment =
-      await this.prisma
-        .payment
-        .findUnique({
-          where: {
-            paymongoCheckoutSessionId:
-              session.id,
-          },
-
-          include: {
-            reservation: true,
-          },
-        });
-
-    if (!localPayment) {
-      throw new NotFoundException(
-        'Local payment record was not found.',
-      );
-    }
-
-    if (
-      localPayment.status ===
-      PaymentStatus.PAID
-    ) {
-      return {
-        received: true,
-        duplicate: true,
-      };
-    }
-
-    const paidAttempt =
-      this.findPaidAttempt(
-        session.attributes
-          ?.payments,
-      );
-
-    if (!paidAttempt) {
-      throw new BadRequestException(
-        'Webhook does not contain a paid payment attempt.',
-      );
-    }
-
-    if (
-      paidAttempt.attributes
-        .amount !==
-      localPayment.amountCentavos
-    ) {
-      throw new BadRequestException(
-        'PayMongo payment amount does not match the reservation amount.',
-      );
-    }
-
-    const method =
-      this.mapPaymentMethod(
-        paidAttempt.attributes
-          .source?.type,
-      );
-
-    const paidAt =
-      paidAttempt.attributes
-        .paid_at
-        ? new Date(
-            paidAttempt.attributes
-              .paid_at * 1000,
-          )
-        : new Date();
-
+  /*
+   * 2. Match PayMongo's cs_... ID
+   *    against our local Payment row.
+   */
+  const localPayment =
     await this.prisma
-      .$transaction(
-        async (transaction) => {
+      .payment
+      .findUnique({
+        where: {
+          paymongoCheckoutSessionId:
+            session.id,
+        },
+
+        include: {
+          reservation: true,
+        },
+      });
+
+  if (!localPayment) {
+    throw new NotFoundException(
+      `No local payment found for PayMongo checkout session ${session.id}.`,
+    );
+  }
+
+  /*
+   * 3. Make webhook handling idempotent.
+   *
+   * PayMongo may deliver the same
+   * webhook more than once.
+   */
+  if (
+    localPayment.status ===
+    PaymentStatus.PAID
+  ) {
+    return {
+      received: true,
+
+      duplicate: true,
+
+      paymentId:
+        localPayment.id,
+    };
+  }
+
+  /*
+   * 4. Find the successful payment
+   *    attempt inside the Checkout Session.
+   */
+  const paidAttempt =
+    this.findPaidAttempt(
+      session.attributes
+        ?.payments,
+    );
+
+  if (!paidAttempt) {
+    throw new BadRequestException(
+      'PayMongo webhook does not contain a paid payment attempt.',
+    );
+  }
+
+  /*
+   * 5. Never trust the browser for money.
+   *
+   * Verify PayMongo's paid amount against
+   * the amount stored in SQLite.
+   */
+  if (
+    paidAttempt.attributes
+      .amount !==
+    localPayment.amountCentavos
+  ) {
+    throw new BadRequestException(
+      'PayMongo payment amount does not match the reservation amount.',
+    );
+  }
+
+  /*
+   * Optional but useful:
+   * validate currency too.
+   */
+  if (
+    paidAttempt.attributes
+      .currency &&
+    paidAttempt.attributes
+      .currency !== 'PHP'
+  ) {
+    throw new BadRequestException(
+      'Unexpected PayMongo payment currency.',
+    );
+  }
+
+  const method =
+    this.mapPaymentMethod(
+      paidAttempt.attributes
+        .source?.type,
+    );
+
+  /*
+   * PayMongo timestamps are Unix seconds.
+   */
+  const paidAt =
+    paidAttempt.attributes
+      .paid_at
+      ? new Date(
+          paidAttempt
+            .attributes
+            .paid_at *
+            1000,
+        )
+      : new Date();
+
+  /*
+   * Some payloads expose the Payment
+   * Intent on the Checkout Session,
+   * while payment records themselves can
+   * also expose payment_intent_id.
+   */
+  const paymentIntentId =
+    session.attributes
+      ?.payment_intent
+      ?.id ??
+    paidAttempt.attributes
+      .payment_intent_id ??
+    null;
+
+  /*
+   * 6. Perform all local financial updates
+   *    atomically.
+   */
+  await this.prisma
+    .$transaction(
+      async (transaction) => {
+        /*
+         * Mark local payment paid.
+         */
+        await transaction
+          .payment
+          .update({
+            where: {
+              id:
+                localPayment.id,
+            },
+
+            data: {
+              status:
+                PaymentStatus.PAID,
+
+              method,
+
+              paymongoPaymentIntentId:
+                paymentIntentId,
+
+              paymongoPaymentId:
+                paidAttempt.id,
+
+              paidAt,
+
+              failureReason:
+                null,
+            },
+          });
+
+        /*
+         * Avoid duplicate transaction
+         * history if PayMongo retries.
+         */
+        const existingTransaction =
           await transaction
-            .payment
+            .transaction
+            .findFirst({
+              where: {
+                paymentId:
+                  localPayment.id,
+
+                providerReference:
+                  paidAttempt.id,
+
+                type:
+                  TransactionType.PAYMENT,
+              },
+            });
+
+        if (
+          !existingTransaction
+        ) {
+          await transaction
+            .transaction
+            .create({
+              data: {
+                paymentId:
+                  localPayment.id,
+
+                type:
+                  TransactionType.PAYMENT,
+
+                status:
+                  TransactionStatus
+                    .SUCCEEDED,
+
+                amountCentavos:
+                  paidAttempt
+                    .attributes
+                    .amount,
+
+                providerReference:
+                  paidAttempt.id,
+
+                description:
+                  'PayMongo reservation payment.',
+              },
+            });
+        }
+
+        /*
+         * Only move PENDING → CONFIRMED.
+         *
+         * We do not blindly overwrite
+         * other reservation states.
+         */
+        if (
+          localPayment
+            .reservation
+            .status ===
+          ReservationStatus.PENDING
+        ) {
+          await transaction
+            .reservation
             .update({
               where: {
                 id:
-                  localPayment.id,
+                  localPayment
+                    .reservationId,
               },
 
               data: {
                 status:
-                  PaymentStatus.PAID,
-
-                method,
-
-                paymongoPaymentIntentId:
-                  session.attributes
-                    ?.payment_intent
-                    ?.id ??
-                  null,
-
-                paymongoPaymentId:
-                  paidAttempt.id,
-
-                paidAt,
-
-                failureReason:
-                  null,
+                  ReservationStatus
+                    .CONFIRMED,
               },
             });
+        }
+      },
+    );
 
-          const existingTransaction =
-            await transaction
-              .transaction
-              .findFirst({
-                where: {
-                  paymentId:
-                    localPayment.id,
+  return {
+    received: true,
 
-                  providerReference:
-                    paidAttempt.id,
+    paid: true,
 
-                  type:
-                    TransactionType.PAYMENT,
-                },
-              });
+    paymentId:
+      localPayment.id,
 
-          if (
-            !existingTransaction
-          ) {
-            await transaction
-              .transaction
-              .create({
-                data: {
-                  paymentId:
-                    localPayment.id,
+    reservationId:
+      localPayment
+        .reservationId,
 
-                  type:
-                    TransactionType.PAYMENT,
+    paymongoPaymentId:
+      paidAttempt.id,
 
-                  status:
-                    TransactionStatus.SUCCEEDED,
-
-                  amountCentavos:
-                    paidAttempt
-                      .attributes
-                      .amount,
-
-                  providerReference:
-                    paidAttempt.id,
-
-                  description:
-                    'PayMongo reservation payment.',
-                },
-              });
-          }
-
-          if (
-            localPayment
-              .reservation
-              .status ===
-            ReservationStatus.PENDING
-          ) {
-            await transaction
-              .reservation
-              .update({
-                where: {
-                  id:
-                    localPayment
-                      .reservationId,
-                },
-
-                data: {
-                  status:
-                    ReservationStatus.CONFIRMED,
-                },
-              });
-          }
-        },
-      );
-
-    return {
-      received: true,
-      paid: true,
-    };
-  }
+    method,
+  };
+}
 }
