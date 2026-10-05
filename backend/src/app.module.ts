@@ -14,6 +14,9 @@ import { PaymentsModule } from './payments/payments.module';
 import {
   TransactionsModule,
 } from './transactions/transactions.module';
+import {
+  ReportsModule,
+} from './reports/reports.module';
 
 
 @Module({
@@ -31,6 +34,7 @@ import {
     ReservationsModule,
     PaymentsModule,
     TransactionsModule,
+    ReportsModule,
   ],
 
   controllers: [AppController],
