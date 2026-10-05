@@ -11,6 +11,9 @@ import { RoomsModule } from './rooms/rooms.module';
 import { GuestsModule } from './guests/guests.module';
 import { ReservationsModule } from './reservations/reservations.module';
 import { PaymentsModule } from './payments/payments.module';
+import {
+  TransactionsModule,
+} from './transactions/transactions.module';
 
 
 @Module({
@@ -27,6 +30,7 @@ import { PaymentsModule } from './payments/payments.module';
     GuestsModule,
     ReservationsModule,
     PaymentsModule,
+    TransactionsModule,
   ],
 
   controllers: [AppController],

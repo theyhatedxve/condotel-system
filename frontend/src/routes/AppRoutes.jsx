@@ -40,6 +40,9 @@ import GuestsPage from
 import ReservationsPage from
   '../pages/admin/ReservationsPage';
 
+import TransactionsPage from
+  '../pages/admin/TransactionsPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -146,9 +149,7 @@ export default function AppRoutes() {
           <Route
             path="transactions"
             element={
-              <PlaceholderPage
-                title="Transactions"
-              />
+              <TransactionsPage />
             }
           />
 
