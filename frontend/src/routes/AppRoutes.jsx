@@ -28,6 +28,12 @@ import ProtectedRoute from
 import RoomsPage from
   '../pages/admin/RoomsPage';
 
+import GuestsPage from
+  '../pages/admin/GuestsPage';
+
+import ReservationsPage from
+  '../pages/admin/ReservationsPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -86,11 +92,7 @@ export default function AppRoutes() {
 
           <Route
             path="guests"
-            element={
-              <PlaceholderPage
-                title="Guest Management"
-              />
-            }
+            element={<GuestsPage />}
           />
 
           <Route
@@ -101,9 +103,7 @@ export default function AppRoutes() {
           <Route
             path="reservations"
             element={
-              <PlaceholderPage
-                title="Reservations"
-              />
+              <ReservationsPage />
             }
           />
 
