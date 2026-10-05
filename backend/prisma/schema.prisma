@@ -445,3 +445,31 @@ model AuditLog {
   @@index([entityType])
   @@index([createdAt])
 }
+
+// ============================================================
+// SYSTEM SETTINGS
+// ============================================================
+
+model SystemSetting {
+  id String @id @default("system")
+
+  propertyName     String  @default("CONDOTEL")
+  propertyAddress  String?
+  propertyCity     String?
+  propertyProvince String?
+  postalCode       String?
+
+  contactEmail String?
+  contactPhone String?
+
+  checkInTime  String @default("14:00")
+  checkOutTime String @default("12:00")
+
+  // These are currently fixed for this prototype.
+  // They are displayed in Settings but are not editable yet.
+  currency String @default("PHP")
+  timezone String @default("Asia/Manila")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

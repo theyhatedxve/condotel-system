@@ -18,6 +18,10 @@ import {
   ReportsModule,
 } from './reports/reports.module';
 
+import {
+  SettingsModule,
+} from './settings/settings.module';
+
 
 @Module({
   imports: [
@@ -35,6 +39,7 @@ import {
     PaymentsModule,
     TransactionsModule,
     ReportsModule,
+    SettingsModule,
   ],
 
   controllers: [AppController],
