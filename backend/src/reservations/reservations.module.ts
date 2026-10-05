@@ -14,9 +14,14 @@ import {
   ReservationsService,
 } from './reservations.service';
 
+import {
+  PaymentsModule,
+} from '../payments/payments.module';
+
 @Module({
   imports: [
     AuthModule,
+    PaymentsModule,
   ],
 
   controllers: [

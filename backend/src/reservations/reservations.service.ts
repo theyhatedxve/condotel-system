@@ -36,6 +36,10 @@ import {
   ReservationQueryDto,
 } from './dto/reservation-query.dto';
 
+import {
+  PaymentsService,
+} from '../payments/payments.service';
+
 const BLOCKING_STATUSES = [
   ReservationStatus.PENDING,
   ReservationStatus.CONFIRMED,
@@ -45,8 +49,12 @@ const BLOCKING_STATUSES = [
 @Injectable()
 export class ReservationsService {
   constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  private readonly prisma:
+    PrismaService,
+
+  private readonly paymentsService:
+    PaymentsService,
+) {}
 
   private parseDates(
     checkInValue: string,
@@ -499,7 +507,6 @@ export class ReservationsService {
       ReservationStatus[]
     > = {
       PENDING: [
-        ReservationStatus.CONFIRMED,
         ReservationStatus.CANCELLED,
       ],
 
@@ -525,6 +532,16 @@ export class ReservationsService {
       throw new BadRequestException(
         `Cannot change reservation from ${reservation.status} to ${newStatus}.`,
       );
+    }
+
+    if (
+      newStatus ===
+      ReservationStatus.CANCELLED
+    ) {
+      await this.paymentsService
+        .cancelPendingPaymentsForReservation(
+          id,
+        );
     }
 
     return this.prisma
@@ -596,6 +613,11 @@ export class ReservationsService {
     );
   }
 
+  await this.paymentsService
+  .cancelPendingPaymentsForReservation(
+    id,
+  );
+  
   return this.prisma
     .reservation
     .update({

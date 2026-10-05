@@ -277,6 +277,107 @@ export class PaymentsService {
     }
   }
 
+async cancelPendingPaymentsForReservation(
+  reservationId: string,
+) {
+  const pendingPayments =
+    await this.prisma
+      .payment
+      .findMany({
+        where: {
+          reservationId,
+
+          status:
+            PaymentStatus.PENDING,
+        },
+      });
+
+  for (
+    const payment
+    of pendingPayments
+  ) {
+    if (
+      payment
+        .paymongoCheckoutSessionId
+    ) {
+      await this.paymongoService
+        .expireCheckoutSession(
+          payment
+            .paymongoCheckoutSessionId,
+        );
+    }
+  }
+
+  const result =
+    await this.prisma
+      .payment
+      .updateMany({
+        where: {
+          reservationId,
+
+          status:
+            PaymentStatus.PENDING,
+        },
+
+        data: {
+          status:
+            PaymentStatus.CANCELLED,
+        },
+      });
+
+  return {
+    cancelledPayments:
+      result.count,
+  };
+}
+
+    async cancelPendingCheckout(
+      reservationId: string,
+      user: AuthenticatedUser,
+    ) {
+      const reservation =
+        await this.prisma
+          .reservation
+          .findUnique({
+            where: {
+              id: reservationId,
+            },
+
+            select: {
+              id: true,
+              guestId: true,
+              status: true,
+            },
+          });
+
+      if (!reservation) {
+        throw new NotFoundException(
+          'Reservation not found.',
+        );
+      }
+
+      this.ensureReservationAccess(
+        user,
+        reservation.guestId,
+      );
+
+      const cancellableReservationStatuses:
+          ReservationStatus[] = [
+            ReservationStatus.PENDING,
+            ReservationStatus.CANCELLED,
+          ];
+
+        if (
+          !cancellableReservationStatuses.includes(
+            reservation.status,
+          )
+        ) {
+          throw new BadRequestException(
+            'This reservation no longer has a cancellable payment checkout.',
+          );
+        }
+    }
+
   async findAll() {
     return this.prisma
       .payment

@@ -104,6 +104,24 @@ export class PaymentsController {
       );
   }
 
+  @Post(
+  'reservations/:reservationId/cancel-pending',
+)
+@UseGuards(JwtAuthGuard)
+cancelPendingCheckout(
+  @Param('reservationId')
+  reservationId: string,
+
+  @CurrentUser()
+  user: AuthenticatedUser,
+) {
+  return this.paymentsService
+    .cancelPendingCheckout(
+      reservationId,
+      user,
+    );
+}
+
 @Post('webhook/paymongo')
 @HttpCode(HttpStatus.OK)
     handlePaymongoWebhook(

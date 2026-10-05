@@ -188,6 +188,48 @@ export class PaymongoService {
     return result;
   }
 
+  async expireCheckoutSession(
+  checkoutSessionId: string,
+) {
+  const response = await fetch(
+    `https://api.paymongo.com/v1/checkout_sessions/${checkoutSessionId}/expire`,
+    {
+      method: 'POST',
+
+      headers: {
+        Authorization:
+          this.getAuthorizationHeader(),
+
+        Accept:
+          'application/json',
+      },
+    },
+  );
+
+  if (!response.ok) {
+    let detail:
+      | string
+      | undefined;
+
+    try {
+      const result =
+        (await response.json()) as
+          PaymongoErrorResponse;
+
+      detail =
+        result.errors?.[0]
+          ?.detail;
+    } catch {
+      detail = undefined;
+    }
+
+    throw new BadGatewayException(
+      detail ??
+        'Unable to expire PayMongo checkout session.',
+    );
+  }
+}
+
   verifyWebhookSignature(
     rawBody: Buffer,
     signatureHeader?: string,
