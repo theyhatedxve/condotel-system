@@ -22,6 +22,10 @@ import {
   SettingsModule,
 } from './settings/settings.module';
 
+import {
+  SearchModule,
+} from './search/search.module';
+
 
 @Module({
   imports: [
@@ -40,6 +44,7 @@ import {
     TransactionsModule,
     ReportsModule,
     SettingsModule,
+    SearchModule,
   ],
 
   controllers: [AppController],
