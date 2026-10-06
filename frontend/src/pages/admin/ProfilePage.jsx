@@ -1,5 +1,4 @@
 import {
-  useEffect,
   useState,
 } from 'react';
 
@@ -27,41 +26,30 @@ export default function ProfilePage() {
   const [
     form,
     setForm,
-  ] = useState({
-    firstName: '',
-    lastName: '',
-    username: '',
-    phone: '',
-  });
+  ] = useState(
+    () => ({
+      firstName:
+        user?.firstName ??
+        '',
+
+      lastName:
+        user?.lastName ??
+        '',
+
+      username:
+        user?.username ??
+        '',
+
+      phone:
+        user?.phone ??
+        '',
+    }),
+  );
 
   const [
     saving,
     setSaving,
   ] = useState(false);
-
-  useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    setForm({
-      firstName:
-        user.firstName ??
-        '',
-
-      lastName:
-        user.lastName ??
-        '',
-
-      username:
-        user.username ??
-        '',
-
-      phone:
-        user.phone ??
-        '',
-    });
-  }, [user]);
 
   function handleChange(
     event,
@@ -74,7 +62,9 @@ export default function ProfilePage() {
     setForm(
       (current) => ({
         ...current,
-        [name]: value,
+
+        [name]:
+          value,
       }),
     );
   }
@@ -84,23 +74,63 @@ export default function ProfilePage() {
   ) {
     event.preventDefault();
 
+    if (
+      !form.firstName
+        .trim() ||
+      !form.lastName
+        .trim()
+    ) {
+      window.alert(
+        'First name and last name are required.',
+      );
+
+      return;
+    }
+
     setSaving(true);
 
     try {
-      await updateMyProfile({
+      const result =
+        await updateMyProfile({
+          firstName:
+            form.firstName
+              .trim(),
+
+          lastName:
+            form.lastName
+              .trim(),
+
+          username:
+            form.username
+              .trim() ||
+            null,
+
+          phone:
+            form.phone
+              .trim() ||
+            null,
+        });
+
+      setForm({
         firstName:
-          form.firstName.trim(),
+          result.user
+            .firstName ??
+          '',
 
         lastName:
-          form.lastName.trim(),
+          result.user
+            .lastName ??
+          '',
 
         username:
-          form.username.trim() ||
-          null,
+          result.user
+            .username ??
+          '',
 
         phone:
-          form.phone.trim() ||
-          null,
+          result.user
+            .phone ??
+          '',
       });
 
       await refreshUser();
@@ -115,8 +145,12 @@ export default function ProfilePage() {
         'Unable to update profile.';
 
       window.alert(
-        Array.isArray(message)
-          ? message.join(' ')
+        Array.isArray(
+          message,
+        )
+          ? message.join(
+              ' ',
+            )
           : message,
       );
     } finally {
@@ -127,16 +161,14 @@ export default function ProfilePage() {
   return (
     <section className="profile-page">
       <header className="profile-header">
-        <div>
-          <h1>
-            My Profile
-          </h1>
+        <h1>
+          My Profile
+        </h1>
 
-          <p>
-            Manage your personal
-            account information.
-          </p>
-        </div>
+        <p>
+          Manage your personal
+          account information.
+        </p>
       </header>
 
       <form
@@ -169,6 +201,7 @@ export default function ProfilePage() {
             First Name
 
             <input
+              type="text"
               name="firstName"
               value={
                 form.firstName
@@ -176,6 +209,7 @@ export default function ProfilePage() {
               onChange={
                 handleChange
               }
+              maxLength={80}
               required
             />
           </label>
@@ -184,6 +218,7 @@ export default function ProfilePage() {
             Last Name
 
             <input
+              type="text"
               name="lastName"
               value={
                 form.lastName
@@ -191,6 +226,7 @@ export default function ProfilePage() {
               onChange={
                 handleChange
               }
+              maxLength={80}
               required
             />
           </label>
@@ -199,6 +235,7 @@ export default function ProfilePage() {
             Username
 
             <input
+              type="text"
               name="username"
               value={
                 form.username
@@ -206,6 +243,7 @@ export default function ProfilePage() {
               onChange={
                 handleChange
               }
+              maxLength={80}
             />
           </label>
 
@@ -213,6 +251,7 @@ export default function ProfilePage() {
             Phone
 
             <input
+              type="text"
               name="phone"
               value={
                 form.phone
@@ -220,6 +259,7 @@ export default function ProfilePage() {
               onChange={
                 handleChange
               }
+              maxLength={30}
             />
           </label>
 
@@ -227,6 +267,7 @@ export default function ProfilePage() {
             Email
 
             <input
+              type="email"
               value={
                 user?.email ??
                 ''
@@ -240,6 +281,7 @@ export default function ProfilePage() {
             Role
 
             <input
+              type="text"
               value={
                 user?.role ??
                 ''
@@ -253,6 +295,7 @@ export default function ProfilePage() {
             Status
 
             <input
+              type="text"
               value={
                 user?.status ??
                 ''

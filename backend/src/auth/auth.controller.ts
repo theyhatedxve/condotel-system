@@ -9,18 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import type {
-  AuthenticatedUser,
-} from './interfaces/authenticated-user.interface';
-
-import {
-  ChangePasswordDto,
-} from './dto/change-password.dto';
-
-import {
-  UpdateProfileDto,
-} from './dto/update-profile.dto';
-
 import {
   UserRole,
 } from '../generated/prisma/enums';
@@ -38,12 +26,20 @@ import {
 } from './decorators/roles.decorator';
 
 import {
+  ChangePasswordDto,
+} from './dto/change-password.dto';
+
+import {
   LoginDto,
 } from './dto/login.dto';
 
 import {
   RegisterDto,
 } from './dto/register.dto';
+
+import {
+  UpdateProfileDto,
+} from './dto/update-profile.dto';
 
 import {
   JwtAuthGuard,
@@ -53,36 +49,95 @@ import {
   RolesGuard,
 } from './guards/roles.guard';
 
+import type {
+  AuthenticatedUser,
+} from './interfaces/authenticated-user.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly authService:
+      AuthService,
   ) {}
 
   @Post('register')
   register(
-    @Body() dto: RegisterDto,
+    @Body()
+    dto:
+      RegisterDto,
   ) {
-    return this.authService.register(dto);
+    return this.authService
+      .register(dto);
   }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(
+    HttpStatus.OK,
+  )
   login(
-    @Body() dto: LoginDto,
+    @Body()
+    dto:
+      LoginDto,
   ) {
-    return this.authService.login(dto);
+    return this.authService
+      .login(dto);
   }
 
   @Get('me')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(
+    JwtAuthGuard,
+  )
   getCurrentUser(
-    @CurrentUser() user: unknown,
+    @CurrentUser()
+    user:
+      AuthenticatedUser,
   ) {
     return {
       user,
     };
+  }
+
+  @Patch('profile')
+  @UseGuards(
+    JwtAuthGuard,
+  )
+  updateProfile(
+    @CurrentUser()
+    user:
+      AuthenticatedUser,
+
+    @Body()
+    dto:
+      UpdateProfileDto,
+  ) {
+    return this.authService
+      .updateProfile(
+        user.id,
+        dto,
+      );
+  }
+
+  @Post('change-password')
+  @HttpCode(
+    HttpStatus.OK,
+  )
+  @UseGuards(
+    JwtAuthGuard,
+  )
+  changePassword(
+    @CurrentUser()
+    user:
+      AuthenticatedUser,
+
+    @Body()
+    dto:
+      ChangePasswordDto,
+  ) {
+    return this.authService
+      .changePassword(
+        user.id,
+        dto,
+      );
   }
 
   @Get('staff-test')
@@ -95,7 +150,9 @@ export class AuthController {
     UserRole.ADMIN,
   )
   staffTest(
-    @CurrentUser() user: unknown,
+    @CurrentUser()
+    user:
+      AuthenticatedUser,
   ) {
     return {
       message:
@@ -104,43 +161,6 @@ export class AuthController {
       user,
     };
   }
-
-    @Patch('profile')
-    @UseGuards(JwtAuthGuard)
-    updateProfile(
-      @CurrentUser()
-      user:
-        AuthenticatedUser,
-
-      @Body()
-      dto:
-        UpdateProfileDto,
-    ) {
-      return this.authService
-        .updateProfile(
-          user.id,
-          dto,
-        );
-    }
-
-    @Post('change-password')
-    @HttpCode(HttpStatus.OK)
-    @UseGuards(JwtAuthGuard)
-    changePassword(
-      @CurrentUser()
-      user:
-        AuthenticatedUser,
-
-      @Body()
-      dto:
-        ChangePasswordDto,
-    ) {
-      return this.authService
-        .changePassword(
-          user.id,
-          dto,
-        );
-    }
 
   @Get('admin-test')
   @UseGuards(
@@ -151,7 +171,9 @@ export class AuthController {
     UserRole.ADMIN,
   )
   adminTest(
-    @CurrentUser() user: unknown,
+    @CurrentUser()
+    user:
+      AuthenticatedUser,
   ) {
     return {
       message:

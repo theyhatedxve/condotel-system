@@ -3,7 +3,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { ConfigService } from '@nestjs/config';
+import {
+  ConfigService,
+} from '@nestjs/config';
 
 import {
   PassportStrategy,
@@ -28,14 +30,21 @@ import {
 
 @Injectable()
 export class JwtStrategy
-  extends PassportStrategy(Strategy)
+  extends PassportStrategy(
+    Strategy,
+  )
 {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly usersService: UsersService,
+    private readonly configService:
+      ConfigService,
+
+    private readonly usersService:
+      UsersService,
   ) {
     const jwtSecret =
-      configService.get<string>('JWT_SECRET');
+      configService.get<string>(
+        'JWT_SECRET',
+      );
 
     if (!jwtSecret) {
       throw new Error(
@@ -45,23 +54,31 @@ export class JwtStrategy
 
     super({
       jwtFromRequest:
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        ExtractJwt
+          .fromAuthHeaderAsBearerToken(),
 
-      ignoreExpiration: false,
+      ignoreExpiration:
+        false,
 
-      secretOrKey: jwtSecret,
+      secretOrKey:
+        jwtSecret,
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(
+    payload:
+      JwtPayload,
+  ) {
     const user =
-      await this.usersService.findById(
-        payload.sub,
-      );
+      await this.usersService
+        .findById(
+          payload.sub,
+        );
 
     if (
       !user ||
-      user.status !== UserStatus.ACTIVE
+      user.status !==
+        UserStatus.ACTIVE
     ) {
       throw new UnauthorizedException(
         'User account is unavailable.',
@@ -69,18 +86,29 @@ export class JwtStrategy
     }
 
     return {
-      id: user.id,
+      id:
+        user.id,
 
-      email: user.email,
-      username: user.username,
+      email:
+        user.email,
 
-      firstName: user.firstName,
-      lastName: user.lastName,
+      username:
+        user.username,
 
-      phone: user.phone,
+      firstName:
+        user.firstName,
 
-      role: user.role,
-      status: user.status,
+      lastName:
+        user.lastName,
+
+      phone:
+        user.phone,
+
+      role:
+        user.role,
+
+      status:
+        user.status,
 
       mustChangePassword:
         user.mustChangePassword,

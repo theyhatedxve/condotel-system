@@ -7,36 +7,26 @@ import {
 import LoadingScreen from
   '../components/common/LoadingScreen';
 
-import { useAuth } from
-  '../hooks/useAuth';
+import {
+  useAuth,
+} from '../hooks/useAuth';
 
 export default function ProtectedRoute({
   allowedRoles,
 }) {
-
-  const location =
-  useLocation();
-  if (!isAuthenticated) {
-    if (
-  user?.mustChangePassword &&
-  location.pathname !==
-    '/change-password'
-) {
-  return (
-    <Navigate
-      to="/change-password"
-      replace
-    />
-  );
-}
   const {
     user,
     isLoading,
     isAuthenticated,
   } = useAuth();
 
+  const location =
+    useLocation();
+
   if (isLoading) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen />
+    );
   }
 
   if (!isAuthenticated) {
@@ -49,8 +39,23 @@ export default function ProtectedRoute({
   }
 
   if (
+    user?.mustChangePassword &&
+    location.pathname !==
+      '/change-password'
+  ) {
+    return (
+      <Navigate
+        to="/change-password"
+        replace
+      />
+    );
+  }
+
+  if (
     allowedRoles &&
-    !allowedRoles.includes(user.role)
+    !allowedRoles.includes(
+      user.role,
+    )
   ) {
     return (
       <Navigate
@@ -61,5 +66,4 @@ export default function ProtectedRoute({
   }
 
   return <Outlet />;
-}
 }

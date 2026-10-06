@@ -9,17 +9,26 @@ import {
   Bell,
   CalendarDays,
   ChevronDown,
+  Clock3,
   CreditCard,
+  KeyRound,
   LoaderCircle,
+  LogOut,
   Search,
   UserRound,
   WalletCards,
-  Clock3,
 } from 'lucide-react';
 
 import {
   useNavigate,
 } from 'react-router-dom';
+
+import {
+  getNotifications,
+  getUnreadNotificationCount,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from '../api/notificationApi';
 
 import {
   searchGlobal,
@@ -32,13 +41,6 @@ import {
 import {
   formatCurrency,
 } from '../utils/formatCurrency';
-
-import {
-  getNotifications,
-  getUnreadNotificationCount,
-  markAllNotificationsRead,
-  markNotificationRead,
-} from '../api/notificationApi';
 
 const resultIcons = {
   GUEST:
@@ -81,168 +83,6 @@ function formatType(
   }
 }
 
-export default function Topbar() {
-
-  const {
-  user,
-  logout,
-} = useAuth();
-
-  const navigate =
-    useNavigate();
-
-  const [
-    query,
-    setQuery,
-  ] = useState('');
-
-  const [
-    results,
-    setResults,
-  ] = useState([]);
-
-  const [
-    profileOpen,
-    setProfileOpen,
-  ] = useState(false);
-
-  const [
-    searching,
-    setSearching,
-
-const [
-  unreadCount,
-  setUnreadCount,
-] = useState(0);
-
-const [
-  notificationsOpen,
-  setNotificationsOpen,
-] = useState(false);
-
-const [
-  notificationsLoading,
-  setNotificationsLoading,
-] = useState(false);
-
-  const debounceRef =
-    useRef(null);
-
-  const requestIdRef =
-    useRef(0);
-
-async function loadNotifications() {
-  setNotificationsLoading(
-    true,
-  );
-
-  try {
-    const result =
-      await getNotifications(
-        10,
-      );
-
-    setNotifications(
-      Array.isArray(result)
-        ? result
-        : [],
-    );
-
-    const unread =
-      await getUnreadNotificationCount();
-
-    setUnreadCount(
-      Number(
-        unread.count ??
-        0,
-      ),
-    );
-  } catch {
-    setNotifications([]);
-  } finally {
-    setNotificationsLoading(
-      false,
-    );
-  }
-}
-
-async function handleNotificationBell() {
-  const nextOpen =
-    !notificationsOpen;
-
-  setNotificationsOpen(
-    nextOpen,
-  );
-
-  setSearchOpen(false);
-
-  if (nextOpen) {
-    await loadNotifications();
-  }
-}
-
-async function handleNotificationClick(
-  notification,
-) {
-  try {
-    if (
-      !notification.isRead
-    ) {
-      await markNotificationRead(
-        notification.id,
-      );
-
-      setUnreadCount(
-        (current) =>
-          Math.max(
-            current - 1,
-            0,
-          ),
-      );
-    }
-  } catch {
-    // Navigation can still continue.
-  }
-
-  setNotificationsOpen(
-    false,
-  );
-
-  if (
-    notification.path
-  ) {
-    navigate(
-      notification.path,
-    );
-  }
-}
-
-async function handleMarkAllRead() {
-  try {
-    await markAllNotificationsRead();
-
-    setNotifications(
-      (current) =>
-        current.map(
-          (notification) => ({
-            ...notification,
-            isRead: true,
-            readAt:
-              notification.readAt ??
-              new Date()
-                .toISOString(),
-          }),
-        ),
-    );
-
-    setUnreadCount(0);
-  } catch {
-    window.alert(
-      'Unable to mark notifications as read.',
-    );
-  }
-}
-
 function formatNotificationTime(
   value,
 ) {
@@ -272,6 +112,66 @@ function formatNotificationTime(
   ).format(date);
 }
 
+export default function Topbar() {
+  const {
+    user,
+    logout,
+  } = useAuth();
+
+  const navigate =
+    useNavigate();
+
+  const [
+    query,
+    setQuery,
+  ] = useState('');
+
+  const [
+    results,
+    setResults,
+  ] = useState([]);
+
+  const [
+    searching,
+    setSearching,
+  ] = useState(false);
+
+  const [
+    searchOpen,
+    setSearchOpen,
+  ] = useState(false);
+
+  const [
+    notifications,
+    setNotifications,
+  ] = useState([]);
+
+  const [
+    unreadCount,
+    setUnreadCount,
+  ] = useState(0);
+
+  const [
+    notificationsOpen,
+    setNotificationsOpen,
+  ] = useState(false);
+
+  const [
+    notificationsLoading,
+    setNotificationsLoading,
+  ] = useState(false);
+
+  const [
+    profileOpen,
+    setProfileOpen,
+  ] = useState(false);
+
+  const debounceRef =
+    useRef(null);
+
+  const requestIdRef =
+    useRef(0);
+
   useEffect(() => {
     return () => {
       if (
@@ -285,43 +185,173 @@ function formatNotificationTime(
   }, []);
 
   useEffect(() => {
-  let cancelled = false;
+    let cancelled =
+      false;
 
-  async function loadUnreadCount() {
+    async function loadUnreadCount() {
+      try {
+        const result =
+          await getUnreadNotificationCount();
+
+        if (!cancelled) {
+          setUnreadCount(
+            Number(
+              result.count ??
+              0,
+            ),
+          );
+        }
+      } catch {
+        // Keep the topbar usable
+        // if polling fails.
+      }
+    }
+
+    loadUnreadCount();
+
+    const intervalId =
+      window.setInterval(
+        loadUnreadCount,
+        30000,
+      );
+
+    return () => {
+      cancelled =
+        true;
+
+      window.clearInterval(
+        intervalId,
+      );
+    };
+  }, []);
+
+  async function loadNotifications() {
+    setNotificationsLoading(
+      true,
+    );
+
     try {
       const result =
+        await getNotifications(
+          10,
+        );
+
+      setNotifications(
+        Array.isArray(result)
+          ? result
+          : [],
+      );
+
+      const unread =
         await getUnreadNotificationCount();
 
-      if (!cancelled) {
-        setUnreadCount(
-          Number(
-            result.count ??
-            0,
-          ),
-        );
-      }
+      setUnreadCount(
+        Number(
+          unread.count ??
+          0,
+        ),
+      );
     } catch {
-      // Keep the topbar usable if
-      // notification polling fails.
+      setNotifications(
+        [],
+      );
+    } finally {
+      setNotificationsLoading(
+        false,
+      );
     }
   }
 
-  loadUnreadCount();
+  async function handleNotificationBell() {
+    const nextOpen =
+      !notificationsOpen;
 
-  const intervalId =
-    window.setInterval(
-      loadUnreadCount,
-      30000,
+    setNotificationsOpen(
+      nextOpen,
     );
 
-  return () => {
-    cancelled = true;
+    setSearchOpen(false);
+    setProfileOpen(false);
 
-    window.clearInterval(
-      intervalId,
+    if (nextOpen) {
+      await loadNotifications();
+    }
+  }
+
+  async function handleNotificationClick(
+    notification,
+  ) {
+    try {
+      if (
+        !notification.isRead
+      ) {
+        await markNotificationRead(
+          notification.id,
+        );
+
+        setUnreadCount(
+          (current) =>
+            Math.max(
+              current - 1,
+              0,
+            ),
+        );
+
+        setNotifications(
+          (current) =>
+            current.map(
+              (item) =>
+                item.id ===
+                notification.id
+                  ? {
+                      ...item,
+                      isRead:
+                        true,
+                    }
+                  : item,
+            ),
+        );
+      }
+    } catch {
+      // Navigation can still continue.
+    }
+
+    setNotificationsOpen(
+      false,
     );
-  };
-}, []);
+
+    if (
+      notification.path
+    ) {
+      navigate(
+        notification.path,
+      );
+    }
+  }
+
+  async function handleMarkAllRead() {
+    try {
+      await markAllNotificationsRead();
+
+      setNotifications(
+        (current) =>
+          current.map(
+            (notification) => ({
+              ...notification,
+
+              isRead:
+                true,
+            }),
+          ),
+      );
+
+      setUnreadCount(0);
+    } catch {
+      window.alert(
+        'Unable to mark notifications as read.',
+      );
+    }
+  }
 
   function handleSearchChange(
     event,
@@ -330,6 +360,12 @@ function formatNotificationTime(
       event.target.value;
 
     setQuery(value);
+
+    setProfileOpen(false);
+
+    setNotificationsOpen(
+      false,
+    );
 
     if (
       debounceRef.current
@@ -351,13 +387,9 @@ function formatNotificationTime(
 
       setResults([]);
 
-      setSearching(
-        false,
-      );
+      setSearching(false);
 
-      setSearchOpen(
-        false,
-      );
+      setSearchOpen(false);
 
       return;
     }
@@ -425,9 +457,7 @@ function formatNotificationTime(
     result,
   ) {
     setQuery('');
-
     setResults([]);
-
     setSearchOpen(false);
 
     navigate(
@@ -442,19 +472,41 @@ function formatNotificationTime(
       event.key ===
       'Escape'
     ) {
-      setSearchOpen(
-        false,
-      );
+      setSearchOpen(false);
     }
+  }
+
+  function handleProfileToggle() {
+    setProfileOpen(
+      (current) =>
+        !current,
+    );
+
+    setSearchOpen(false);
+
+    setNotificationsOpen(
+      false,
+    );
+  }
+
+  function handleSignOut() {
+    setProfileOpen(false);
+
+    logout();
+
+    navigate(
+      '/login',
+      {
+        replace: true,
+      },
+    );
   }
 
   return (
     <header className="topbar">
       <div
         className="topbar-search"
-        onBlur={(
-          event,
-        ) => {
+        onBlur={(event) => {
           if (
             !event.currentTarget
               .contains(
@@ -481,6 +533,14 @@ function formatNotificationTime(
             handleSearchChange
           }
           onFocus={() => {
+            setProfileOpen(
+              false,
+            );
+
+            setNotificationsOpen(
+              false,
+            );
+
             if (
               query
                 .trim()
@@ -604,168 +664,269 @@ function formatNotificationTime(
 
       <div className="topbar-actions">
         <div
-  className="topbar-notifications"
-  onBlur={(event) => {
-    if (
-      !event.currentTarget
-        .contains(
-          event.relatedTarget,
-        )
-    ) {
-      setNotificationsOpen(
-        false,
-      );
-    }
-  }}
->
-  <button
-    type="button"
-    className="topbar-icon-button"
-    aria-label="Notifications"
-    onClick={
-      handleNotificationBell
-    }
-  >
-    <Bell
-      size={18}
-    />
-
-    {unreadCount > 0 && (
-      <span className="topbar-notification-badge">
-        {unreadCount > 99
-          ? '99+'
-          : unreadCount}
-      </span>
-    )}
-  </button>
-
-  {notificationsOpen && (
-    <div className="notification-dropdown">
-      <div className="notification-dropdown-header">
-        <div>
-          <strong>
-            Notifications
-          </strong>
-
-          <span>
-            {unreadCount}{' '}
-            unread
-          </span>
-        </div>
-
-        {unreadCount > 0 && (
+          className="topbar-notifications"
+          onBlur={(event) => {
+            if (
+              !event.currentTarget
+                .contains(
+                  event.relatedTarget,
+                )
+            ) {
+              setNotificationsOpen(
+                false,
+              );
+            }
+          }}
+        >
           <button
             type="button"
+            className="topbar-icon-button"
+            aria-label="Notifications"
+            aria-expanded={
+              notificationsOpen
+            }
             onClick={
-              handleMarkAllRead
+              handleNotificationBell
             }
           >
-            Mark all read
-          </button>
-        )}
-      </div>
+            <Bell
+              size={18}
+            />
 
-      {notificationsLoading ? (
-        <div className="notification-empty">
-          Loading notifications...
-        </div>
-      ) : notifications.length ===
-        0 ? (
-        <div className="notification-empty">
-          No notifications yet.
-        </div>
-      ) : (
-        <div className="notification-list">
-          {notifications.map(
-            (notification) => (
-              <button
-                key={
-                  notification.id
-                }
-                type="button"
-                className={
-                  notification.isRead
-                    ? 'notification-item'
-                    : 'notification-item unread'
-                }
-                onClick={() =>
-                  handleNotificationClick(
-                    notification,
-                  )
-                }
-              >
-                <div className="notification-item-icon">
-                  {notification.type ===
-                  'PAYMENT_RECEIVED' ? (
-                    <CreditCard
-                      size={17}
-                    />
-                  ) : notification.type ===
-                    'UPCOMING_CHECK_IN' ? (
-                    <Clock3
-                      size={17}
-                    />
-                  ) : (
-                    <CalendarDays
-                      size={17}
-                    />
+            {unreadCount > 0 && (
+              <span className="topbar-notification-badge">
+                {unreadCount > 99
+                  ? '99+'
+                  : unreadCount}
+              </span>
+            )}
+          </button>
+
+          {notificationsOpen && (
+            <div className="notification-dropdown">
+              <div className="notification-dropdown-header">
+                <div>
+                  <strong>
+                    Notifications
+                  </strong>
+
+                  <span>
+                    {unreadCount}{' '}
+                    unread
+                  </span>
+                </div>
+
+                {unreadCount >
+                  0 && (
+                  <button
+                    type="button"
+                    onClick={
+                      handleMarkAllRead
+                    }
+                  >
+                    Mark all read
+                  </button>
+                )}
+              </div>
+
+              {notificationsLoading ? (
+                <div className="notification-empty">
+                  Loading notifications...
+                </div>
+              ) : notifications.length ===
+                0 ? (
+                <div className="notification-empty">
+                  No notifications yet.
+                </div>
+              ) : (
+                <div className="notification-list">
+                  {notifications.map(
+                    (
+                      notification,
+                    ) => (
+                      <button
+                        key={
+                          notification.id
+                        }
+                        type="button"
+                        className={
+                          notification.isRead
+                            ? 'notification-item'
+                            : 'notification-item unread'
+                        }
+                        onClick={() =>
+                          handleNotificationClick(
+                            notification,
+                          )
+                        }
+                      >
+                        <div className="notification-item-icon">
+                          {notification.type ===
+                          'PAYMENT_RECEIVED' ? (
+                            <CreditCard
+                              size={17}
+                            />
+                          ) : notification.type ===
+                            'UPCOMING_CHECK_IN' ? (
+                            <Clock3
+                              size={17}
+                            />
+                          ) : (
+                            <CalendarDays
+                              size={17}
+                            />
+                          )}
+                        </div>
+
+                        <div className="notification-item-content">
+                          <div className="notification-item-title">
+                            <strong>
+                              {
+                                notification.title
+                              }
+                            </strong>
+
+                            {!notification.isRead && (
+                              <i />
+                            )}
+                          </div>
+
+                          <p>
+                            {
+                              notification.message
+                            }
+                          </p>
+
+                          <small>
+                            {formatNotificationTime(
+                              notification.createdAt,
+                            )}
+                          </small>
+                        </div>
+                      </button>
+                    ),
                   )}
                 </div>
-
-                <div className="notification-item-content">
-                  <div className="notification-item-title">
-                    <strong>
-                      {
-                        notification.title
-                      }
-                    </strong>
-
-                    {!notification.isRead && (
-                      <i />
-                    )}
-                  </div>
-
-                  <p>
-                    {
-                      notification.message
-                    }
-                  </p>
-
-                  <small>
-                    {formatNotificationTime(
-                      notification.createdAt,
-                    )}
-                  </small>
-                </div>
-              </button>
-            ),
+              )}
+            </div>
           )}
         </div>
-      )}
-    </div>
-  )}
-</div>
 
-        <button
-          type="button"
-          className="topbar-profile"
+        <div
+          className="topbar-profile-menu"
+          onBlur={(event) => {
+            if (
+              !event.currentTarget
+                .contains(
+                  event.relatedTarget,
+                )
+            ) {
+              setProfileOpen(
+                false,
+              );
+            }
+          }}
         >
-          <div className="topbar-avatar">
-            {user?.firstName
-              ?.charAt(0)
-              ?.toUpperCase() ||
-              'A'}
-          </div>
+          <button
+            type="button"
+            className="topbar-profile"
+            aria-expanded={
+              profileOpen
+            }
+            onClick={
+              handleProfileToggle
+            }
+          >
+            <div className="topbar-avatar">
+              {user?.firstName
+                ?.charAt(0)
+                ?.toUpperCase() ||
+                'A'}
+            </div>
 
-          <span>
-            {user?.firstName ||
-              'Admin'}
-          </span>
+            <span>
+              {user?.firstName ||
+                'Admin'}
+            </span>
 
-          <ChevronDown
-            size={15}
-          />
-        </button>
+            <ChevronDown
+              size={15}
+            />
+          </button>
+
+          {profileOpen && (
+            <div className="profile-dropdown">
+              <div className="profile-dropdown-user">
+                <strong>
+                  {user?.firstName}{' '}
+                  {user?.lastName}
+                </strong>
+
+                <span>
+                  {user?.email}
+                </span>
+
+                <small>
+                  {user?.role}
+                </small>
+              </div>
+
+              <div className="profile-dropdown-actions">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileOpen(
+                      false,
+                    );
+
+                    navigate(
+                      '/admin/profile',
+                    );
+                  }}
+                >
+                  <UserRound
+                    size={16}
+                  />
+
+                  My Profile
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProfileOpen(
+                      false,
+                    );
+
+                    navigate(
+                      '/change-password',
+                    );
+                  }}
+                >
+                  <KeyRound
+                    size={16}
+                  />
+
+                  Change Password
+                </button>
+
+                <button
+                  type="button"
+                  className="profile-dropdown-signout"
+                  onClick={
+                    handleSignOut
+                  }
+                >
+                  <LogOut
+                    size={16}
+                  />
+
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   );

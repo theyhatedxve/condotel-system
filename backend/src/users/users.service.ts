@@ -1,17 +1,22 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 
-import { PrismaService } from '../prisma/prisma.service';
 import {
   UserRole,
   UserStatus,
 } from '../generated/prisma/enums';
 
+import {
+  PrismaService,
+} from '../prisma/prisma.service';
+
 const publicUserSelect = {
   id: true,
+
   email: true,
   username: true,
 
@@ -19,10 +24,11 @@ const publicUserSelect = {
   lastName: true,
   phone: true,
 
-  mustChangePassword: true,
-
   role: true,
   status: true,
+
+  mustChangePassword:
+    true,
 
   lastLoginAt: true,
 
@@ -32,32 +38,170 @@ const publicUserSelect = {
 
 interface CreateCustomerData {
   email: string;
+
   username?: string;
+
   passwordHash: string;
 
   firstName: string;
   lastName: string;
+
   phone?: string;
+}
+
+interface UpdateProfileData {
+  firstName?: string;
+  lastName?: string;
+
+  username?:
+    | string
+    | null;
+
+  phone?:
+    | string
+    | null;
 }
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma:
+      PrismaService,
+  ) {}
 
-    async updateProfile(
+  async findByEmail(
+    email: string,
+  ) {
+    return this.prisma.user
+      .findUnique({
+        where: {
+          email:
+            email
+              .trim()
+              .toLowerCase(),
+        },
+      });
+  }
+
+  async findByUsername(
+    username: string,
+  ) {
+    return this.prisma.user
+      .findUnique({
+        where: {
+          username:
+            username
+              .trim()
+              .toLowerCase(),
+        },
+      });
+  }
+
+  async findByEmailOrUsername(
+    identifier: string,
+  ) {
+    const normalizedIdentifier =
+      identifier
+        .trim()
+        .toLowerCase();
+
+    return this.prisma.user
+      .findFirst({
+        where: {
+          OR: [
+            {
+              email:
+                normalizedIdentifier,
+            },
+            {
+              username:
+                normalizedIdentifier,
+            },
+          ],
+        },
+      });
+  }
+
+  async findById(
     id: string,
-    data: {
-      firstName?: string;
-      lastName?: string;
+  ) {
+    return this.prisma.user
+      .findUnique({
+        where: {
+          id,
+        },
+      });
+  }
 
-      username?:
-        | string
-        | null;
+  async findPublicById(
+    id: string,
+  ) {
+    return this.prisma.user
+      .findUnique({
+        where: {
+          id,
+        },
 
-      phone?:
-        | string
-        | null;
-    },
+        select:
+          publicUserSelect,
+      });
+  }
+
+  async createCustomer(
+    data:
+      CreateCustomerData,
+  ) {
+    return this.prisma.user
+      .create({
+        data: {
+          email:
+            data.email
+              .trim()
+              .toLowerCase(),
+
+          username:
+            data.username
+              ? data.username
+                  .trim()
+                  .toLowerCase()
+              : null,
+
+          passwordHash:
+            data.passwordHash,
+
+          firstName:
+            data.firstName
+              .trim(),
+
+          lastName:
+            data.lastName
+              .trim(),
+
+          phone:
+            data.phone
+              ?.trim() ||
+            null,
+
+          role:
+            UserRole.CUSTOMER,
+
+          status:
+            UserStatus.ACTIVE,
+
+          guestProfile: {
+            create: {},
+          },
+        },
+
+        select:
+          publicUserSelect,
+      });
+  }
+
+  async updateProfile(
+    id: string,
+    data:
+      UpdateProfileData,
   ) {
     const user =
       await this.findById(id);
@@ -65,6 +209,26 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(
         'User not found.',
+      );
+    }
+
+    if (
+      data.firstName !==
+        undefined &&
+      !data.firstName.trim()
+    ) {
+      throw new BadRequestException(
+        'First name is required.',
+      );
+    }
+
+    if (
+      data.lastName !==
+        undefined &&
+      !data.lastName.trim()
+    ) {
+      throw new BadRequestException(
+        'Last name is required.',
       );
     }
 
@@ -89,9 +253,10 @@ export class UsersService {
           user.username
       ) {
         const existing =
-          await this.findByUsername(
-            username,
-          );
+          await this
+            .findByUsername(
+              username,
+            );
 
         if (
           existing &&
@@ -104,51 +269,52 @@ export class UsersService {
       }
     }
 
-    return this.prisma.user.update({
-      where: {
-        id,
-      },
+    return this.prisma.user
+      .update({
+        where: {
+          id,
+        },
 
-      data: {
-        ...(data.firstName !==
-        undefined
-          ? {
-              firstName:
-                data.firstName
-                  .trim(),
-            }
-          : {}),
+        data: {
+          ...(data.firstName !==
+          undefined
+            ? {
+                firstName:
+                  data.firstName
+                    .trim(),
+              }
+            : {}),
 
-        ...(data.lastName !==
-        undefined
-          ? {
-              lastName:
-                data.lastName
-                  .trim(),
-            }
-          : {}),
+          ...(data.lastName !==
+          undefined
+            ? {
+                lastName:
+                  data.lastName
+                    .trim(),
+              }
+            : {}),
 
-        ...(data.username !==
-        undefined
-          ? {
-              username,
-            }
-          : {}),
+          ...(data.username !==
+          undefined
+            ? {
+                username,
+              }
+            : {}),
 
-        ...(data.phone !==
-        undefined
-          ? {
-              phone:
-                data.phone
-                  ?.trim() ||
-                null,
-            }
-          : {}),
-      },
+          ...(data.phone !==
+          undefined
+            ? {
+                phone:
+                  data.phone
+                    ?.trim() ||
+                  null,
+              }
+            : {}),
+        },
 
-      select:
-        publicUserSelect,
-    });
+        select:
+          publicUserSelect,
+      });
   }
 
   async updatePassword(
@@ -157,113 +323,39 @@ export class UsersService {
     mustChangePassword:
       boolean,
   ) {
-    return this.prisma.user.update({
-      where: {
-        id,
-      },
-
-      data: {
-        passwordHash,
-        mustChangePassword,
-      },
-
-      select:
-        publicUserSelect,
-    });
-  }
-
-  async findByEmail(email: string) {
-    return this.prisma.user.findUnique({
-      where: {
-        email: email.trim().toLowerCase(),
-      },
-    });
-  }
-
-  async findByUsername(username: string) {
-    return this.prisma.user.findUnique({
-      where: {
-        username: username.trim().toLowerCase(),
-      },
-    });
-  }
-
-  async findByEmailOrUsername(identifier: string) {
-    const normalizedIdentifier = identifier
-      .trim()
-      .toLowerCase();
-
-    return this.prisma.user.findFirst({
-      where: {
-        OR: [
-          {
-            email: normalizedIdentifier,
-          },
-          {
-            username: normalizedIdentifier,
-          },
-        ],
-      },
-    });
-  }
-
-  async findById(id: string) {
-    return this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-    });
-  }
-
-  async findPublicById(id: string) {
-    return this.prisma.user.findUnique({
-      where: {
-        id,
-      },
-
-      select: publicUserSelect,
-    });
-  }
-
-  async createCustomer(data: CreateCustomerData) {
-    return this.prisma.user.create({
-      data: {
-        email: data.email.trim().toLowerCase(),
-
-        username: data.username
-          ? data.username.trim().toLowerCase()
-          : null,
-
-        passwordHash: data.passwordHash,
-
-        firstName: data.firstName.trim(),
-        lastName: data.lastName.trim(),
-
-        phone: data.phone?.trim() || null,
-
-        role: UserRole.CUSTOMER,
-        status: UserStatus.ACTIVE,
-
-        guestProfile: {
-          create: {},
+    return this.prisma.user
+      .update({
+        where: {
+          id,
         },
-      },
 
-      select: publicUserSelect,
-    });
+        data: {
+          passwordHash,
+
+          mustChangePassword,
+        },
+
+        select:
+          publicUserSelect,
+      });
   }
 
-  async updateLastLogin(id: string) {
-    return this.prisma.user.update({
-      where: {
-        id,
-      },
+  async updateLastLogin(
+    id: string,
+  ) {
+    return this.prisma.user
+      .update({
+        where: {
+          id,
+        },
 
-      data: {
-        lastLoginAt: new Date(),
-      },
+        data: {
+          lastLoginAt:
+            new Date(),
+        },
 
-      select: publicUserSelect,
-    });
+        select:
+          publicUserSelect,
+      });
   }
 }

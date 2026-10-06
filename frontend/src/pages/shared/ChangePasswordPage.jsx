@@ -78,6 +78,17 @@ export default function ChangePasswordPage() {
       return;
     }
 
+    if (
+      newPassword.length <
+      8
+    ) {
+      window.alert(
+        'New password must be at least 8 characters.',
+      );
+
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -108,8 +119,12 @@ export default function ChangePasswordPage() {
         'Unable to change password.';
 
       window.alert(
-        Array.isArray(message)
-          ? message.join(' ')
+        Array.isArray(
+          message,
+        )
+          ? message.join(
+              ' ',
+            )
           : message,
       );
     } finally {
@@ -158,6 +173,7 @@ export default function ChangePasswordPage() {
               )
             }
             autoComplete="current-password"
+            maxLength={128}
             required
           />
         </label>
@@ -179,6 +195,7 @@ export default function ChangePasswordPage() {
               )
             }
             minLength={8}
+            maxLength={128}
             autoComplete="new-password"
             required
           />
@@ -201,6 +218,7 @@ export default function ChangePasswordPage() {
               )
             }
             minLength={8}
+            maxLength={128}
             autoComplete="new-password"
             required
           />

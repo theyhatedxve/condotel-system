@@ -833,3 +833,152 @@
     justify-content: center;
   }
 }
+
+/* ============================================================
+   PROFILE DROPDOWN
+   ============================================================ */
+
+.topbar-profile-menu {
+  position: relative;
+}
+
+.topbar-profile {
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+
+  top:
+    calc(
+      100% + 10px
+    );
+
+  right: 0;
+
+  z-index: 50;
+
+  width: 240px;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-md);
+
+  background: #ffffff;
+
+  box-shadow:
+    0 18px 45px
+    rgba(
+      15,
+      23,
+      42,
+      0.16
+    );
+}
+
+.profile-dropdown-user {
+  display: flex;
+  flex-direction: column;
+
+  padding: 14px;
+
+  border-bottom:
+    1px solid
+    var(--color-border);
+}
+
+.profile-dropdown-user strong {
+  color:
+    var(--color-navy-950);
+
+  font-size: 12px;
+}
+
+.profile-dropdown-user span {
+  overflow: hidden;
+
+  margin-top: 3px;
+
+  color:
+    var(--color-text-muted);
+
+  font-size: 9px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.profile-dropdown-user small {
+  margin-top: 7px;
+
+  color:
+    var(--color-blue-700);
+
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.profile-dropdown-actions {
+  display: flex;
+  flex-direction: column;
+
+  padding: 6px;
+}
+
+.profile-dropdown-actions button {
+  width: 100%;
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 10px;
+
+  border: none;
+
+  border-radius: 6px;
+
+  background: transparent;
+
+  color:
+    var(--color-navy-950);
+
+  text-align: left;
+
+  font-size: 10px;
+
+  cursor: pointer;
+}
+
+.profile-dropdown-actions button:hover {
+  background: #f4f8fb;
+}
+
+.profile-dropdown-actions
+.profile-dropdown-signout {
+  color: #c03f3f;
+}
+
+@media (
+  max-width: 650px
+) {
+  .profile-dropdown {
+    width:
+      min(
+        240px,
+        calc(
+          100vw -
+          var(--sidebar-width) -
+          28px
+        )
+      );
+  }
+}

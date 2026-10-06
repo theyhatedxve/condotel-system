@@ -20,70 +20,93 @@ import {
   AuthContext,
 } from './auth-context';
 
+export function AuthProvider({
+  children,
+}) {
+  const [
+    user,
+    setUser,
+  ] = useState(null);
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-
-  const [isLoading, setIsLoading] = useState(
-    () => Boolean(getAccessToken()),
+  const [
+    isLoading,
+    setIsLoading,
+  ] = useState(
+    () =>
+      Boolean(
+        getAccessToken(),
+      ),
   );
 
-const refreshUser =
-  useCallback(
-    async () => {
-      const result =
-        await getCurrentUser();
+  const refreshUser =
+    useCallback(
+      async () => {
+        const result =
+          await getCurrentUser();
 
-      setUser(
-        result.user,
-      );
+        setUser(
+          result.user,
+        );
 
-      return result.user;
-    },
-    [],
-  );
-  
-  const login = useCallback(
-    async ({
-      identifier,
-      password,
-      rememberMe,
-    }) => {
-      const result = await loginUser({
+        return result.user;
+      },
+      [],
+    );
+
+  const login =
+    useCallback(
+      async ({
         identifier,
         password,
-      });
-
-      saveAccessToken(
-        result.accessToken,
         rememberMe,
-      );
+      }) => {
+        const result =
+          await loginUser({
+            identifier,
+            password,
+          });
 
-      setUser(result.user);
+        saveAccessToken(
+          result.accessToken,
+          rememberMe,
+        );
 
-      return result.user;
-    },
-    [],
-  );
+        setUser(
+          result.user,
+        );
 
-  const logout = useCallback(() => {
-    clearAccessToken();
-    setUser(null);
-  }, []);
+        return result.user;
+      },
+      [],
+    );
+
+  const logout =
+    useCallback(
+      () => {
+        clearAccessToken();
+
+        setUser(null);
+      },
+      [],
+    );
 
   useEffect(() => {
-    const token = getAccessToken();
+    const token =
+      getAccessToken();
 
     if (!token) {
       return;
     }
 
-    let cancelled = false;
+    let cancelled =
+      false;
 
     getCurrentUser()
       .then((result) => {
         if (!cancelled) {
-          setUser(result.user);
+          setUser(
+            result.user,
+          );
         }
       })
       .catch(() => {
@@ -95,39 +118,47 @@ const refreshUser =
       })
       .finally(() => {
         if (!cancelled) {
-          setIsLoading(false);
+          setIsLoading(
+            false,
+          );
         }
       });
 
     return () => {
-      cancelled = true;
+      cancelled =
+        true;
     };
   }, []);
 
-  const value = useMemo(
-    () => ({
-      user,
-      isLoading,
+  const value =
+    useMemo(
+      () => ({
+        user,
 
-      isAuthenticated:
-        Boolean(user),
+        isLoading,
 
-      login,
-      logout,
-      refreshUser,
-    }),
-    [
-      user,
-      isLoading,
-      login,
-      logout,
-      refreshUser,
-    ],
-  );
+        isAuthenticated:
+          Boolean(user),
 
-  
+        login,
+
+        logout,
+
+        refreshUser,
+      }),
+      [
+        user,
+        isLoading,
+        login,
+        logout,
+        refreshUser,
+      ],
+    );
+
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={value}
+    >
       {children}
     </AuthContext.Provider>
   );
