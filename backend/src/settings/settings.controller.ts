@@ -32,7 +32,7 @@ import {
 
 import {
   UpdateSettingsDto,
-} from './dto/update-settings.dto';
+} from './update-settings.dto';
 
 import {
   SettingsService,

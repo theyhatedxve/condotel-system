@@ -28,15 +28,15 @@ import {
 
 import {
   CreateRoomDto,
-} from './dto/create-room.dto';
+} from './create-room.dto';
 
 import {
   UpdateRoomDto,
-} from './dto/update-room.dto';
+} from './update-room.dto';
 
 import {
   UpdateRoomStatusDto,
-} from './dto/update-room-status.dto';
+} from './update-room-status.dto';
 
 import {
   RoomsService,

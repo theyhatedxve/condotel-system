@@ -13,7 +13,7 @@ import {
 
 import {
   UpdateSettingsDto,
-} from './dto/update-settings.dto';
+} from './update-settings.dto';
 
 const SYSTEM_SETTINGS_ID =
   'system';

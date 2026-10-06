@@ -8,13 +8,13 @@ import AdminLayout from
   '../layouts/AdminLayout';
 
 import DashboardPage from
-  '../pages/admin/DashboardPage';
+  '../features/dashboard/DashboardPage';
 
 import PlaceholderPage from
-  '../pages/admin/PlaceholderPage';
+  '../features/nfc/PlaceholderPage';
 
 import LoginPage from
-  '../pages/auth/LoginPage';
+  '../features/auth/LoginPage';
 
 import NotFoundPage from
   '../pages/shared/NotFoundPage';
@@ -26,37 +26,37 @@ import ProtectedRoute from
   './ProtectedRoute';
 
 import RoomsPage from
-  '../pages/admin/RoomsPage';
+  '../features/rooms/RoomsPage';
 
 import PaymentsPage from
-  '../pages/admin/PaymentsPage';
+  '../features/payments/PaymentsPage';
 
 import PaymentResultPage from
-  '../pages/shared/PaymentResultPage';
+  '../features/payments/PaymentResultPage';
 
 import GuestsPage from
-  '../pages/admin/GuestsPage';
+  '../features/guests/GuestsPage';
 
 import ReservationsPage from
-  '../pages/admin/ReservationsPage';
+  '../features/reservations/ReservationsPage';
 
 import TransactionsPage from
-  '../pages/admin/TransactionsPage';
+  '../features/transactions/TransactionsPage';
 
 import ReportsPage from
-  '../pages/admin/ReportsPage';
+  '../features/reports/ReportsPage';
 
 import SettingsPage from
-  '../pages/admin/SettingsPage';
+  '../features/settings/SettingsPage';
 
 import ProfilePage from
-  '../pages/admin/ProfilePage';
+  '../features/auth/ProfilePage';
 
 import ChangePasswordPage from
-  '../pages/shared/ChangePasswordPage';
+  '../features/auth/ChangePasswordPage';
 
 import UserManagementPage from
-  '../pages/admin/UserManagementPage';
+  '../features/user-management/UserManagementPage';
 
 export default function AppRoutes() {
   return (

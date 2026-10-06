@@ -26,7 +26,7 @@ import type {
 import type {
   PaymongoPaymentAttempt,
   PaymongoWebhookEvent,
-} from './interfaces/paymongo.interface';
+} from './paymongo.interface';
 
 import {
   PaymongoService,

@@ -28,15 +28,15 @@ import {
   getUnreadNotificationCount,
   markAllNotificationsRead,
   markNotificationRead,
-} from '../api/notificationApi';
+} from '../features/notifications/notificationApi';
 
 import {
   searchGlobal,
-} from '../api/searchApi';
+} from '../features/search/searchApi';
 
 import {
   useAuth,
-} from '../hooks/useAuth';
+} from '../features/auth/useAuth';
 
 import {
   formatCurrency,

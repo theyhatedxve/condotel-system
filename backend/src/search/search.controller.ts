@@ -23,7 +23,7 @@ import {
 
 import {
   SearchQueryDto,
-} from './dto/search-query.dto';
+} from './search-query.dto';
 
 import {
   SearchService,

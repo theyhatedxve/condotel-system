@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { getAccessToken } from '../utils/authStorage';
+import { getAccessToken } from '../features/auth/authStorage';
 
 const apiClient = axios.create({
   baseURL:

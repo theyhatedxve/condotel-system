@@ -21,15 +21,15 @@ import {
 
 import {
   ResetUserPasswordDto,
-} from './dto/reset-user-password.dto';
+} from './reset-user-password.dto';
 
 import {
   UpdateManagedUserDto,
-} from './dto/update-managed-user.dto';
+} from './update-managed-user.dto';
 
 import {
   UserManagementQueryDto,
-} from './dto/user-management-query.dto';
+} from './user-management-query.dto';
 
 const managedUserSelect = {
   id: true,

@@ -14,11 +14,11 @@ import {
 
 import {
   CreateRoomDto,
-} from './dto/create-room.dto';
+} from './create-room.dto';
 
 import {
   UpdateRoomDto,
-} from './dto/update-room.dto';
+} from './update-room.dto';
 
 @Injectable()
 export class RoomsService {

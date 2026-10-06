@@ -17,11 +17,11 @@ import {
 
 import {
   CreateGuestDto,
-} from './dto/create-guest.dto';
+} from './create-guest.dto';
 
 import {
   UpdateGuestDto,
-} from './dto/update-guest.dto';
+} from './update-guest.dto';
 
 @Injectable()
 export class GuestsService {

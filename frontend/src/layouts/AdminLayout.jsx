@@ -8,7 +8,7 @@ import Sidebar from
 import Topbar from
   '../layouts/Topbar';
 
-import '../styles/layout.css';
+import './layout.css';
 
 export default function AdminLayout() {
   return (

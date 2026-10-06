@@ -26,15 +26,15 @@ import {
 
 import {
   AvailabilityQueryDto,
-} from './dto/availability-query.dto';
+} from './availability-query.dto';
 
 import {
   CreateReservationDto,
-} from './dto/create-reservation.dto';
+} from './create-reservation.dto';
 
 import {
   ReservationQueryDto,
-} from './dto/reservation-query.dto';
+} from './reservation-query.dto';
 
 import {
   PaymentsService,

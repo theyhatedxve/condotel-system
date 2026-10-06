@@ -19,7 +19,7 @@ import {
 
 import {
   useAuth,
-} from '../hooks/useAuth';
+} from '../features/auth/useAuth';
 
 const navigation = [
   {

@@ -5,11 +5,11 @@ import {
 } from 'react-router-dom';
 
 import LoadingScreen from
-  '../components/common/LoadingScreen';
+  '../features/auth/LoadingScreen';
 
 import {
   useAuth,
-} from '../hooks/useAuth';
+} from '../features/auth/useAuth';
 
 export default function ProtectedRoute({
   allowedRoles,

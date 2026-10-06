@@ -16,7 +16,7 @@ import {
 import type {
   PaymongoCheckoutSession,
   PaymongoErrorResponse,
-} from './interfaces/paymongo.interface';
+} from './paymongo.interface';
 
 interface CreateCheckoutInput {
   reservationId: string;

@@ -23,7 +23,7 @@ import {
 
 import {
   ReportRangeQueryDto,
-} from './dto/report-range-query.dto';
+} from './report-range-query.dto';
 
 import {
   ReportsService,
