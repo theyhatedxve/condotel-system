@@ -55,6 +55,10 @@ import {
 } from './search/search.module';
 
 import {
+  SecurityModule,
+} from './security/security.module';
+
+import {
   SettingsModule,
 } from './settings/settings.module';
 
@@ -77,6 +81,8 @@ import {
     }),
 
     PrismaModule,
+
+    SecurityModule,
 
     HealthModule,
 
