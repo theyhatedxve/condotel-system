@@ -12,6 +12,10 @@ export interface AuthenticatedUser {
   firstName: string;
   lastName: string;
 
+  phone: string | null;
+
   role: UserRole;
   status: UserStatus;
+
+  mustChangePassword: boolean;
 }

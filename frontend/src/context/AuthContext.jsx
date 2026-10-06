@@ -20,6 +20,7 @@ import {
   AuthContext,
 } from './auth-context';
 
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
@@ -27,6 +28,21 @@ export function AuthProvider({ children }) {
     () => Boolean(getAccessToken()),
   );
 
+const refreshUser =
+  useCallback(
+    async () => {
+      const result =
+        await getCurrentUser();
+
+      setUser(
+        result.user,
+      );
+
+      return result.user;
+    },
+    [],
+  );
+  
   const login = useCallback(
     async ({
       identifier,
@@ -98,15 +114,18 @@ export function AuthProvider({ children }) {
 
       login,
       logout,
+      refreshUser,
     }),
     [
       user,
       isLoading,
       login,
       logout,
+      refreshUser,
     ],
   );
 
+  
   return (
     <AuthContext.Provider value={value}>
       {children}

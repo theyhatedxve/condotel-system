@@ -77,8 +77,13 @@ export class JwtStrategy
       firstName: user.firstName,
       lastName: user.lastName,
 
+      phone: user.phone,
+
       role: user.role,
       status: user.status,
+
+      mustChangePassword:
+        user.mustChangePassword,
     };
   }
 }

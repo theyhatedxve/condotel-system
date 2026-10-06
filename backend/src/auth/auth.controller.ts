@@ -4,9 +4,22 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
+
+import type {
+  AuthenticatedUser,
+} from './interfaces/authenticated-user.interface';
+
+import {
+  ChangePasswordDto,
+} from './dto/change-password.dto';
+
+import {
+  UpdateProfileDto,
+} from './dto/update-profile.dto';
 
 import {
   UserRole,
@@ -39,6 +52,7 @@ import {
 import {
   RolesGuard,
 } from './guards/roles.guard';
+
 
 @Controller('auth')
 export class AuthController {
@@ -90,6 +104,43 @@ export class AuthController {
       user,
     };
   }
+
+    @Patch('profile')
+    @UseGuards(JwtAuthGuard)
+    updateProfile(
+      @CurrentUser()
+      user:
+        AuthenticatedUser,
+
+      @Body()
+      dto:
+        UpdateProfileDto,
+    ) {
+      return this.authService
+        .updateProfile(
+          user.id,
+          dto,
+        );
+    }
+
+    @Post('change-password')
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(JwtAuthGuard)
+    changePassword(
+      @CurrentUser()
+      user:
+        AuthenticatedUser,
+
+      @Body()
+      dto:
+        ChangePasswordDto,
+    ) {
+      return this.authService
+        .changePassword(
+          user.id,
+          dto,
+        );
+    }
 
   @Get('admin-test')
   @UseGuards(

@@ -83,8 +83,10 @@ function formatType(
 
 export default function Topbar() {
 
-  const { user } =
-    useAuth();
+  const {
+  user,
+  logout,
+} = useAuth();
 
   const navigate =
     useNavigate();
@@ -100,19 +102,13 @@ export default function Topbar() {
   ] = useState([]);
 
   const [
+    profileOpen,
+    setProfileOpen,
+  ] = useState(false);
+
+  const [
     searching,
     setSearching,
-  ] = useState(false);
-
-  const [
-    searchOpen,
-    setSearchOpen,
-  ] = useState(false);
-
-  const [
-  notifications,
-  setNotifications,
-] = useState([]);
 
 const [
   unreadCount,

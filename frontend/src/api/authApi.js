@@ -16,3 +16,27 @@ export async function getCurrentUser() {
 
   return response.data;
 }
+
+export async function updateMyProfile(
+  payload,
+) {
+  const response =
+    await apiClient.patch(
+      '/auth/profile',
+      payload,
+    );
+
+  return response.data;
+}
+
+export async function changeMyPassword(
+  payload,
+) {
+  const response =
+    await apiClient.post(
+      '/auth/change-password',
+      payload,
+    );
+
+  return response.data;
+}

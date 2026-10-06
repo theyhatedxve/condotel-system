@@ -50,19 +50,22 @@ export class ReportsService {
     const year =
       parts.find(
         (part) =>
-          part.type === 'year',
+          part.type ===
+          'year',
       )?.value;
 
     const month =
       parts.find(
         (part) =>
-          part.type === 'month',
+          part.type ===
+          'month',
       )?.value;
 
     const day =
       parts.find(
         (part) =>
-          part.type === 'day',
+          part.type ===
+          'day',
       )?.value;
 
     if (
@@ -189,18 +192,20 @@ export class ReportsService {
       availableRooms,
       occupiedRooms,
       maintenanceRooms,
-      currentGuests,
+      currentGuestStays,
       todayCheckIns,
       todayCheckOuts,
       todayPayments,
       recentReservations,
     ] = await Promise.all([
+      // Total active rooms
       this.prisma.room.count({
         where: {
           isActive: true,
         },
       }),
 
+      // Available rooms
       this.prisma.room.count({
         where: {
           isActive: true,
@@ -210,6 +215,7 @@ export class ReportsService {
         },
       }),
 
+      // Occupied rooms
       this.prisma.room.count({
         where: {
           isActive: true,
@@ -219,6 +225,7 @@ export class ReportsService {
         },
       }),
 
+      // Rooms under maintenance
       this.prisma.room.count({
         where: {
           isActive: true,
@@ -228,106 +235,142 @@ export class ReportsService {
         },
       }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            status:
+      // Current checked-in reservations.
+      // We need adults and children so that
+      // Current Guests represents PEOPLE,
+      // not simply reservation count.
+      this.prisma.reservation.findMany({
+        where: {
+          status:
+            ReservationStatus
+              .CHECKED_IN,
+        },
+
+        select: {
+          adults: true,
+          children: true,
+        },
+      }),
+
+      // Today's scheduled check-ins
+      this.prisma.reservation.count({
+        where: {
+          checkIn: {
+            gte: start,
+            lt: endExclusive,
+          },
+
+          status: {
+            in: [
+              ReservationStatus
+                .CONFIRMED,
+
               ReservationStatus
                 .CHECKED_IN,
+            ],
           },
-        }),
+        },
+      }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            checkIn: {
-              gte: start,
-              lt: endExclusive,
-            },
-
-            status: {
-              in: [
-                ReservationStatus
-                  .CONFIRMED,
-
-                ReservationStatus
-                  .CHECKED_IN,
-              ],
-            },
-          },
-        }),
-
-      this.prisma.reservation
-        .count({
-          where: {
-            checkOut: {
-              gte: start,
-              lt: endExclusive,
-            },
-
-            status: {
-              in: [
-                ReservationStatus
-                  .CONFIRMED,
-
-                ReservationStatus
-                  .CHECKED_IN,
-
-                ReservationStatus
-                  .CHECKED_OUT,
-              ],
-            },
-          },
-        }),
-
-      this.prisma.payment
-        .aggregate({
-          where: {
-            status:
-              PaymentStatus.PAID,
-
-            paidAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+      // Today's scheduled/completed check-outs
+      this.prisma.reservation.count({
+        where: {
+          checkOut: {
+            gte: start,
+            lt: endExclusive,
           },
 
-          _sum: {
-            amountCentavos:
-              true,
+          status: {
+            in: [
+              ReservationStatus
+                .CONFIRMED,
+
+              ReservationStatus
+                .CHECKED_IN,
+
+              ReservationStatus
+                .CHECKED_OUT,
+            ],
           },
+        },
+      }),
 
-          _count: {
-            id: true,
+      // Today's successfully paid payments
+      this.prisma.payment.aggregate({
+        where: {
+          status:
+            PaymentStatus.PAID,
+
+          paidAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
 
-      this.prisma.reservation
-        .findMany({
-          take: 5,
+        _sum: {
+          amountCentavos:
+            true,
+        },
 
-          include: {
-            guest: {
-              select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
+        _count: {
+          id: true,
+        },
+      }),
 
-            room: {
-              select: {
-                id: true,
-                roomNumber: true,
-              },
+      // Latest five reservations
+      this.prisma.reservation.findMany({
+        take: 5,
+
+        include: {
+          guest: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
             },
           },
 
-          orderBy: {
-            createdAt: 'desc',
+          room: {
+            select: {
+              id: true,
+              roomNumber: true,
+            },
           },
-        }),
+        },
+
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
     ]);
+
+    // --------------------------------------------------------
+    // CURRENT GUESTS
+    //
+    // Example:
+    // Reservation A = 2 adults + 1 child = 3
+    // Reservation B = 1 adult + 0 children = 1
+    //
+    // Current Guests = 4
+    // --------------------------------------------------------
+
+    const currentGuests =
+      currentGuestStays.reduce(
+        (
+          total,
+          reservation,
+        ) =>
+          total +
+          reservation.adults +
+          reservation.children,
+        0,
+      );
+
+    // --------------------------------------------------------
+    // ROOM OCCUPANCY
+    //
+    // Occupancy is room-based, not guest-based.
+    // --------------------------------------------------------
 
     const occupancyPercent =
       totalRooms > 0
@@ -416,80 +459,87 @@ export class ReportsService {
       occupiedRooms,
       maintenanceRooms,
     ] = await Promise.all([
-      this.prisma.reservation
-        .count({
-          where: {
-            createdAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+      // ------------------------------------------------------
+      // RESERVATIONS
+      // ------------------------------------------------------
+
+      this.prisma.reservation.count({
+        where: {
+          createdAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
+      }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            status:
-              ReservationStatus.PENDING,
+      this.prisma.reservation.count({
+        where: {
+          status:
+            ReservationStatus
+              .PENDING,
 
-            createdAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+          createdAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
+      }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            status:
-              ReservationStatus.CONFIRMED,
+      this.prisma.reservation.count({
+        where: {
+          status:
+            ReservationStatus
+              .CONFIRMED,
 
-            createdAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+          createdAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
+      }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            status:
-              ReservationStatus.CHECKED_IN,
+      this.prisma.reservation.count({
+        where: {
+          status:
+            ReservationStatus
+              .CHECKED_IN,
 
-            createdAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+          createdAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
+      }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            status:
-              ReservationStatus.CHECKED_OUT,
+      this.prisma.reservation.count({
+        where: {
+          status:
+            ReservationStatus
+              .CHECKED_OUT,
 
-            createdAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+          createdAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
+      }),
 
-      this.prisma.reservation
-        .count({
-          where: {
-            status:
-              ReservationStatus.CANCELLED,
+      this.prisma.reservation.count({
+        where: {
+          status:
+            ReservationStatus
+              .CANCELLED,
 
-            createdAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+          createdAt: {
+            gte: start,
+            lt: endExclusive,
           },
-        }),
+        },
+      }),
+
+      // ------------------------------------------------------
+      // PAYMENTS
+      // ------------------------------------------------------
 
       this.prisma.payment.count({
         where: {
@@ -539,7 +589,8 @@ export class ReportsService {
       this.prisma.payment.count({
         where: {
           status:
-            PaymentStatus.CANCELLED,
+            PaymentStatus
+              .CANCELLED,
 
           createdAt: {
             gte: start,
@@ -563,7 +614,8 @@ export class ReportsService {
       this.prisma.payment.count({
         where: {
           status:
-            PaymentStatus.REFUNDED,
+            PaymentStatus
+              .REFUNDED,
 
           createdAt: {
             gte: start,
@@ -572,25 +624,33 @@ export class ReportsService {
         },
       }),
 
-      this.prisma.transaction
-        .findMany({
-          where: {
-            occurredAt: {
-              gte: start,
-              lt: endExclusive,
-            },
+      // ------------------------------------------------------
+      // SUCCESSFUL FINANCIAL TRANSACTIONS
+      // ------------------------------------------------------
 
-            status:
-              TransactionStatus
-                .SUCCEEDED,
+      this.prisma.transaction.findMany({
+        where: {
+          occurredAt: {
+            gte: start,
+            lt: endExclusive,
           },
 
-          select: {
-            type: true,
-            amountCentavos:
-              true,
-          },
-        }),
+          status:
+            TransactionStatus
+              .SUCCEEDED,
+        },
+
+        select: {
+          type: true,
+
+          amountCentavos:
+            true,
+        },
+      }),
+
+      // ------------------------------------------------------
+      // ROOM INVENTORY
+      // ------------------------------------------------------
 
       this.prisma.room.count({
         where: {
@@ -621,10 +681,15 @@ export class ReportsService {
           isActive: true,
 
           status:
-            RoomStatus.MAINTENANCE,
+            RoomStatus
+              .MAINTENANCE,
         },
       }),
     ]);
+
+    // --------------------------------------------------------
+    // FINANCIAL CALCULATIONS
+    // --------------------------------------------------------
 
     let grossRevenueCentavos =
       0;
@@ -671,6 +736,10 @@ export class ReportsService {
       grossRevenueCentavos -
       refundedCentavos +
       adjustmentCentavos;
+
+    // --------------------------------------------------------
+    // ROOM OCCUPANCY
+    // --------------------------------------------------------
 
     const occupancyPercent =
       totalRooms > 0

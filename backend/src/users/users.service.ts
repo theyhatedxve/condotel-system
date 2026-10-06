@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -14,6 +18,8 @@ const publicUserSelect = {
   firstName: true,
   lastName: true,
   phone: true,
+
+  mustChangePassword: true,
 
   role: true,
   status: true,
@@ -37,6 +43,134 @@ interface CreateCustomerData {
 @Injectable()
 export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
+
+    async updateProfile(
+    id: string,
+    data: {
+      firstName?: string;
+      lastName?: string;
+
+      username?:
+        | string
+        | null;
+
+      phone?:
+        | string
+        | null;
+    },
+  ) {
+    const user =
+      await this.findById(id);
+
+    if (!user) {
+      throw new NotFoundException(
+        'User not found.',
+      );
+    }
+
+    let username:
+      | string
+      | null
+      | undefined;
+
+    if (
+      data.username !==
+      undefined
+    ) {
+      username =
+        data.username
+          ?.trim()
+          .toLowerCase() ||
+        null;
+
+      if (
+        username &&
+        username !==
+          user.username
+      ) {
+        const existing =
+          await this.findByUsername(
+            username,
+          );
+
+        if (
+          existing &&
+          existing.id !== id
+        ) {
+          throw new ConflictException(
+            'Username is already taken.',
+          );
+        }
+      }
+    }
+
+    return this.prisma.user.update({
+      where: {
+        id,
+      },
+
+      data: {
+        ...(data.firstName !==
+        undefined
+          ? {
+              firstName:
+                data.firstName
+                  .trim(),
+            }
+          : {}),
+
+        ...(data.lastName !==
+        undefined
+          ? {
+              lastName:
+                data.lastName
+                  .trim(),
+            }
+          : {}),
+
+        ...(data.username !==
+        undefined
+          ? {
+              username,
+            }
+          : {}),
+
+        ...(data.phone !==
+        undefined
+          ? {
+              phone:
+                data.phone
+                  ?.trim() ||
+                null,
+            }
+          : {}),
+      },
+
+      select:
+        publicUserSelect,
+    });
+  }
+
+  async updatePassword(
+    id: string,
+    passwordHash: string,
+    mustChangePassword:
+      boolean,
+  ) {
+    return this.prisma.user.update({
+      where: {
+        id,
+      },
+
+      data: {
+        passwordHash,
+        mustChangePassword,
+      },
+
+      select:
+        publicUserSelect,
+    });
+  }
 
   async findByEmail(email: string) {
     return this.prisma.user.findUnique({

@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   UnauthorizedException,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
@@ -17,12 +18,106 @@ import { LoginDto } from './dto/login.dto';
 
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
+import {
+  ChangePasswordDto,
+} from './dto/change-password.dto';
+
+import {
+  UpdateProfileDto,
+} from './dto/update-profile.dto';
+
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
+
+
+      async updateProfile(
+      userId: string,
+      dto: UpdateProfileDto,
+    ) {
+      const user =
+        await this.usersService
+          .updateProfile(
+            userId,
+            dto,
+          );
+
+      return {
+        message:
+          'Profile updated successfully.',
+
+        user,
+      };
+    }
+
+    async changePassword(
+      userId: string,
+      dto: ChangePasswordDto,
+    ) {
+      const user =
+        await this.usersService
+          .findById(userId);
+
+      if (!user) {
+        throw new UnauthorizedException(
+          'User account is unavailable.',
+        );
+      }
+
+      const currentPasswordMatches =
+        await argon2.verify(
+          user.passwordHash,
+          dto.currentPassword,
+        );
+
+      if (
+        !currentPasswordMatches
+      ) {
+        throw new UnauthorizedException(
+          'Current password is incorrect.',
+        );
+      }
+
+      const samePassword =
+        await argon2.verify(
+          user.passwordHash,
+          dto.newPassword,
+        );
+
+      if (samePassword) {
+        throw new BadRequestException(
+          'New password must be different from the current password.',
+        );
+      }
+
+      const passwordHash =
+        await argon2.hash(
+          dto.newPassword,
+          {
+            type:
+              argon2.argon2id,
+          },
+        );
+
+      const updatedUser =
+        await this.usersService
+          .updatePassword(
+            user.id,
+            passwordHash,
+            false,
+          );
+
+      return {
+        message:
+          'Password changed successfully.',
+
+        user:
+          updatedUser,
+      };
+    }
 
   async register(dto: RegisterDto) {
     const existingEmail =

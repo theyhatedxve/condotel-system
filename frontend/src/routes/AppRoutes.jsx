@@ -49,6 +49,12 @@ import ReportsPage from
 import SettingsPage from
   '../pages/admin/SettingsPage';
 
+import ProfilePage from
+  '../pages/admin/ProfilePage';
+
+import ChangePasswordPage from
+  '../pages/shared/ChangePasswordPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -61,6 +67,19 @@ export default function AppRoutes() {
           />
         }
       />
+
+      <Route
+        element={
+          <ProtectedRoute />
+        }
+      >
+        <Route
+          path="/change-password"
+          element={
+            <ChangePasswordPage />
+          }
+        />
+      </Route>
 
       <Route
         path="/login"
@@ -102,6 +121,13 @@ export default function AppRoutes() {
           path="/admin"
           element={<AdminLayout />}
         >
+          <Route
+            path="profile"
+            element={
+              <ProfilePage />
+            }
+          />
+
           <Route
             index
             element={
