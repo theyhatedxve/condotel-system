@@ -55,6 +55,9 @@ import ProfilePage from
 import ChangePasswordPage from
   '../pages/shared/ChangePasswordPage';
 
+import UserManagementPage from
+  '../pages/admin/UserManagementPage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -121,6 +124,7 @@ export default function AppRoutes() {
           path="/admin"
           element={<AdminLayout />}
         >
+          
           <Route
             path="profile"
             element={
@@ -149,7 +153,23 @@ export default function AppRoutes() {
             path="guests"
             element={<GuestsPage />}
           />
-
+          <Route
+            element={
+              <ProtectedRoute
+                allowedRoles={[
+                  'ADMIN',
+                ]}
+              />
+            }
+          >
+            <Route
+              path="users"
+              element={
+                <UserManagementPage />
+              }
+            />
+          </Route>
+          
           <Route
             path="rooms"
             element={<RoomsPage />}

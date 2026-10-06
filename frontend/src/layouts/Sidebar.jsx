@@ -8,6 +8,7 @@ import {
   LogOut,
   RadioTower,
   Settings,
+  UserCog,
   Users,
   WalletCards,
 } from 'lucide-react';
@@ -16,68 +17,150 @@ import {
   NavLink,
 } from 'react-router-dom';
 
-import { useAuth } from
-  '../hooks/useAuth';
+import {
+  useAuth,
+} from '../hooks/useAuth';
 
 const navigation = [
   {
-    label: 'Dashboard',
-    path: '/admin/dashboard',
-    icon: LayoutDashboard,
+    label:
+      'Dashboard',
+
+    path:
+      '/admin/dashboard',
+
+    icon:
+      LayoutDashboard,
   },
+
   {
-    label: 'Guests',
-    path: '/admin/guests',
-    icon: Users,
+    label:
+      'Guests',
+
+    path:
+      '/admin/guests',
+
+    icon:
+      Users,
   },
+
   {
-    label: 'Rooms',
-    path: '/admin/rooms',
-    icon: BedDouble,
+    label:
+      'User Management',
+
+    path:
+      '/admin/users',
+
+    icon:
+      UserCog,
+
+    adminOnly:
+      true,
   },
+
   {
-    label: 'Reservations',
-    path: '/admin/reservations',
-    icon: CalendarDays,
+    label:
+      'Rooms',
+
+    path:
+      '/admin/rooms',
+
+    icon:
+      BedDouble,
   },
+
   {
-    label: 'NFC Management',
-    path: '/admin/nfc',
-    icon: RadioTower,
+    label:
+      'Reservations',
+
+    path:
+      '/admin/reservations',
+
+    icon:
+      CalendarDays,
   },
+
   {
-    label: 'Payments',
-    path: '/admin/payments',
-    icon: CreditCard,
+    label:
+      'NFC Management',
+
+    path:
+      '/admin/nfc',
+
+    icon:
+      RadioTower,
   },
+
   {
-    label: 'Transactions',
-    path: '/admin/transactions',
-    icon: WalletCards,
+    label:
+      'Payments',
+
+    path:
+      '/admin/payments',
+
+    icon:
+      CreditCard,
   },
+
   {
-    label: 'Reports',
-    path: '/admin/reports',
-    icon: BarChart3,
+    label:
+      'Transactions',
+
+    path:
+      '/admin/transactions',
+
+    icon:
+      WalletCards,
   },
+
   {
-    label: 'Settings',
-    path: '/admin/settings',
-    icon: Settings,
+    label:
+      'Reports',
+
+    path:
+      '/admin/reports',
+
+    icon:
+      BarChart3,
+  },
+
+  {
+    label:
+      'Settings',
+
+    path:
+      '/admin/settings',
+
+    icon:
+      Settings,
   },
 ];
 
 export default function Sidebar() {
-  const { user, logout } =
-    useAuth();
+  const {
+    user,
+    logout,
+  } = useAuth();
+
+  const visibleNavigation =
+    navigation.filter(
+      (item) =>
+        !item.adminOnly ||
+        user?.role ===
+          'ADMIN',
+    );
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <Building2 size={32} />
+        <Building2
+          size={32}
+        />
 
         <div>
-          <strong>CONDOTEL</strong>
+          <strong>
+            CONDOTEL
+          </strong>
 
           <span>
             NFC SYSTEM WITH PAYMENT
@@ -89,7 +172,8 @@ export default function Sidebar() {
         <div className="sidebar-avatar">
           {user?.firstName
             ?.charAt(0)
-            ?.toUpperCase() || 'A'}
+            ?.toUpperCase() ||
+            'A'}
         </div>
 
         <div>
@@ -106,7 +190,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="sidebar-navigation">
-        {navigation.map(
+        {visibleNavigation.map(
           ({
             label,
             path,
@@ -123,7 +207,9 @@ export default function Sidebar() {
                   : 'sidebar-link'
               }
             >
-              <Icon size={18} />
+              <Icon
+                size={18}
+              />
 
               <span>
                 {label}
@@ -138,7 +224,9 @@ export default function Sidebar() {
         className="sidebar-logout"
         onClick={logout}
       >
-        <LogOut size={18} />
+        <LogOut
+          size={18}
+        />
 
         Sign Out
       </button>
