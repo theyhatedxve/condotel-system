@@ -207,6 +207,7 @@ export default function PaymentsPage() {
     }
   }
 
+  // Summary cards use all loaded payments; table search and filters do not change these totals.
   const paidPayments =
     payments.filter(
       (payment) =>

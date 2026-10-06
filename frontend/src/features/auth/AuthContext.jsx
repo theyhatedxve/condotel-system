@@ -90,6 +90,8 @@ export function AuthProvider({
       [],
     );
 
+  // Validate a stored token with the backend before treating the session as authenticated.
+  // ProtectedRoute waits for this initialization before deciding whether to redirect.
   useEffect(() => {
     const token =
       getAccessToken();

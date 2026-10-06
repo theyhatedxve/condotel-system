@@ -153,6 +153,7 @@ export class PaymentsService {
       );
     }
 
+    // Reuse a pending hosted checkout when the user retries the payment action.
     const existingCheckout =
       reservation.payments.find(
         (payment) =>
@@ -299,6 +300,8 @@ async cancelPendingPaymentsForReservation(
         },
       });
 
+  // Expire hosted sessions before marking local payments cancelled; a provider failure
+  // leaves the local records pending so cancellation can be retried.
   for (
     const payment
     of pendingPayments
@@ -573,12 +576,8 @@ async cancelPendingPaymentsForReservation(
     );
   }
 
-  /*
-   * 3. Make webhook handling idempotent.
-   *
-   * PayMongo may deliver the same
-   * webhook more than once.
-   */
+  // Skip financial writes when a previous delivery has already marked this payment paid.
+  // Retry the notification separately; its dedupe key prevents another notification row.
   if (
     localPayment.status ===
     PaymentStatus.PAID
@@ -693,10 +692,8 @@ async cancelPendingPaymentsForReservation(
       .payment_intent_id ??
     null;
 
-  /*
-   * 6. Perform all local financial updates
-   *    atomically.
-   */
+  // This notification is created outside the financial transaction below;
+  // it can remain even if those later database updates fail.
 
   await this.notificationsService
   .notifyPaymentReceived({
@@ -717,6 +714,8 @@ async cancelPendingPaymentsForReservation(
         .amountCentavos,
   });
   
+  // Commit the payment, transaction history and reservation confirmation together
+  // so a failed database write cannot leave only part of the financial update saved.
   await this.prisma
     .$transaction(
       async (transaction) => {

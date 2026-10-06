@@ -338,6 +338,8 @@ export default function UserManagementPage() {
       return;
     }
 
+    // Omit protected role/status fields entirely: the backend rejects their presence
+    // for administrator accounts, even when their values are unchanged.
     const canManageRoleAndStatus =
       editingUser.id !==
         currentUser?.id &&

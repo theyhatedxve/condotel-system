@@ -266,6 +266,7 @@ export class RoomsService {
     });
   }
 
+  // Hide the room from active inventory while retaining its reservation/payment history.
   async deactivate(id: string) {
     const room =
       await this.findOne(id);

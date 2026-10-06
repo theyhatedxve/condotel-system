@@ -31,6 +31,7 @@ export class SearchService {
       normalizedQuery
         .toLowerCase();
 
+    // Convert partial status/method text into enum values before building Prisma filters.
     const matchingPaymentStatuses =
       Object.values(
         PaymentStatus,
@@ -697,6 +698,7 @@ export class SearchService {
       ),
     ];
 
+    // Each category is capped at five matches; counts describe this result set, not all matches.
     return {
       query:
         normalizedQuery,

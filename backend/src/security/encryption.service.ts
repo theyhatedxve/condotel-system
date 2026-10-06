@@ -27,6 +27,7 @@ export class EncryptionService {
       throw new Error('Encryption plaintext must be a string.');
     }
 
+    // Reusing an IV with the same AES-GCM key can compromise confidentiality and integrity.
     const iv = randomBytes(IV_BYTES);
     const cipher = createCipheriv(ALGORITHM, key, iv, {
       authTagLength: AUTH_TAG_BYTES,

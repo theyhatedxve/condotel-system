@@ -27,6 +27,7 @@ export class RolesGuard
   canActivate(
     context: ExecutionContext,
   ): boolean {
+    // Method-level roles override controller defaults, allowing stricter write permissions.
     const requiredRoles =
       this.reflector.getAllAndOverride<
         UserRole[]
@@ -48,6 +49,7 @@ export class RolesGuard
     const request =
       context.switchToHttp().getRequest();
 
+    // JwtAuthGuard must run first to attach the database-backed user to the request.
     const user = request.user;
 
     if (!user) {

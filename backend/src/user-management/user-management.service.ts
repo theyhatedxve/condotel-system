@@ -323,6 +323,7 @@ export class UserManagementService {
       }
     }
 
+    // Keep role/profile changes and their audit entry atomic to avoid a partially updated account.
     return this.prisma
       .$transaction(
         async (
@@ -440,6 +441,7 @@ export class UserManagementService {
 
                 details:
                   JSON.stringify({
+                    // Record field names rather than copying account values into the audit log.
                     updatedFields:
                       Object.keys(
                         dto,
@@ -532,6 +534,7 @@ export class UserManagementService {
                 data: {
                   passwordHash,
 
+                  // Mark administrator-issued passwords as temporary for the password-change flow.
                   mustChangePassword:
                     true,
                 },

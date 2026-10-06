@@ -96,6 +96,8 @@ export class ReportsService {
     return date;
   }
 
+  // Interpret report dates in Manila time regardless of the server timezone.
+  // The exclusive next-day boundary includes all of the requested final day.
   private createRange(
     from: string,
     to: string,
@@ -423,6 +425,8 @@ export class ReportsService {
     };
   }
 
+  // Reservation/payment counts use creation dates; revenue uses transaction occurrence dates.
+  // Room occupancy remains a current snapshot, even for a historical report range.
   async getSummary(
     query:
       ReportRangeQueryDto,

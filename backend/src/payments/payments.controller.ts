@@ -122,6 +122,7 @@ cancelPendingCheckout(
     );
 }
 
+// PayMongo authenticates this callback with its signature; no browser JWT is expected.
 @Post('webhook/paymongo')
 @HttpCode(HttpStatus.OK)
     handlePaymongoWebhook(

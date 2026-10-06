@@ -169,6 +169,8 @@ export default function Topbar() {
   const debounceRef =
     useRef(null);
 
+  // Debouncing limits requests; this sequence also prevents late responses
+  // from replacing newer results or repopulating a cleared search.
   const requestIdRef =
     useRef(0);
 

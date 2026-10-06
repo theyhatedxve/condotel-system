@@ -44,6 +44,7 @@ import {
   NotificationsService,
 } from '../notifications/notifications.service';
 
+// Pending reservations also hold availability; cancelled and checked-out stays do not.
 const BLOCKING_STATUSES = [
   ReservationStatus.PENDING,
   ReservationStatus.CONFIRMED,
@@ -182,6 +183,7 @@ export class ReservationsService {
             }
           : {}),
 
+        // Strict overlap allows one stay to check out exactly when another checks in.
         reservations: {
           none: {
             status: {
@@ -330,6 +332,7 @@ export class ReservationsService {
     user: AuthenticatedUser,
     dto: CreateReservationDto,
   ) {
+    // Customers can book only for themselves; staff and admins may select another guest.
     const guestId =
       user.role ===
       UserRole.CUSTOMER
@@ -447,6 +450,7 @@ export class ReservationsService {
         checkOut,
       );
 
+    // Price the stay from the stored room rate, never from an amount supplied by the browser.
     const totalAmountCentavos =
       nights *
       room.ratePerNightCentavos;
@@ -530,6 +534,8 @@ export class ReservationsService {
     const reservation =
       await this.findOne(id);
 
+    // This manual status action only cancels eligible stays; payment confirmation
+    // is handled by the verified webhook, not by this endpoint.
     const allowedTransitions: Record<
       ReservationStatus,
       ReservationStatus[]

@@ -203,6 +203,7 @@ export default function TransactionsPage() {
         'REFUND',
     );
 
+  // This is gross successful payment value; refunds and adjustments are excluded from this card.
   const successfulPaymentAmount =
     successfulTransactions
       .filter(

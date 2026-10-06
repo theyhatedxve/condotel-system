@@ -14,6 +14,7 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
+    // Read storage for each request so login/logout changes take effect without recreating the client.
     const token = getAccessToken();
 
     if (token) {

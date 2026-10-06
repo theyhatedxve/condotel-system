@@ -23,6 +23,7 @@ export default function ProtectedRoute({
   const location =
     useLocation();
 
+  // Wait for session restoration so a valid stored token does not cause a login redirect.
   if (isLoading) {
     return (
       <LoadingScreen />
@@ -38,6 +39,7 @@ export default function ProtectedRoute({
     );
   }
 
+  // Keep the password-change page reachable to avoid a redirect loop for temporary passwords.
   if (
     user?.mustChangePassword &&
     location.pathname !==

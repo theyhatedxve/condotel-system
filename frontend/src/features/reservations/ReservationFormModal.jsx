@@ -46,6 +46,7 @@ export default function ReservationFormModal({
     field,
     value,
   ) {
+    // Date or guest-count changes invalidate both the selected room and its availability results.
     setForm((current) => ({
       ...current,
 

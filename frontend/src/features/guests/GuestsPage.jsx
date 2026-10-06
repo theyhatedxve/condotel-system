@@ -33,6 +33,7 @@ export default function GuestsPage() {
   const [search, setSearch] =
     useState('');
 
+  // Only submitted searches reach the API; typing alone does not reload the guest list.
   const [
     appliedSearch,
     setAppliedSearch,

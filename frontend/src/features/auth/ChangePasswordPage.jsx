@@ -97,6 +97,7 @@ export default function ChangePasswordPage() {
         newPassword,
       });
 
+      // Refresh the password-change flag before navigation to avoid redirecting back here.
       const updatedUser =
         await refreshUser();
 

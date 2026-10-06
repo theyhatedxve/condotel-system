@@ -90,6 +90,7 @@ export default function ReportsPage() {
     setLoading,
   ] = useState(true);
 
+  // Load the initial date range once; subsequent date edits are applied by loadReport.
   useEffect(() => {
     let cancelled = false;
 

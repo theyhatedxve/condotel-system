@@ -35,6 +35,7 @@ export default function PaymentResultPage() {
       'reservationId',
     );
 
+  // This URL controls presentation only; the verified backend webhook confirms payment.
   const success =
     location.pathname ===
     '/payment/success';

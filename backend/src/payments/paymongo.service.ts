@@ -295,6 +295,7 @@ export class PaymongoService {
       );
     }
 
+    // Limit replay of signed requests to a five-minute window around the server clock.
     const ageInSeconds =
       Math.abs(
         Math.floor(
@@ -309,6 +310,7 @@ export class PaymongoService {
       );
     }
 
+    // Verify the timestamp and original body together; JSON re-serialization can change the signature.
     const signedPayload =
       `${timestamp}.${rawBody.toString(
         'utf8',
@@ -334,6 +336,7 @@ export class PaymongoService {
         'utf8',
       );
 
+    // Check lengths before the constant-time comparison, which requires equal-sized buffers.
     if (
       expectedBuffer.length !==
         providedBuffer.length ||

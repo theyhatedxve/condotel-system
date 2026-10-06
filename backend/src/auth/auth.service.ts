@@ -79,6 +79,7 @@ export class AuthService {
       }
     }
 
+    // Passwords use non-reversible Argon2id hashes; AES is reserved for secret key material.
     const passwordHash =
       await argon2.hash(
         dto.password,
@@ -127,6 +128,7 @@ export class AuthService {
           dto.identifier,
         );
 
+    // Login failures share one message so account existence and status are not disclosed.
     if (
       !user ||
       user.status !==

@@ -1,6 +1,7 @@
 const TOKEN_KEY = 'condotel_access_token';
 
 export function saveAccessToken(token, rememberMe = false) {
+  // Remove the previous storage choice so an old persistent token cannot override this login.
   clearAccessToken();
 
   if (rememberMe) {

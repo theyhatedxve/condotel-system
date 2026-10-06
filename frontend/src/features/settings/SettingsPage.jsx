@@ -198,6 +198,7 @@ export default function SettingsPage() {
     setSaving(true);
 
     try {
+      // Currency and timezone are displayed but omitted because they are not editable settings.
       const result =
         await updateSettings({
           propertyName:

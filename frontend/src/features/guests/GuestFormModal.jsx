@@ -130,6 +130,7 @@ export default function GuestFormModal({
         form.emergencyContactPhone,
     };
 
+    // Account credentials belong to creation; the guest edit endpoint accepts profile fields only.
     if (!guest) {
       payload.email =
         form.email;

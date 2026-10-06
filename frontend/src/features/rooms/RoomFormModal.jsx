@@ -102,6 +102,7 @@ export default function RoomFormModal({
       capacity:
         Number(form.capacity),
 
+      // The form accepts pesos; the API stores integer centavos.
       ratePerNightCentavos:
         Math.round(
           ratePerNight * 100,

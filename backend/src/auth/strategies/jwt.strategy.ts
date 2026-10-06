@@ -69,6 +69,8 @@ export class JwtStrategy
     payload:
       JwtPayload,
   ) {
+    // Reload account status and role for each authenticated request so existing tokens
+    // reflect account suspension and role changes without waiting for token expiry.
     const user =
       await this.usersService
         .findById(

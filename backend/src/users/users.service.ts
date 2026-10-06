@@ -14,6 +14,7 @@ import {
   PrismaService,
 } from '../prisma/prisma.service';
 
+// Keep password hashes out of profile and authentication responses.
 const publicUserSelect = {
   id: true,
 

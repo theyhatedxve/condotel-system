@@ -8,6 +8,7 @@ async function bootstrap() {
       await NestFactory.create(
         AppModule,
         {
+          // PayMongo signatures require the original body bytes, not re-serialized JSON.
           rawBody: true,
         },
       );

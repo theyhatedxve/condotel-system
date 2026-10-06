@@ -70,6 +70,7 @@ export class NotificationsService {
       const recipient
       of recipients
     ) {
+      // Deduplicate per event and recipient; an empty update preserves an existing read state.
       const dedupeKey =
         input.dedupeKeyPrefix
           ? `${input.dedupeKeyPrefix}:${recipient.id}`
@@ -149,6 +150,7 @@ export class NotificationsService {
     }
   }
 
+  // Notification failures must not turn a completed reservation or payment operation into an error.
   private async safelyCreate(
     input:
       CreateStaffNotificationInput,
@@ -278,6 +280,8 @@ export class NotificationsService {
     });
   }
 
+  // List and unread-count requests generate these reminders on demand, without a scheduler.
+  // Per-reservation dedupe keys keep repeated polling from creating duplicate reminders.
   private async createUpcomingCheckInNotifications() {
     try {
       const now =

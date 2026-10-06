@@ -189,6 +189,7 @@ export class GuestsService {
         },
       );
 
+    // A guest is a CUSTOMER account plus a profile; the nested write creates both atomically.
     return this.prisma.user.create({
       data: {
         email,

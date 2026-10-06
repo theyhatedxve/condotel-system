@@ -25,6 +25,7 @@ export class SettingsService {
       PrismaService,
   ) {}
 
+  // Create the singleton lazily so a fresh database needs no separate settings seed.
   async getSettings() {
     return this.prisma
       .systemSetting
@@ -97,6 +98,7 @@ export class SettingsService {
         dto.checkOutTime,
     };
 
+    // Save the settings and audit entry together so a change cannot commit without its audit trail.
     return this.prisma
       .$transaction(
         async (
