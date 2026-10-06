@@ -14,6 +14,7 @@ import {
   Search,
   UserRound,
   WalletCards,
+  Clock3,
 } from 'lucide-react';
 
 import {
@@ -31,6 +32,13 @@ import {
 import {
   formatCurrency,
 } from '../utils/formatCurrency';
+
+import {
+  getNotifications,
+  getUnreadNotificationCount,
+  markAllNotificationsRead,
+  markNotificationRead,
+} from '../api/notificationApi';
 
 const resultIcons = {
   GUEST:
@@ -74,6 +82,7 @@ function formatType(
 }
 
 export default function Topbar() {
+
   const { user } =
     useAuth();
 
@@ -100,11 +109,172 @@ export default function Topbar() {
     setSearchOpen,
   ] = useState(false);
 
+  const [
+  notifications,
+  setNotifications,
+] = useState([]);
+
+const [
+  unreadCount,
+  setUnreadCount,
+] = useState(0);
+
+const [
+  notificationsOpen,
+  setNotificationsOpen,
+] = useState(false);
+
+const [
+  notificationsLoading,
+  setNotificationsLoading,
+] = useState(false);
+
   const debounceRef =
     useRef(null);
 
   const requestIdRef =
     useRef(0);
+
+async function loadNotifications() {
+  setNotificationsLoading(
+    true,
+  );
+
+  try {
+    const result =
+      await getNotifications(
+        10,
+      );
+
+    setNotifications(
+      Array.isArray(result)
+        ? result
+        : [],
+    );
+
+    const unread =
+      await getUnreadNotificationCount();
+
+    setUnreadCount(
+      Number(
+        unread.count ??
+        0,
+      ),
+    );
+  } catch {
+    setNotifications([]);
+  } finally {
+    setNotificationsLoading(
+      false,
+    );
+  }
+}
+
+async function handleNotificationBell() {
+  const nextOpen =
+    !notificationsOpen;
+
+  setNotificationsOpen(
+    nextOpen,
+  );
+
+  setSearchOpen(false);
+
+  if (nextOpen) {
+    await loadNotifications();
+  }
+}
+
+async function handleNotificationClick(
+  notification,
+) {
+  try {
+    if (
+      !notification.isRead
+    ) {
+      await markNotificationRead(
+        notification.id,
+      );
+
+      setUnreadCount(
+        (current) =>
+          Math.max(
+            current - 1,
+            0,
+          ),
+      );
+    }
+  } catch {
+    // Navigation can still continue.
+  }
+
+  setNotificationsOpen(
+    false,
+  );
+
+  if (
+    notification.path
+  ) {
+    navigate(
+      notification.path,
+    );
+  }
+}
+
+async function handleMarkAllRead() {
+  try {
+    await markAllNotificationsRead();
+
+    setNotifications(
+      (current) =>
+        current.map(
+          (notification) => ({
+            ...notification,
+            isRead: true,
+            readAt:
+              notification.readAt ??
+              new Date()
+                .toISOString(),
+          }),
+        ),
+    );
+
+    setUnreadCount(0);
+  } catch {
+    window.alert(
+      'Unable to mark notifications as read.',
+    );
+  }
+}
+
+function formatNotificationTime(
+  value,
+) {
+  if (!value) {
+    return '—';
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
+    return '—';
+  }
+
+  return new Intl.DateTimeFormat(
+    'en-PH',
+    {
+      month: 'short',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+    },
+  ).format(date);
+}
 
   useEffect(() => {
     return () => {
@@ -117,6 +287,45 @@ export default function Topbar() {
       }
     };
   }, []);
+
+  useEffect(() => {
+  let cancelled = false;
+
+  async function loadUnreadCount() {
+    try {
+      const result =
+        await getUnreadNotificationCount();
+
+      if (!cancelled) {
+        setUnreadCount(
+          Number(
+            result.count ??
+            0,
+          ),
+        );
+      }
+    } catch {
+      // Keep the topbar usable if
+      // notification polling fails.
+    }
+  }
+
+  loadUnreadCount();
+
+  const intervalId =
+    window.setInterval(
+      loadUnreadCount,
+      30000,
+    );
+
+  return () => {
+    cancelled = true;
+
+    window.clearInterval(
+      intervalId,
+    );
+  };
+}, []);
 
   function handleSearchChange(
     event,
@@ -398,15 +607,148 @@ export default function Topbar() {
       </div>
 
       <div className="topbar-actions">
-        <button
-          type="button"
-          className="topbar-icon-button"
-          aria-label="Notifications"
-        >
-          <Bell
-            size={18}
-          />
-        </button>
+        <div
+  className="topbar-notifications"
+  onBlur={(event) => {
+    if (
+      !event.currentTarget
+        .contains(
+          event.relatedTarget,
+        )
+    ) {
+      setNotificationsOpen(
+        false,
+      );
+    }
+  }}
+>
+  <button
+    type="button"
+    className="topbar-icon-button"
+    aria-label="Notifications"
+    onClick={
+      handleNotificationBell
+    }
+  >
+    <Bell
+      size={18}
+    />
+
+    {unreadCount > 0 && (
+      <span className="topbar-notification-badge">
+        {unreadCount > 99
+          ? '99+'
+          : unreadCount}
+      </span>
+    )}
+  </button>
+
+  {notificationsOpen && (
+    <div className="notification-dropdown">
+      <div className="notification-dropdown-header">
+        <div>
+          <strong>
+            Notifications
+          </strong>
+
+          <span>
+            {unreadCount}{' '}
+            unread
+          </span>
+        </div>
+
+        {unreadCount > 0 && (
+          <button
+            type="button"
+            onClick={
+              handleMarkAllRead
+            }
+          >
+            Mark all read
+          </button>
+        )}
+      </div>
+
+      {notificationsLoading ? (
+        <div className="notification-empty">
+          Loading notifications...
+        </div>
+      ) : notifications.length ===
+        0 ? (
+        <div className="notification-empty">
+          No notifications yet.
+        </div>
+      ) : (
+        <div className="notification-list">
+          {notifications.map(
+            (notification) => (
+              <button
+                key={
+                  notification.id
+                }
+                type="button"
+                className={
+                  notification.isRead
+                    ? 'notification-item'
+                    : 'notification-item unread'
+                }
+                onClick={() =>
+                  handleNotificationClick(
+                    notification,
+                  )
+                }
+              >
+                <div className="notification-item-icon">
+                  {notification.type ===
+                  'PAYMENT_RECEIVED' ? (
+                    <CreditCard
+                      size={17}
+                    />
+                  ) : notification.type ===
+                    'UPCOMING_CHECK_IN' ? (
+                    <Clock3
+                      size={17}
+                    />
+                  ) : (
+                    <CalendarDays
+                      size={17}
+                    />
+                  )}
+                </div>
+
+                <div className="notification-item-content">
+                  <div className="notification-item-title">
+                    <strong>
+                      {
+                        notification.title
+                      }
+                    </strong>
+
+                    {!notification.isRead && (
+                      <i />
+                    )}
+                  </div>
+
+                  <p>
+                    {
+                      notification.message
+                    }
+                  </p>
+
+                  <small>
+                    {formatNotificationTime(
+                      notification.createdAt,
+                    )}
+                  </small>
+                </div>
+              </button>
+            ),
+          )}
+        </div>
+      )}
+    </div>
+  )}
+</div>
 
         <button
           type="button"
