@@ -1,0 +1,13 @@
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/generated/
+**/.agents/
+**/.claude/
+**/.windsurf/
+**/package-lock.json
+**/skills-lock.json
+**/*.tsbuildinfo
+**/.env*
+backend/prisma/migrations/

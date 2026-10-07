@@ -12,9 +12,7 @@ import {
 export class RegisterDto {
   @IsEmail()
   @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim().toLowerCase()
-      : value,
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   email: string;
 
@@ -33,9 +31,7 @@ export class RegisterDto {
 
     const username = value.trim().toLowerCase();
 
-    return username === ''
-      ? undefined
-      : username;
+    return username === '' ? undefined : username;
   })
   username?: string;
 
@@ -47,21 +43,13 @@ export class RegisterDto {
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   firstName: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   lastName: string;
 
   @IsOptional()
@@ -74,9 +62,7 @@ export class RegisterDto {
 
     const phone = value.trim();
 
-    return phone === ''
-      ? undefined
-      : phone;
+    return phone === '' ? undefined : phone;
   })
   phone?: string;
 }

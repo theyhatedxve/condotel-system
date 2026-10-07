@@ -1,79 +1,38 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  BedDouble,
-  CalendarCheck,
-  CreditCard,
-  Users,
-} from 'lucide-react';
+import { BedDouble, CalendarCheck, CreditCard, Users } from 'lucide-react';
 
-import {
-  useNavigate,
-} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import {
-  getDashboardReport,
-} from '../reports/reportApi';
+import { getDashboardReport } from '../reports/reportApi';
 
-import {
-  useAuth,
-} from '../auth/useAuth';
+import { useAuth } from '../auth/useAuth';
 
-import {
-  formatCurrency,
-} from '../../utils/formatCurrency';
+import { formatCurrency } from '../../utils/formatCurrency';
 
-import {
-  formatDate,
-} from '../../utils/formatDate';
+import { formatDate } from '../../utils/formatDate';
 
 import './dashboard.css';
 
-function getStatusClass(
-  status,
-) {
-  return status
-    .toLowerCase()
-    .replaceAll(
-      '_',
-      '-',
-    );
+function getStatusClass(status) {
+  return status.toLowerCase().replaceAll('_', '-');
 }
 
-function formatStatus(
-  status,
-) {
+function formatStatus(status) {
   return status
     .split('_')
-    .map(
-      (part) =>
-        part.charAt(0) +
-        part
-          .slice(1)
-          .toLowerCase(),
-    )
+    .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
     .join(' ');
 }
 
 export default function DashboardPage() {
-  const { user } =
-    useAuth();
+  const { user } = useAuth();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [
-    dashboard,
-    setDashboard,
-  ] = useState(null);
+  const [dashboard, setDashboard] = useState(null);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,15 +43,11 @@ export default function DashboardPage() {
           return;
         }
 
-        setDashboard(
-          result,
-        );
+        setDashboard(result);
       })
       .catch(() => {
         if (!cancelled) {
-          window.alert(
-            'Unable to load dashboard data.',
-          );
+          window.alert('Unable to load dashboard data.');
         }
       })
       .finally(() => {
@@ -109,105 +64,71 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <section className="dashboard-page">
-        <div className="dashboard-loading">
-          Loading dashboard...
-        </div>
+        <div className="dashboard-loading">Loading dashboard...</div>
       </section>
     );
   }
 
-  const statistics =
-    dashboard?.statistics ?? {
-      totalRooms: 0,
-      currentGuests: 0,
-      todayCheckIns: 0,
-      todayPaymentsCentavos:
-        0,
-    };
+  const statistics = dashboard?.statistics ?? {
+    totalRooms: 0,
+    currentGuests: 0,
+    todayCheckIns: 0,
+    todayPaymentsCentavos: 0,
+  };
 
-  const occupancy =
-    dashboard?.occupancy ?? {
-      occupiedRooms: 0,
-      availableRooms: 0,
-      maintenanceRooms: 0,
-      occupancyPercent: 0,
-    };
+  const occupancy = dashboard?.occupancy ?? {
+    occupiedRooms: 0,
+    availableRooms: 0,
+    maintenanceRooms: 0,
+    occupancyPercent: 0,
+  };
 
-  const recentReservations =
-    dashboard
-      ?.recentReservations ??
-    [];
+  const recentReservations = dashboard?.recentReservations ?? [];
 
   const cards = [
     {
-      title:
-        'Total Rooms',
+      title: 'Total Rooms',
 
-      value:
-        statistics
-          .totalRooms,
+      value: statistics.totalRooms,
 
-      detail:
-        `${occupancy.availableRooms} available`,
+      detail: `${occupancy.availableRooms} available`,
 
-      icon:
-        BedDouble,
+      icon: BedDouble,
 
-      className:
-        'blue',
+      className: 'blue',
     },
     {
-      title:
-        'Current Guests',
+      title: 'Current Guests',
 
-      value:
-        statistics
-          .currentGuests,
+      value: statistics.currentGuests,
 
-      detail:
-        `${occupancy.occupancyPercent}% occupancy`,
+      detail: `${occupancy.occupancyPercent}% occupancy`,
 
-      icon:
-        Users,
+      icon: Users,
 
-      className:
-        'green',
+      className: 'green',
     },
     {
-      title:
-        "Today's Check-ins",
+      title: "Today's Check-ins",
 
-      value:
-        statistics
-          .todayCheckIns,
+      value: statistics.todayCheckIns,
 
-      detail:
-        `${statistics.todayCheckOuts ?? 0} check-outs today`,
+      detail: `${statistics.todayCheckOuts ?? 0} check-outs today`,
 
-      icon:
-        CalendarCheck,
+      icon: CalendarCheck,
 
-      className:
-        'orange',
+      className: 'orange',
     },
     {
-      title:
-        "Today's Payments",
+      title: "Today's Payments",
 
-      value:
-        formatCurrency(
-          statistics
-            .todayPaymentsCentavos,
-        ),
+      value: formatCurrency(statistics.todayPaymentsCentavos),
 
-      detail:
-        `${statistics.todayPaymentCount ?? 0} paid payment(s)`,
+      detail: `${statistics.todayPaymentCount ?? 0} paid payment(s)`,
 
-      icon:
-        CreditCard,
+      icon: CreditCard,
 
-      className:
-        'purple',
+      className: 'purple',
     },
   ];
 
@@ -215,161 +136,87 @@ export default function DashboardPage() {
     <section className="dashboard-page">
       <header className="dashboard-header">
         <h1>
-          Welcome,{' '}
-          {user?.firstName ||
-            'Admin'}!
+          {'Welcome,'} {user?.firstName || 'Admin'}!
         </h1>
 
-        <p>
-          Here's what's happening with
-          your condotel today.
-        </p>
+        <p>Here's what's happening with your condotel today.</p>
       </header>
 
       <div className="stat-grid">
-        {cards.map(
-          ({
-            title,
-            value,
-            detail,
-            icon: Icon,
-            className,
-          }) => (
-            <article
-              key={title}
-              className={`stat-card ${className}`}
-            >
-              <div>
-                <span className="stat-title">
-                  {title}
-                </span>
+        {cards.map(({ title, value, detail, icon: Icon, className }) => (
+          <article key={title} className={`stat-card ${className}`}>
+            <div>
+              <span className="stat-title">{title}</span>
 
-                <strong>
-                  {value}
-                </strong>
+              <strong>{value}</strong>
 
-                <small>
-                  {detail}
-                </small>
-              </div>
+              <small>{detail}</small>
+            </div>
 
-              <Icon
-                size={30}
-              />
-            </article>
-          ),
-        )}
+            <Icon size={30} />
+          </article>
+        ))}
       </div>
 
       <div className="dashboard-grid">
         <article className="dashboard-panel reservations-panel">
           <div className="panel-heading">
-            <h2>
-              Recent Reservations
-            </h2>
+            <h2>Recent Reservations</h2>
 
             <button
               type="button"
-              onClick={() =>
-                navigate(
-                  '/admin/reservations',
-                )
-              }
+              onClick={() => navigate('/admin/reservations')}
             >
               View all
             </button>
           </div>
 
-          {recentReservations.length ===
-          0 ? (
-            <div className="dashboard-empty">
-              No reservations found.
-            </div>
+          {recentReservations.length === 0 ? (
+            <div className="dashboard-empty">No reservations found.</div>
           ) : (
             <div className="table-wrapper">
               <table className="dashboard-table">
                 <thead>
                   <tr>
-                    <th>
-                      Guest Name
-                    </th>
+                    <th>Guest Name</th>
 
-                    <th>Room</th>
+                    <th>{'Room'}</th>
 
-                    <th>
-                      Check-in
-                    </th>
+                    <th>Check-in</th>
 
-                    <th>
-                      Check-out
-                    </th>
+                    <th>Check-out</th>
 
                     <th>Status</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {recentReservations.map(
-                    (
-                      reservation,
-                    ) => (
-                      <tr
-                        key={
-                          reservation.id
-                        }
-                      >
-                        <td>
-                          {
-                            reservation
-                              .guest
-                              .firstName
-                          }{' '}
-                          {
-                            reservation
-                              .guest
-                              .lastName
-                          }
-                        </td>
+                  {recentReservations.map((reservation) => (
+                    <tr key={reservation.id}>
+                      <td>
+                        {reservation.guest.firstName}{' '}
+                        {reservation.guest.lastName}
+                      </td>
 
-                        <td>
-                          Room{' '}
-                          {
-                            reservation
-                              .room
-                              .roomNumber
-                          }
-                        </td>
+                      <td>
+                        {'Room'} {reservation.room.roomNumber}
+                      </td>
 
-                        <td>
-                          {formatDate(
-                            reservation
-                              .checkIn,
-                          )}
-                        </td>
+                      <td>{formatDate(reservation.checkIn)}</td>
 
-                        <td>
-                          {formatDate(
-                            reservation
-                              .checkOut,
-                          )}
-                        </td>
+                      <td>{formatDate(reservation.checkOut)}</td>
 
-                        <td>
-                          <span
-                            className={`status-badge ${getStatusClass(
-                              reservation
-                                .status,
-                            )}`}
-                          >
-                            {formatStatus(
-                              reservation
-                                .status,
-                            )}
-                          </span>
-                        </td>
-                      </tr>
-                    ),
-                  )}
+                      <td>
+                        <span
+                          className={`status-badge ${getStatusClass(
+                            reservation.status,
+                          )}`}
+                        >
+                          {formatStatus(reservation.status)}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -377,70 +224,38 @@ export default function DashboardPage() {
         </article>
 
         <article className="dashboard-panel occupancy-panel">
-          <h2>
-            Room Occupancy
-          </h2>
+          <h2>Room Occupancy</h2>
 
           <div
             className="occupancy-circle"
             style={{
-              '--occupancy':
-                `${occupancy.occupancyPercent}%`,
+              '--occupancy': `${occupancy.occupancyPercent}%`,
             }}
           >
             <div>
-              <strong>
-                {
-                  occupancy
-                    .occupancyPercent
-                }
-                %
-              </strong>
+              <strong>{occupancy.occupancyPercent}%</strong>
 
-              <span>
-                Occupied
-              </span>
+              <span>Occupied</span>
             </div>
           </div>
 
           <div className="occupancy-legend">
             <span>
               <i className="occupied-dot" />
-
               Occupied
-
-              <strong>
-                {
-                  occupancy
-                    .occupiedRooms
-                }
-              </strong>
+              <strong>{occupancy.occupiedRooms}</strong>
             </span>
 
             <span>
               <i className="available-dot" />
-
               Available
-
-              <strong>
-                {
-                  occupancy
-                    .availableRooms
-                }
-              </strong>
+              <strong>{occupancy.availableRooms}</strong>
             </span>
 
             <span>
               <i className="maintenance-dot" />
-
               Maintenance
-
-              <strong>
-                {
-                  occupancy
-                    .maintenanceRooms
-                }
-              </strong>
+              <strong>{occupancy.maintenanceRooms}</strong>
             </span>
           </div>
         </article>

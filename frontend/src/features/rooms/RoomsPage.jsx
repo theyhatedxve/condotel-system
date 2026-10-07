@@ -1,11 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  Plus,
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 import {
   createRoom,
@@ -15,14 +10,11 @@ import {
   updateRoom,
 } from './roomApi';
 
-import RoomCard from
-  './RoomCard';
+import RoomCard from './RoomCard';
 
-import RoomFormModal from
-  './RoomFormModal';
+import RoomFormModal from './RoomFormModal';
 
-import { useAuth } from
-  '../auth/useAuth';
+import { useAuth } from '../auth/useAuth';
 
 import './rooms.css';
 
@@ -45,66 +37,39 @@ const filters = [
   },
 ];
 
-function getErrorMessage(
-  error,
-  fallbackMessage,
-) {
-  const message =
-    error.response?.data?.message;
+function getErrorMessage(error, fallbackMessage) {
+  const message = error.response?.data?.message;
 
   if (Array.isArray(message)) {
     return message.join(' ');
   }
 
-  return (
-    message ||
-    fallbackMessage
-  );
+  return message || fallbackMessage;
 }
 
 export default function RoomsPage() {
-  const { user } =
-    useAuth();
+  const { user } = useAuth();
 
-  const [rooms, setRooms] =
-    useState([]);
+  const [rooms, setRooms] = useState([]);
 
-  const [
-    statusFilter,
-    setStatusFilter,
-  ] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState('');
+  const [error, setError] = useState('');
 
-  const [
-    modalOpen,
-    setModalOpen,
-  ] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [
-    selectedRoom,
-    setSelectedRoom,
-  ] = useState(null);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
-  const [
-    submitting,
-    setSubmitting,
-  ] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const canManage =
-    user?.role === 'ADMIN';
+  const canManage = user?.role === 'ADMIN';
 
   useEffect(() => {
     let cancelled = false;
 
-    getRooms(
-      statusFilter ||
-        undefined,
-    )
+    getRooms(statusFilter || undefined)
       .then((result) => {
         if (cancelled) {
           return;
@@ -118,12 +83,7 @@ export default function RoomsPage() {
           return;
         }
 
-        setError(
-          getErrorMessage(
-            requestError,
-            'Unable to load rooms.',
-          ),
-        );
+        setError(getErrorMessage(requestError, 'Unable to load rooms.'));
       })
       .finally(() => {
         if (!cancelled) {
@@ -140,32 +100,19 @@ export default function RoomsPage() {
     setLoading(true);
 
     try {
-      const result =
-        await getRooms(
-          statusFilter ||
-            undefined,
-        );
+      const result = await getRooms(statusFilter || undefined);
 
       setRooms(result);
       setError('');
     } catch (requestError) {
-      setError(
-        getErrorMessage(
-          requestError,
-          'Unable to load rooms.',
-        ),
-      );
+      setError(getErrorMessage(requestError, 'Unable to load rooms.'));
     } finally {
       setLoading(false);
     }
   }
 
-  function handleFilterChange(
-    value,
-  ) {
-    if (
-      value === statusFilter
-    ) {
+  function handleFilterChange(value) {
+    if (value === statusFilter) {
       return;
     }
 
@@ -192,21 +139,14 @@ export default function RoomsPage() {
     setSelectedRoom(null);
   }
 
-  async function handleSave(
-    payload,
-  ) {
+  async function handleSave(payload) {
     setSubmitting(true);
 
     try {
       if (selectedRoom) {
-        await updateRoom(
-          selectedRoom.id,
-          payload,
-        );
+        await updateRoom(selectedRoom.id, payload);
       } else {
-        await createRoom(
-          payload,
-        );
+        await createRoom(payload);
       }
 
       setModalOpen(false);
@@ -214,61 +154,35 @@ export default function RoomsPage() {
 
       await refreshRooms();
     } catch (requestError) {
-      window.alert(
-        getErrorMessage(
-          requestError,
-          'Unable to save room.',
-        ),
-      );
+      window.alert(getErrorMessage(requestError, 'Unable to save room.'));
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function handleDeactivate(
-    room,
-  ) {
-    const confirmed =
-      window.confirm(
-        `Deactivate Room ${room.roomNumber}?`,
-      );
+  async function handleDeactivate(room) {
+    const confirmed = window.confirm(`Deactivate Room ${room.roomNumber}?`);
 
     if (!confirmed) {
       return;
     }
 
     try {
-      await deactivateRoom(
-        room.id,
-      );
+      await deactivateRoom(room.id);
 
       await refreshRooms();
     } catch (requestError) {
-      window.alert(
-        getErrorMessage(
-          requestError,
-          'Unable to deactivate room.',
-        ),
-      );
+      window.alert(getErrorMessage(requestError, 'Unable to deactivate room.'));
     }
   }
 
-  async function handleReactivate(
-    room,
-  ) {
+  async function handleReactivate(room) {
     try {
-      await reactivateRoom(
-        room.id,
-      );
+      await reactivateRoom(room.id);
 
       await refreshRooms();
     } catch (requestError) {
-      window.alert(
-        getErrorMessage(
-          requestError,
-          'Unable to reactivate room.',
-        ),
-      );
+      window.alert(getErrorMessage(requestError, 'Unable to reactivate room.'));
     }
   }
 
@@ -276,106 +190,66 @@ export default function RoomsPage() {
     <section className="rooms-page">
       <header className="rooms-page-header">
         <div>
-          <h1>
-            Room Management
-          </h1>
+          <h1>Room Management</h1>
 
-          <p>
-            Manage condotel rooms,
-            rates, and availability.
-          </p>
+          <p>Manage condotel rooms, rates, and availability.</p>
         </div>
 
         {canManage && (
           <button
             type="button"
             className="primary-button add-room-button"
-            onClick={
-              openCreateModal
-            }
+            onClick={openCreateModal}
           >
             <Plus size={17} />
-
             Add Room
           </button>
         )}
       </header>
 
       <div className="room-filter-bar">
-        {filters.map(
-          (filter) => (
-            <button
-              key={
-                filter.label
-              }
-              type="button"
-              className={
-                statusFilter ===
-                filter.value
-                  ? 'room-filter active'
-                  : 'room-filter'
-              }
-              onClick={() =>
-                handleFilterChange(
-                  filter.value,
-                )
-              }
-            >
-              {filter.label}
-            </button>
-          ),
-        )}
+        {filters.map((filter) => (
+          <button
+            key={filter.label}
+            type="button"
+            className={
+              statusFilter === filter.value
+                ? 'room-filter active'
+                : 'room-filter'
+            }
+            onClick={() => handleFilterChange(filter.value)}
+          >
+            {filter.label}
+          </button>
+        ))}
       </div>
 
-      {error && (
-        <div className="rooms-error">
-          {error}
-        </div>
-      )}
+      {error && <div className="rooms-error">{error}</div>}
 
       {loading ? (
-        <div className="rooms-loading">
-          Loading rooms...
-        </div>
+        <div className="rooms-loading">Loading rooms...</div>
       ) : rooms.length === 0 ? (
-        <div className="rooms-empty">
-          No rooms found.
-        </div>
+        <div className="rooms-empty">No rooms found.</div>
       ) : (
         <div className="room-grid">
-          {rooms.map(
-            (room) => (
-              <RoomCard
-                key={room.id}
-                room={room}
-                canManage={
-                  canManage
-                }
-                onEdit={
-                  openEditModal
-                }
-                onDeactivate={
-                  handleDeactivate
-                }
-                onReactivate={
-                  handleReactivate
-                }
-              />
-            ),
-          )}
+          {rooms.map((room) => (
+            <RoomCard
+              key={room.id}
+              room={room}
+              canManage={canManage}
+              onEdit={openEditModal}
+              onDeactivate={handleDeactivate}
+              onReactivate={handleReactivate}
+            />
+          ))}
         </div>
       )}
 
       {modalOpen && (
         <RoomFormModal
-          key={
-            selectedRoom?.id ??
-            'new-room'
-          }
+          key={selectedRoom?.id ?? 'new-room'}
           room={selectedRoom}
-          isSubmitting={
-            submitting
-          }
+          isSubmitting={submitting}
           onClose={closeModal}
           onSubmit={handleSave}
         />

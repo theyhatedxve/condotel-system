@@ -11,69 +11,38 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import {
-  CurrentUser,
-} from '../auth/decorators/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-import {
-  Roles,
-} from '../auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-import {
-  JwtAuthGuard,
-} from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-import {
-  RolesGuard,
-} from '../auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
-import type {
-  AuthenticatedUser,
-} from '../auth/interfaces/authenticated-user.interface';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
-import {
-  UserRole,
-} from '../generated/prisma/enums';
+import { UserRole } from '../generated/prisma/enums';
 
-import {
-  ResetUserPasswordDto,
-} from './reset-user-password.dto';
+import { ResetUserPasswordDto } from './reset-user-password.dto';
 
-import {
-  UpdateManagedUserDto,
-} from './update-managed-user.dto';
+import { UpdateManagedUserDto } from './update-managed-user.dto';
 
-import {
-  UserManagementQueryDto,
-} from './user-management-query.dto';
+import { UserManagementQueryDto } from './user-management-query.dto';
 
-import {
-  UserManagementService,
-} from './user-management.service';
+import { UserManagementService } from './user-management.service';
 
 @Controller('admin/users')
-@UseGuards(
-  JwtAuthGuard,
-  RolesGuard,
-)
-@Roles(
-  UserRole.ADMIN,
-)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 export class UserManagementController {
-  constructor(
-    private readonly userManagementService:
-      UserManagementService,
-  ) {}
+  constructor(private readonly userManagementService: UserManagementService) {}
 
   @Get()
   findAll(
     @Query()
-    query:
-      UserManagementQueryDto,
+    query: UserManagementQueryDto,
   ) {
-    return this
-      .userManagementService
-      .findAll(query);
+    return this.userManagementService.findAll(query);
   }
 
   @Get(':id')
@@ -81,9 +50,7 @@ export class UserManagementController {
     @Param('id')
     id: string,
   ) {
-    return this
-      .userManagementService
-      .findOne(id);
+    return this.userManagementService.findOne(id);
   }
 
   @Patch(':id')
@@ -92,46 +59,26 @@ export class UserManagementController {
     id: string,
 
     @Body()
-    dto:
-      UpdateManagedUserDto,
+    dto: UpdateManagedUserDto,
 
     @CurrentUser()
-    admin:
-      AuthenticatedUser,
+    admin: AuthenticatedUser,
   ) {
-    return this
-      .userManagementService
-      .update(
-        id,
-        dto,
-        admin,
-      );
+    return this.userManagementService.update(id, dto, admin);
   }
 
-  @Post(
-    ':id/reset-password',
-  )
-  @HttpCode(
-    HttpStatus.OK,
-  )
+  @Post(':id/reset-password')
+  @HttpCode(HttpStatus.OK)
   resetPassword(
     @Param('id')
     id: string,
 
     @Body()
-    dto:
-      ResetUserPasswordDto,
+    dto: ResetUserPasswordDto,
 
     @CurrentUser()
-    admin:
-      AuthenticatedUser,
+    admin: AuthenticatedUser,
   ) {
-    return this
-      .userManagementService
-      .resetPassword(
-        id,
-        dto,
-        admin,
-      );
+    return this.userManagementService.resetPassword(id, dto, admin);
   }
 }

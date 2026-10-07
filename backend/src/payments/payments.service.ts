@@ -15,91 +15,262 @@ import {
   UserRole,
 } from '../generated/prisma/enums';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
-import type {
-  AuthenticatedUser,
-} from '../auth/interfaces/authenticated-user.interface';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
 import type {
   PaymongoPaymentAttempt,
   PaymongoWebhookEvent,
 } from './paymongo.interface';
 
-import {
-  PaymongoService,
-} from './paymongo.service';
+import { PaymongoService } from './paymongo.service';
 
-import {
-  NotificationsService,
-} from '../notifications/notifications.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class PaymentsService {
   constructor(
-    private readonly prisma:
-      PrismaService,
+    private readonly prisma: PrismaService,
 
-    private readonly paymongoService:
-      PaymongoService,
+    private readonly paymongoService: PaymongoService,
 
-    private readonly notificationsService:
-      NotificationsService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
-  private ensureReservationAccess(
-    user: AuthenticatedUser,
-    guestId: string,
-  ) {
-    if (
-      user.role ===
-        UserRole.CUSTOMER &&
-      user.id !== guestId
-    ) {
+  private ensureReservationAccess(user: AuthenticatedUser, guestId: string) {
+    if (user.role === UserRole.CUSTOMER && user.id !== guestId) {
       throw new ForbiddenException(
         'You cannot access this reservation payment.',
       );
     }
   }
 
-  private mapPaymentMethod(
-  type?: string,
-): PaymentMethod {
-  const normalizedType =
-    type
-      ?.trim()
-      .toLowerCase();
+  private mapPaymentMethod(type?: string): PaymentMethod {
+    const normalizedType = type?.trim().toLowerCase();
 
-  switch (normalizedType) {
-    case 'card':
-      return PaymentMethod.CARD;
+    switch (normalizedType) {
+      case 'card':
+        return PaymentMethod.CARD;
 
-    case 'gcash':
-      return PaymentMethod.GCASH;
+      case 'gcash':
+        return PaymentMethod.GCASH;
 
-    case 'maya':
-    case 'paymaya':
-      return PaymentMethod.MAYA;
+      case 'maya':
+      case 'paymaya':
+        return PaymentMethod.MAYA;
 
-    default:
-      return PaymentMethod.OTHER;
+      default:
+        return PaymentMethod.OTHER;
+    }
   }
-}
 
-  async createCheckout(
-    reservationId: string,
-    user: AuthenticatedUser,
-  ) {
-    const reservation =
-      await this.prisma
-        .reservation
-        .findUnique({
-          where: {
-            id: reservationId,
+  async createCheckout(reservationId: string, user: AuthenticatedUser) {
+    const reservation = await this.prisma.reservation.findUnique({
+      where: {
+        id: reservationId,
+      },
+
+      include: {
+        guest: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
           },
+        },
 
+        room: true,
+
+        payments: {
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
+
+    if (!reservation) {
+      throw new NotFoundException('Reservation not found.');
+    }
+
+    this.ensureReservationAccess(user, reservation.guestId);
+
+    const paidPayment = reservation.payments.find(
+      (payment) => payment.status === PaymentStatus.PAID,
+    );
+
+    if (paidPayment) {
+      throw new ConflictException('This reservation has already been paid.');
+    }
+
+    if (reservation.status !== ReservationStatus.PENDING) {
+      throw new BadRequestException(
+        'Only pending reservations can proceed to payment.',
+      );
+    }
+
+    // Reuse a pending hosted checkout when the user retries the payment action.
+    const existingCheckout = reservation.payments.find(
+      (payment) =>
+        payment.status === PaymentStatus.PENDING &&
+        payment.checkoutUrl &&
+        payment.paymongoCheckoutSessionId,
+    );
+
+    if (existingCheckout) {
+      return {
+        paymentId: existingCheckout.id,
+
+        status: existingCheckout.status,
+
+        checkoutUrl: existingCheckout.checkoutUrl,
+
+        checkoutSessionId: existingCheckout.paymongoCheckoutSessionId,
+      };
+    }
+
+    const payment = await this.prisma.payment.create({
+      data: {
+        reservationId: reservation.id,
+
+        provider: 'PAYMONGO',
+
+        amountCentavos: reservation.totalAmountCentavos,
+
+        currency: 'PHP',
+
+        status: PaymentStatus.PENDING,
+      },
+    });
+
+    try {
+      const checkout = await this.paymongoService.createCheckoutSession({
+        reservationId: reservation.id,
+
+        referenceNo: reservation.referenceNo,
+
+        roomNumber: reservation.room.roomNumber,
+
+        totalAmountCentavos: reservation.totalAmountCentavos,
+      });
+
+      const updatedPayment = await this.prisma.payment.update({
+        where: {
+          id: payment.id,
+        },
+
+        data: {
+          paymongoCheckoutSessionId: checkout.data.id,
+
+          checkoutUrl: checkout.data.attributes.checkout_url,
+        },
+      });
+
+      return {
+        paymentId: updatedPayment.id,
+
+        status: updatedPayment.status,
+
+        checkoutSessionId: updatedPayment.paymongoCheckoutSessionId,
+
+        checkoutUrl: updatedPayment.checkoutUrl,
+      };
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'PayMongo checkout creation failed.';
+
+      await this.prisma.payment.update({
+        where: {
+          id: payment.id,
+        },
+
+        data: {
+          status: PaymentStatus.FAILED,
+
+          failureReason: message,
+        },
+      });
+
+      throw error;
+    }
+  }
+
+  async cancelPendingPaymentsForReservation(reservationId: string) {
+    const pendingPayments = await this.prisma.payment.findMany({
+      where: {
+        reservationId,
+
+        status: PaymentStatus.PENDING,
+      },
+    });
+
+    // Expire hosted sessions before marking local payments cancelled; a provider failure
+    // leaves the local records pending so cancellation can be retried.
+    for (const payment of pendingPayments) {
+      if (payment.paymongoCheckoutSessionId) {
+        await this.paymongoService.expireCheckoutSession(
+          payment.paymongoCheckoutSessionId,
+        );
+      }
+    }
+
+    const result = await this.prisma.payment.updateMany({
+      where: {
+        reservationId,
+
+        status: PaymentStatus.PENDING,
+      },
+
+      data: {
+        status: PaymentStatus.CANCELLED,
+      },
+    });
+
+    return {
+      cancelledPayments: result.count,
+    };
+  }
+
+  async cancelPendingCheckout(reservationId: string, user: AuthenticatedUser) {
+    const reservation = await this.prisma.reservation.findUnique({
+      where: {
+        id: reservationId,
+      },
+
+      select: {
+        id: true,
+        guestId: true,
+        status: true,
+      },
+    });
+
+    if (!reservation) {
+      throw new NotFoundException('Reservation not found.');
+    }
+
+    this.ensureReservationAccess(user, reservation.guestId);
+
+    const cancellableReservationStatuses: ReservationStatus[] = [
+      ReservationStatus.PENDING,
+      ReservationStatus.CANCELLED,
+    ];
+
+    if (!cancellableReservationStatuses.includes(reservation.status)) {
+      throw new BadRequestException(
+        'This reservation no longer has a cancellable payment checkout.',
+      );
+    }
+    return this.cancelPendingPaymentsForReservation(reservationId);
+  }
+
+  async findAll() {
+    return this.prisma.payment.findMany({
+      include: {
+        reservation: {
           include: {
             guest: {
               select: {
@@ -111,742 +282,307 @@ export class PaymentsService {
             },
 
             room: true,
-
-            payments: {
-              orderBy: {
-                createdAt: 'desc',
-              },
-            },
           },
-        });
+        },
+
+        transactions: true,
+      },
+
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async findByReservation(reservationId: string, user: AuthenticatedUser) {
+    const reservation = await this.prisma.reservation.findUnique({
+      where: {
+        id: reservationId,
+      },
+
+      select: {
+        guestId: true,
+      },
+    });
 
     if (!reservation) {
-      throw new NotFoundException(
-        'Reservation not found.',
-      );
+      throw new NotFoundException('Reservation not found.');
     }
 
-    this.ensureReservationAccess(
-      user,
-      reservation.guestId,
-    );
+    this.ensureReservationAccess(user, reservation.guestId);
 
-    const paidPayment =
-      reservation.payments.find(
-        (payment) =>
-          payment.status ===
-          PaymentStatus.PAID,
-      );
+    return this.prisma.payment.findMany({
+      where: {
+        reservationId,
+      },
 
-    if (paidPayment) {
-      throw new ConflictException(
-        'This reservation has already been paid.',
-      );
-    }
+      include: {
+        transactions: true,
+      },
 
-    if (
-      reservation.status !==
-      ReservationStatus.PENDING
-    ) {
-      throw new BadRequestException(
-        'Only pending reservations can proceed to payment.',
-      );
-    }
-
-    // Reuse a pending hosted checkout when the user retries the payment action.
-    const existingCheckout =
-      reservation.payments.find(
-        (payment) =>
-          payment.status ===
-            PaymentStatus.PENDING &&
-          payment.checkoutUrl &&
-          payment
-            .paymongoCheckoutSessionId,
-      );
-
-    if (existingCheckout) {
-      return {
-        paymentId:
-          existingCheckout.id,
-
-        status:
-          existingCheckout.status,
-
-        checkoutUrl:
-          existingCheckout.checkoutUrl,
-
-        checkoutSessionId:
-          existingCheckout
-            .paymongoCheckoutSessionId,
-      };
-    }
-
-    const payment =
-      await this.prisma
-        .payment
-        .create({
-          data: {
-            reservationId:
-              reservation.id,
-
-            provider:
-              'PAYMONGO',
-
-            amountCentavos:
-              reservation
-                .totalAmountCentavos,
-
-            currency: 'PHP',
-
-            status:
-              PaymentStatus.PENDING,
-          },
-        });
-
-    try {
-      const checkout =
-        await this.paymongoService
-          .createCheckoutSession({
-            reservationId:
-              reservation.id,
-
-            referenceNo:
-              reservation.referenceNo,
-
-            roomNumber:
-              reservation
-                .room
-                .roomNumber,
-
-            totalAmountCentavos:
-              reservation
-                .totalAmountCentavos,
-          });
-
-      const updatedPayment =
-        await this.prisma
-          .payment
-          .update({
-            where: {
-              id:
-                payment.id,
-            },
-
-            data: {
-              paymongoCheckoutSessionId:
-                checkout.data.id,
-
-              checkoutUrl:
-                checkout.data
-                  .attributes
-                  .checkout_url,
-            },
-          });
-
-      return {
-        paymentId:
-          updatedPayment.id,
-
-        status:
-          updatedPayment.status,
-
-        checkoutSessionId:
-          updatedPayment
-            .paymongoCheckoutSessionId,
-
-        checkoutUrl:
-          updatedPayment
-            .checkoutUrl,
-      };
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'PayMongo checkout creation failed.';
-
-      await this.prisma
-        .payment
-        .update({
-          where: {
-            id:
-              payment.id,
-          },
-
-          data: {
-            status:
-              PaymentStatus.FAILED,
-
-            failureReason:
-              message,
-          },
-        });
-
-      throw error;
-    }
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
-async cancelPendingPaymentsForReservation(
-  reservationId: string,
-) {
-  const pendingPayments =
-    await this.prisma
-      .payment
-      .findMany({
-        where: {
-          reservationId,
-
-          status:
-            PaymentStatus.PENDING,
-        },
-      });
-
-  // Expire hosted sessions before marking local payments cancelled; a provider failure
-  // leaves the local records pending so cancellation can be retried.
-  for (
-    const payment
-    of pendingPayments
-  ) {
-    if (
-      payment
-        .paymongoCheckoutSessionId
-    ) {
-      await this.paymongoService
-        .expireCheckoutSession(
-          payment
-            .paymongoCheckoutSessionId,
-        );
-    }
-  }
-
-  const result =
-    await this.prisma
-      .payment
-      .updateMany({
-        where: {
-          reservationId,
-
-          status:
-            PaymentStatus.PENDING,
-        },
-
-        data: {
-          status:
-            PaymentStatus.CANCELLED,
-        },
-      });
-
-  return {
-    cancelledPayments:
-      result.count,
-  };
-}
-
-    async cancelPendingCheckout(
-      reservationId: string,
-      user: AuthenticatedUser,
-    ) {
-      const reservation =
-        await this.prisma
-          .reservation
-          .findUnique({
-            where: {
-              id: reservationId,
-            },
-
-            select: {
-              id: true,
-              guestId: true,
-              status: true,
-            },
-          });
-
-      if (!reservation) {
-        throw new NotFoundException(
-          'Reservation not found.',
-        );
-      }
-
-      this.ensureReservationAccess(
-        user,
-        reservation.guestId,
-      );
-
-      const cancellableReservationStatuses:
-          ReservationStatus[] = [
-            ReservationStatus.PENDING,
-            ReservationStatus.CANCELLED,
-          ];
-
-        if (
-          !cancellableReservationStatuses.includes(
-            reservation.status,
-          )
-        ) {
-          throw new BadRequestException(
-            'This reservation no longer has a cancellable payment checkout.',
-          );
-        }
-        return this
-        .cancelPendingPaymentsForReservation(
-          reservationId,
-        );
-    }
-
-  async findAll() {
-    return this.prisma
-      .payment
-      .findMany({
-        include: {
-          reservation: {
-            include: {
-              guest: {
-                select: {
-                  id: true,
-                  firstName: true,
-                  lastName: true,
-                  email: true,
-                },
-              },
-
-              room: true,
-            },
-          },
-
-          transactions: true,
-        },
-
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-  }
-
-  async findByReservation(
-    reservationId: string,
-    user: AuthenticatedUser,
-  ) {
-    const reservation =
-      await this.prisma
-        .reservation
-        .findUnique({
-          where: {
-            id:
-              reservationId,
-          },
-
-          select: {
-            guestId: true,
-          },
-        });
-
-    if (!reservation) {
-      throw new NotFoundException(
-        'Reservation not found.',
-      );
-    }
-
-    this.ensureReservationAccess(
-      user,
-      reservation.guestId,
-    );
-
-    return this.prisma
-      .payment
-      .findMany({
-        where: {
-          reservationId,
-        },
-
-        include: {
-          transactions: true,
-        },
-
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
-  }
-
-  private findPaidAttempt(
-    payments:
-      | PaymongoPaymentAttempt[]
-      | undefined,
-  ) {
+  private findPaidAttempt(payments: PaymongoPaymentAttempt[] | undefined) {
     if (!payments) {
       return undefined;
     }
 
     return [...payments]
       .reverse()
-      .find(
-        (payment) =>
-          payment.attributes
-            .status === 'paid',
-      );
+      .find((payment) => payment.attributes.status === 'paid');
   }
 
   async handlePaymongoWebhook(
-  rawBody: Buffer,
-  signatureHeader: string | undefined,
-  body: unknown,
-) {
-  /*
-   * 1. Verify that this request really came
-   *    from PayMongo.
-   */
-  this.paymongoService
-    .verifyWebhookSignature(
-      rawBody,
-      signatureHeader,
-    );
-
-  const webhook =
-    body as PaymongoWebhookEvent;
-
-  /*
-   * Actual PayMongo event-resource structure:
-   *
-   * data.type = "event"
-   *
-   * data.attributes.type =
-   *   "checkout_session.payment.paid"
-   *
-   * data.attributes.data =
-   *   Checkout Session
-   */
-  const eventType =
-    webhook.data
-      ?.attributes
-      ?.type;
-
-  /*
-   * Ignore events that are unrelated
-   * to successful Hosted Checkout payments.
-   */
-  if (
-    eventType !==
-    'checkout_session.payment.paid'
+    rawBody: Buffer,
+    signatureHeader: string | undefined,
+    body: unknown,
   ) {
-    return {
-      received: true,
+    /*
+     * 1. Verify that this request really came
+     *    from PayMongo.
+     */
+    this.paymongoService.verifyWebhookSignature(rawBody, signatureHeader);
 
-      ignored: true,
+    const webhook = body as PaymongoWebhookEvent;
 
-      eventType:
-        eventType ??
-        'unknown',
-    };
-  }
+    /*
+     * Actual PayMongo event-resource structure:
+     *
+     * data.type = "event"
+     *
+     * data.attributes.type =
+     *   "checkout_session.payment.paid"
+     *
+     * data.attributes.data =
+     *   Checkout Session
+     */
+    const eventType = webhook.data?.attributes?.type;
 
-  /*
-   * The actual Checkout Session resource.
-   */
-  const session =
-    webhook.data
-      ?.attributes
-      ?.data;
+    /*
+     * Ignore events that are unrelated
+     * to successful Hosted Checkout payments.
+     */
+    if (eventType !== 'checkout_session.payment.paid') {
+      return {
+        received: true,
 
-  if (!session?.id) {
-    throw new BadRequestException(
-      'PayMongo checkout session is missing.',
-    );
-  }
+        ignored: true,
 
-  /*
-   * 2. Match PayMongo's cs_... ID
-   *    against our local Payment row.
-   */
-  const localPayment =
-    await this.prisma
-      .payment
-      .findUnique({
+        eventType: eventType ?? 'unknown',
+      };
+    }
+
+    /*
+     * The actual Checkout Session resource.
+     */
+    const session = webhook.data?.attributes?.data;
+
+    if (!session?.id) {
+      throw new BadRequestException('PayMongo checkout session is missing.');
+    }
+
+    /*
+     * 2. Match PayMongo's cs_... ID
+     *    against our local Payment row.
+     */
+    const localPayment = await this.prisma.payment.findUnique({
+      where: {
+        paymongoCheckoutSessionId: session.id,
+      },
+
+      include: {
+        reservation: true,
+      },
+    });
+
+    if (!localPayment) {
+      throw new NotFoundException(
+        `No local payment found for PayMongo checkout session ${session.id}.`,
+      );
+    }
+
+    // Skip financial writes when a previous delivery has already marked this payment paid.
+    // Retry the notification separately; its dedupe key prevents another notification row.
+    if (localPayment.status === PaymentStatus.PAID) {
+      await this.notificationsService.notifyPaymentReceived({
+        paymentId: localPayment.id,
+
+        reservationId: localPayment.reservationId,
+
+        referenceNo: localPayment.reservation.referenceNo,
+
+        amountCentavos: localPayment.amountCentavos,
+      });
+      return {
+        received: true,
+
+        duplicate: true,
+
+        paymentId: localPayment.id,
+      };
+    }
+
+    /*
+     * 4. Find the successful payment
+     *    attempt inside the Checkout Session.
+     */
+    const paidAttempt = this.findPaidAttempt(session.attributes?.payments);
+
+    if (!paidAttempt) {
+      throw new BadRequestException(
+        'PayMongo webhook does not contain a paid payment attempt.',
+      );
+    }
+
+    /*
+     * 5. Never trust the browser for money.
+     *
+     * Verify PayMongo's paid amount against
+     * the amount stored in SQLite.
+     */
+    if (paidAttempt.attributes.amount !== localPayment.amountCentavos) {
+      throw new BadRequestException(
+        'PayMongo payment amount does not match the reservation amount.',
+      );
+    }
+
+    /*
+     * Optional but useful:
+     * validate currency too.
+     */
+    if (
+      paidAttempt.attributes.currency &&
+      paidAttempt.attributes.currency !== 'PHP'
+    ) {
+      throw new BadRequestException('Unexpected PayMongo payment currency.');
+    }
+
+    const method = this.mapPaymentMethod(paidAttempt.attributes.source?.type);
+
+    /*
+     * PayMongo timestamps are Unix seconds.
+     */
+    const paidAt = paidAttempt.attributes.paid_at
+      ? new Date(paidAttempt.attributes.paid_at * 1000)
+      : new Date();
+
+    /*
+     * Some payloads expose the Payment
+     * Intent on the Checkout Session,
+     * while payment records themselves can
+     * also expose payment_intent_id.
+     */
+    const paymentIntentId =
+      session.attributes?.payment_intent?.id ??
+      paidAttempt.attributes.payment_intent_id ??
+      null;
+
+    // This notification is created outside the financial transaction below;
+    // it can remain even if those later database updates fail.
+
+    await this.notificationsService.notifyPaymentReceived({
+      paymentId: localPayment.id,
+
+      reservationId: localPayment.reservationId,
+
+      referenceNo: localPayment.reservation.referenceNo,
+
+      amountCentavos: localPayment.amountCentavos,
+    });
+
+    // Commit the payment, transaction history and reservation confirmation together
+    // so a failed database write cannot leave only part of the financial update saved.
+    await this.prisma.$transaction(async (transaction) => {
+      /*
+       * Mark local payment paid.
+       */
+      await transaction.payment.update({
         where: {
-          paymongoCheckoutSessionId:
-            session.id,
+          id: localPayment.id,
         },
 
-        include: {
-          reservation: true,
+        data: {
+          status: PaymentStatus.PAID,
+
+          method,
+
+          paymongoPaymentIntentId: paymentIntentId,
+
+          paymongoPaymentId: paidAttempt.id,
+
+          paidAt,
+
+          failureReason: null,
         },
       });
 
-  if (!localPayment) {
-    throw new NotFoundException(
-      `No local payment found for PayMongo checkout session ${session.id}.`,
-    );
-  }
+      /*
+       * Avoid duplicate transaction
+       * history if PayMongo retries.
+       */
+      const existingTransaction = await transaction.transaction.findFirst({
+        where: {
+          paymentId: localPayment.id,
 
-  // Skip financial writes when a previous delivery has already marked this payment paid.
-  // Retry the notification separately; its dedupe key prevents another notification row.
-  if (
-    localPayment.status ===
-    PaymentStatus.PAID
-  ) {
+          providerReference: paidAttempt.id,
 
-    await this.notificationsService
-  .notifyPaymentReceived({
-    paymentId:
-      localPayment.id,
+          type: TransactionType.PAYMENT,
+        },
+      });
 
-    reservationId:
-      localPayment
-        .reservationId,
+      if (!existingTransaction) {
+        await transaction.transaction.create({
+          data: {
+            paymentId: localPayment.id,
 
-    referenceNo:
-      localPayment
-        .reservation
-        .referenceNo,
+            type: TransactionType.PAYMENT,
 
-    amountCentavos:
-      localPayment
-        .amountCentavos,
-  });
+            status: TransactionStatus.SUCCEEDED,
+
+            amountCentavos: paidAttempt.attributes.amount,
+
+            providerReference: paidAttempt.id,
+
+            description: 'PayMongo reservation payment.',
+          },
+        });
+      }
+
+      /*
+       * Only move PENDING → CONFIRMED.
+       *
+       * We do not blindly overwrite
+       * other reservation states.
+       */
+      if (localPayment.reservation.status === ReservationStatus.PENDING) {
+        await transaction.reservation.update({
+          where: {
+            id: localPayment.reservationId,
+          },
+
+          data: {
+            status: ReservationStatus.CONFIRMED,
+          },
+        });
+      }
+    });
+
     return {
       received: true,
 
-      duplicate: true,
+      paid: true,
 
-      paymentId:
-        localPayment.id,
+      paymentId: localPayment.id,
+
+      reservationId: localPayment.reservationId,
+
+      paymongoPaymentId: paidAttempt.id,
+
+      method,
     };
   }
-
-  /*
-   * 4. Find the successful payment
-   *    attempt inside the Checkout Session.
-   */
-  const paidAttempt =
-    this.findPaidAttempt(
-      session.attributes
-        ?.payments,
-    );
-
-  if (!paidAttempt) {
-    throw new BadRequestException(
-      'PayMongo webhook does not contain a paid payment attempt.',
-    );
-  }
-
-  /*
-   * 5. Never trust the browser for money.
-   *
-   * Verify PayMongo's paid amount against
-   * the amount stored in SQLite.
-   */
-  if (
-    paidAttempt.attributes
-      .amount !==
-    localPayment.amountCentavos
-  ) {
-    throw new BadRequestException(
-      'PayMongo payment amount does not match the reservation amount.',
-    );
-  }
-
-  /*
-   * Optional but useful:
-   * validate currency too.
-   */
-  if (
-    paidAttempt.attributes
-      .currency &&
-    paidAttempt.attributes
-      .currency !== 'PHP'
-  ) {
-    throw new BadRequestException(
-      'Unexpected PayMongo payment currency.',
-    );
-  }
-
-  const method =
-    this.mapPaymentMethod(
-      paidAttempt.attributes
-        .source?.type,
-    );
-
-  /*
-   * PayMongo timestamps are Unix seconds.
-   */
-  const paidAt =
-    paidAttempt.attributes
-      .paid_at
-      ? new Date(
-          paidAttempt
-            .attributes
-            .paid_at *
-            1000,
-        )
-      : new Date();
-
-  /*
-   * Some payloads expose the Payment
-   * Intent on the Checkout Session,
-   * while payment records themselves can
-   * also expose payment_intent_id.
-   */
-  const paymentIntentId =
-    session.attributes
-      ?.payment_intent
-      ?.id ??
-    paidAttempt.attributes
-      .payment_intent_id ??
-    null;
-
-  // This notification is created outside the financial transaction below;
-  // it can remain even if those later database updates fail.
-
-  await this.notificationsService
-  .notifyPaymentReceived({
-    paymentId:
-      localPayment.id,
-
-    reservationId:
-      localPayment
-        .reservationId,
-
-    referenceNo:
-      localPayment
-        .reservation
-        .referenceNo,
-
-    amountCentavos:
-      localPayment
-        .amountCentavos,
-  });
-  
-  // Commit the payment, transaction history and reservation confirmation together
-  // so a failed database write cannot leave only part of the financial update saved.
-  await this.prisma
-    .$transaction(
-      async (transaction) => {
-        /*
-         * Mark local payment paid.
-         */
-        await transaction
-          .payment
-          .update({
-            where: {
-              id:
-                localPayment.id,
-            },
-
-            data: {
-              status:
-                PaymentStatus.PAID,
-
-              method,
-
-              paymongoPaymentIntentId:
-                paymentIntentId,
-
-              paymongoPaymentId:
-                paidAttempt.id,
-
-              paidAt,
-
-              failureReason:
-                null,
-            },
-          });
-
-        /*
-         * Avoid duplicate transaction
-         * history if PayMongo retries.
-         */
-        const existingTransaction =
-          await transaction
-            .transaction
-            .findFirst({
-              where: {
-                paymentId:
-                  localPayment.id,
-
-                providerReference:
-                  paidAttempt.id,
-
-                type:
-                  TransactionType.PAYMENT,
-              },
-            });
-
-        if (
-          !existingTransaction
-        ) {
-          await transaction
-            .transaction
-            .create({
-              data: {
-                paymentId:
-                  localPayment.id,
-
-                type:
-                  TransactionType.PAYMENT,
-
-                status:
-                  TransactionStatus
-                    .SUCCEEDED,
-
-                amountCentavos:
-                  paidAttempt
-                    .attributes
-                    .amount,
-
-                providerReference:
-                  paidAttempt.id,
-
-                description:
-                  'PayMongo reservation payment.',
-              },
-            });
-        }
-
-        /*
-         * Only move PENDING → CONFIRMED.
-         *
-         * We do not blindly overwrite
-         * other reservation states.
-         */
-        if (
-          localPayment
-            .reservation
-            .status ===
-          ReservationStatus.PENDING
-        ) {
-          await transaction
-            .reservation
-            .update({
-              where: {
-                id:
-                  localPayment
-                    .reservationId,
-              },
-
-              data: {
-                status:
-                  ReservationStatus
-                    .CONFIRMED,
-              },
-            });
-        }
-      },
-    );
-
-  return {
-    received: true,
-
-    paid: true,
-
-    paymentId:
-      localPayment.id,
-
-    reservationId:
-      localPayment
-        .reservationId,
-
-    paymongoPaymentId:
-      paidAttempt.id,
-
-    method,
-  };
-}
 }

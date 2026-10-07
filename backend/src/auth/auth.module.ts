@@ -1,41 +1,22 @@
 import { Module } from '@nestjs/common';
 
-import {
-  ConfigModule,
-  ConfigService,
-} from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import {
-  JwtModule,
-} from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 
-import {
-  PassportModule,
-} from '@nestjs/passport';
+import { PassportModule } from '@nestjs/passport';
 
-import {
-  UsersModule,
-} from '../users/users.module';
+import { UsersModule } from '../users/users.module';
 
-import {
-  AuthController,
-} from './auth.controller';
+import { AuthController } from './auth.controller';
 
-import {
-  AuthService,
-} from './auth.service';
+import { AuthService } from './auth.service';
 
-import {
-  JwtAuthGuard,
-} from './guards/jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
-import {
-  RolesGuard,
-} from './guards/roles.guard';
+import { RolesGuard } from './guards/roles.guard';
 
-import {
-  JwtStrategy,
-} from './strategies/jwt.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
@@ -48,32 +29,19 @@ import {
     }),
 
     JwtModule.registerAsync({
-      imports: [
-        ConfigModule,
-      ],
+      imports: [ConfigModule],
 
-      inject: [
-        ConfigService,
-      ],
+      inject: [ConfigService],
 
-      useFactory: (
-        configService: ConfigService,
-      ) => {
-        const secret =
-          configService.get<string>(
-            'JWT_SECRET',
-          );
+      useFactory: (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET');
 
         if (!secret) {
-          throw new Error(
-            'JWT_SECRET is missing from the .env file.',
-          );
+          throw new Error('JWT_SECRET is missing from the .env file.');
         }
 
         const expiresIn = Number(
-          configService.get<string>(
-            'JWT_EXPIRES_IN_SECONDS',
-          ) ?? '3600',
+          configService.get<string>('JWT_EXPIRES_IN_SECONDS') ?? '3600',
         );
 
         return {
@@ -87,21 +55,10 @@ import {
     }),
   ],
 
-  controllers: [
-    AuthController,
-  ],
+  controllers: [AuthController],
 
-  providers: [
-    AuthService,
-    JwtStrategy,
-    JwtAuthGuard,
-    RolesGuard,
-  ],
+  providers: [AuthService, JwtStrategy, JwtAuthGuard, RolesGuard],
 
-  exports: [
-    AuthService,
-    JwtAuthGuard,
-    RolesGuard,
-  ],
+  exports: [AuthService, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}

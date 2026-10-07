@@ -7,10 +7,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-import {
-  UserRole,
-  UserStatus,
-} from '../generated/prisma/enums';
+import { UserRole, UserStatus } from '../generated/prisma/enums';
 
 export class UpdateManagedUserDto {
   @IsOptional()
@@ -33,16 +30,12 @@ export class UpdateManagedUserDto {
   @IsOptional()
   @IsString()
   @MaxLength(80)
-  username?:
-    | string
-    | null;
+  username?: string | null;
 
   @IsOptional()
   @IsString()
   @MaxLength(30)
-  phone?:
-    | string
-    | null;
+  phone?: string | null;
 
   @IsOptional()
   @IsEnum(UserRole)

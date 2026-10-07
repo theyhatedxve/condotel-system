@@ -1,7 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import {
   PaymentStatus,
@@ -11,122 +8,58 @@ import {
   TransactionType,
 } from '../generated/prisma/enums';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
-import {
-  ReportRangeQueryDto,
-} from './report-range-query.dto';
+import { ReportRangeQueryDto } from './report-range-query.dto';
 
 @Injectable()
 export class ReportsService {
-  constructor(
-    private readonly prisma:
-      PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  private getManilaDateString(
-    date = new Date(),
-  ) {
-    const formatter =
-      new Intl.DateTimeFormat(
-        'en-US',
-        {
-          timeZone:
-            'Asia/Manila',
+  private getManilaDateString(date = new Date()) {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Manila',
 
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        },
-      );
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
 
-    const parts =
-      formatter.formatToParts(
-        date,
-      );
+    const parts = formatter.formatToParts(date);
 
-    const year =
-      parts.find(
-        (part) =>
-          part.type ===
-          'year',
-      )?.value;
+    const year = parts.find((part) => part.type === 'year')?.value;
 
-    const month =
-      parts.find(
-        (part) =>
-          part.type ===
-          'month',
-      )?.value;
+    const month = parts.find((part) => part.type === 'month')?.value;
 
-    const day =
-      parts.find(
-        (part) =>
-          part.type ===
-          'day',
-      )?.value;
+    const day = parts.find((part) => part.type === 'day')?.value;
 
-    if (
-      !year ||
-      !month ||
-      !day
-    ) {
-      throw new Error(
-        'Unable to determine Manila date.',
-      );
+    if (!year || !month || !day) {
+      throw new Error('Unable to determine Manila date.');
     }
 
     return `${year}-${month}-${day}`;
   }
 
-  private getNextDate(
-    value: string,
-  ) {
-    const date =
-      new Date(
-        `${value}T00:00:00+08:00`,
-      );
+  private getNextDate(value: string) {
+    const date = new Date(`${value}T00:00:00+08:00`);
 
-    date.setUTCDate(
-      date.getUTCDate() + 1,
-    );
+    date.setUTCDate(date.getUTCDate() + 1);
 
     return date;
   }
 
   // Interpret report dates in Manila time regardless of the server timezone.
   // The exclusive next-day boundary includes all of the requested final day.
-  private createRange(
-    from: string,
-    to: string,
-  ) {
-    const start =
-      new Date(
-        `${from}T00:00:00+08:00`,
-      );
+  private createRange(from: string, to: string) {
+    const start = new Date(`${from}T00:00:00+08:00`);
 
-    const endExclusive =
-      this.getNextDate(to);
+    const endExclusive = this.getNextDate(to);
 
-    if (
-      Number.isNaN(
-        start.getTime(),
-      ) ||
-      Number.isNaN(
-        endExclusive.getTime(),
-      )
-    ) {
-      throw new BadRequestException(
-        'Invalid report date range.',
-      );
+    if (Number.isNaN(start.getTime()) || Number.isNaN(endExclusive.getTime())) {
+      throw new BadRequestException('Invalid report date range.');
     }
 
-    if (
-      start.getTime() >=
-      endExclusive.getTime()
-    ) {
+    if (start.getTime() >= endExclusive.getTime()) {
       throw new BadRequestException(
         'Report start date must not be after the end date.',
       );
@@ -138,36 +71,18 @@ export class ReportsService {
     };
   }
 
-  private resolveRange(
-    query:
-      ReportRangeQueryDto,
-  ) {
-    const today =
-      this.getManilaDateString();
+  private resolveRange(query: ReportRangeQueryDto) {
+    const today = this.getManilaDateString();
 
-    const [
-      year,
-      month,
-    ] = today.split('-');
+    const [year, month] = today.split('-');
 
-    const defaultFrom =
-      `${year}-${month}-01`;
+    const defaultFrom = `${year}-${month}-01`;
 
-    const from =
-      query.from ??
-      defaultFrom;
+    const from = query.from ?? defaultFrom;
 
-    const to =
-      query.to ??
-      today;
+    const to = query.to ?? today;
 
-    const {
-      start,
-      endExclusive,
-    } = this.createRange(
-      from,
-      to,
-    );
+    const { start, endExclusive } = this.createRange(from, to);
 
     return {
       from,
@@ -178,16 +93,9 @@ export class ReportsService {
   }
 
   async getDashboard() {
-    const today =
-      this.getManilaDateString();
+    const today = this.getManilaDateString();
 
-    const {
-      start,
-      endExclusive,
-    } = this.createRange(
-      today,
-      today,
-    );
+    const { start, endExclusive } = this.createRange(today, today);
 
     const [
       totalRooms,
@@ -212,8 +120,7 @@ export class ReportsService {
         where: {
           isActive: true,
 
-          status:
-            RoomStatus.AVAILABLE,
+          status: RoomStatus.AVAILABLE,
         },
       }),
 
@@ -222,8 +129,7 @@ export class ReportsService {
         where: {
           isActive: true,
 
-          status:
-            RoomStatus.OCCUPIED,
+          status: RoomStatus.OCCUPIED,
         },
       }),
 
@@ -232,8 +138,7 @@ export class ReportsService {
         where: {
           isActive: true,
 
-          status:
-            RoomStatus.MAINTENANCE,
+          status: RoomStatus.MAINTENANCE,
         },
       }),
 
@@ -243,9 +148,7 @@ export class ReportsService {
       // not simply reservation count.
       this.prisma.reservation.findMany({
         where: {
-          status:
-            ReservationStatus
-              .CHECKED_IN,
+          status: ReservationStatus.CHECKED_IN,
         },
 
         select: {
@@ -263,13 +166,7 @@ export class ReportsService {
           },
 
           status: {
-            in: [
-              ReservationStatus
-                .CONFIRMED,
-
-              ReservationStatus
-                .CHECKED_IN,
-            ],
+            in: [ReservationStatus.CONFIRMED, ReservationStatus.CHECKED_IN],
           },
         },
       }),
@@ -284,14 +181,11 @@ export class ReportsService {
 
           status: {
             in: [
-              ReservationStatus
-                .CONFIRMED,
+              ReservationStatus.CONFIRMED,
 
-              ReservationStatus
-                .CHECKED_IN,
+              ReservationStatus.CHECKED_IN,
 
-              ReservationStatus
-                .CHECKED_OUT,
+              ReservationStatus.CHECKED_OUT,
             ],
           },
         },
@@ -300,8 +194,7 @@ export class ReportsService {
       // Today's successfully paid payments
       this.prisma.payment.aggregate({
         where: {
-          status:
-            PaymentStatus.PAID,
+          status: PaymentStatus.PAID,
 
           paidAt: {
             gte: start,
@@ -310,8 +203,7 @@ export class ReportsService {
         },
 
         _sum: {
-          amountCentavos:
-            true,
+          amountCentavos: true,
         },
 
         _count: {
@@ -356,17 +248,10 @@ export class ReportsService {
     // Current Guests = 4
     // --------------------------------------------------------
 
-    const currentGuests =
-      currentGuestStays.reduce(
-        (
-          total,
-          reservation,
-        ) =>
-          total +
-          reservation.adults +
-          reservation.children,
-        0,
-      );
+    const currentGuests = currentGuestStays.reduce(
+      (total, reservation) => total + reservation.adults + reservation.children,
+      0,
+    );
 
     // --------------------------------------------------------
     // ROOM OCCUPANCY
@@ -375,15 +260,7 @@ export class ReportsService {
     // --------------------------------------------------------
 
     const occupancyPercent =
-      totalRooms > 0
-        ? Math.round(
-            (
-              occupiedRooms /
-              totalRooms
-            ) *
-              100,
-          )
-        : 0;
+      totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
 
     return {
       date: today,
@@ -397,16 +274,9 @@ export class ReportsService {
 
         todayCheckOuts,
 
-        todayPaymentCount:
-          todayPayments
-            ._count
-            .id,
+        todayPaymentCount: todayPayments._count.id,
 
-        todayPaymentsCentavos:
-          todayPayments
-            ._sum
-            .amountCentavos ??
-          0,
+        todayPaymentsCentavos: todayPayments._sum.amountCentavos ?? 0,
       },
 
       occupancy: {
@@ -427,18 +297,8 @@ export class ReportsService {
 
   // Reservation/payment counts use creation dates; revenue uses transaction occurrence dates.
   // Room occupancy remains a current snapshot, even for a historical report range.
-  async getSummary(
-    query:
-      ReportRangeQueryDto,
-  ) {
-    const {
-      from,
-      to,
-      start,
-      endExclusive,
-    } = this.resolveRange(
-      query,
-    );
+  async getSummary(query: ReportRangeQueryDto) {
+    const { from, to, start, endExclusive } = this.resolveRange(query);
 
     const [
       totalReservations,
@@ -478,9 +338,7 @@ export class ReportsService {
 
       this.prisma.reservation.count({
         where: {
-          status:
-            ReservationStatus
-              .PENDING,
+          status: ReservationStatus.PENDING,
 
           createdAt: {
             gte: start,
@@ -491,9 +349,7 @@ export class ReportsService {
 
       this.prisma.reservation.count({
         where: {
-          status:
-            ReservationStatus
-              .CONFIRMED,
+          status: ReservationStatus.CONFIRMED,
 
           createdAt: {
             gte: start,
@@ -504,9 +360,7 @@ export class ReportsService {
 
       this.prisma.reservation.count({
         where: {
-          status:
-            ReservationStatus
-              .CHECKED_IN,
+          status: ReservationStatus.CHECKED_IN,
 
           createdAt: {
             gte: start,
@@ -517,9 +371,7 @@ export class ReportsService {
 
       this.prisma.reservation.count({
         where: {
-          status:
-            ReservationStatus
-              .CHECKED_OUT,
+          status: ReservationStatus.CHECKED_OUT,
 
           createdAt: {
             gte: start,
@@ -530,9 +382,7 @@ export class ReportsService {
 
       this.prisma.reservation.count({
         where: {
-          status:
-            ReservationStatus
-              .CANCELLED,
+          status: ReservationStatus.CANCELLED,
 
           createdAt: {
             gte: start,
@@ -556,8 +406,7 @@ export class ReportsService {
 
       this.prisma.payment.count({
         where: {
-          status:
-            PaymentStatus.PAID,
+          status: PaymentStatus.PAID,
 
           createdAt: {
             gte: start,
@@ -568,8 +417,7 @@ export class ReportsService {
 
       this.prisma.payment.count({
         where: {
-          status:
-            PaymentStatus.PENDING,
+          status: PaymentStatus.PENDING,
 
           createdAt: {
             gte: start,
@@ -580,8 +428,7 @@ export class ReportsService {
 
       this.prisma.payment.count({
         where: {
-          status:
-            PaymentStatus.FAILED,
+          status: PaymentStatus.FAILED,
 
           createdAt: {
             gte: start,
@@ -592,9 +439,7 @@ export class ReportsService {
 
       this.prisma.payment.count({
         where: {
-          status:
-            PaymentStatus
-              .CANCELLED,
+          status: PaymentStatus.CANCELLED,
 
           createdAt: {
             gte: start,
@@ -605,8 +450,7 @@ export class ReportsService {
 
       this.prisma.payment.count({
         where: {
-          status:
-            PaymentStatus.EXPIRED,
+          status: PaymentStatus.EXPIRED,
 
           createdAt: {
             gte: start,
@@ -617,9 +461,7 @@ export class ReportsService {
 
       this.prisma.payment.count({
         where: {
-          status:
-            PaymentStatus
-              .REFUNDED,
+          status: PaymentStatus.REFUNDED,
 
           createdAt: {
             gte: start,
@@ -639,16 +481,13 @@ export class ReportsService {
             lt: endExclusive,
           },
 
-          status:
-            TransactionStatus
-              .SUCCEEDED,
+          status: TransactionStatus.SUCCEEDED,
         },
 
         select: {
           type: true,
 
-          amountCentavos:
-            true,
+          amountCentavos: true,
         },
       }),
 
@@ -666,8 +505,7 @@ export class ReportsService {
         where: {
           isActive: true,
 
-          status:
-            RoomStatus.AVAILABLE,
+          status: RoomStatus.AVAILABLE,
         },
       }),
 
@@ -675,8 +513,7 @@ export class ReportsService {
         where: {
           isActive: true,
 
-          status:
-            RoomStatus.OCCUPIED,
+          status: RoomStatus.OCCUPIED,
         },
       }),
 
@@ -684,9 +521,7 @@ export class ReportsService {
         where: {
           isActive: true,
 
-          status:
-            RoomStatus
-              .MAINTENANCE,
+          status: RoomStatus.MAINTENANCE,
         },
       }),
     ]);
@@ -695,66 +530,35 @@ export class ReportsService {
     // FINANCIAL CALCULATIONS
     // --------------------------------------------------------
 
-    let grossRevenueCentavos =
-      0;
+    let grossRevenueCentavos = 0;
 
-    let refundedCentavos =
-      0;
+    let refundedCentavos = 0;
 
-    let adjustmentCentavos =
-      0;
+    let adjustmentCentavos = 0;
 
-    for (
-      const transaction
-      of transactions
-    ) {
-      if (
-        transaction.type ===
-        TransactionType.PAYMENT
-      ) {
-        grossRevenueCentavos +=
-          transaction
-            .amountCentavos;
+    for (const transaction of transactions) {
+      if (transaction.type === TransactionType.PAYMENT) {
+        grossRevenueCentavos += transaction.amountCentavos;
       }
 
-      if (
-        transaction.type ===
-        TransactionType.REFUND
-      ) {
-        refundedCentavos +=
-          transaction
-            .amountCentavos;
+      if (transaction.type === TransactionType.REFUND) {
+        refundedCentavos += transaction.amountCentavos;
       }
 
-      if (
-        transaction.type ===
-        TransactionType.ADJUSTMENT
-      ) {
-        adjustmentCentavos +=
-          transaction
-            .amountCentavos;
+      if (transaction.type === TransactionType.ADJUSTMENT) {
+        adjustmentCentavos += transaction.amountCentavos;
       }
     }
 
     const netRevenueCentavos =
-      grossRevenueCentavos -
-      refundedCentavos +
-      adjustmentCentavos;
+      grossRevenueCentavos - refundedCentavos + adjustmentCentavos;
 
     // --------------------------------------------------------
     // ROOM OCCUPANCY
     // --------------------------------------------------------
 
     const occupancyPercent =
-      totalRooms > 0
-        ? Math.round(
-            (
-              occupiedRooms /
-              totalRooms
-            ) *
-              100,
-          )
-        : 0;
+      totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
 
     return {
       range: {
@@ -773,65 +577,47 @@ export class ReportsService {
       },
 
       reservations: {
-        total:
-          totalReservations,
+        total: totalReservations,
 
-        pending:
-          pendingReservations,
+        pending: pendingReservations,
 
-        confirmed:
-          confirmedReservations,
+        confirmed: confirmedReservations,
 
-        checkedIn:
-          checkedInReservations,
+        checkedIn: checkedInReservations,
 
-        checkedOut:
-          checkedOutReservations,
+        checkedOut: checkedOutReservations,
 
-        cancelled:
-          cancelledReservations,
+        cancelled: cancelledReservations,
       },
 
       payments: {
-        total:
-          totalPayments,
+        total: totalPayments,
 
-        paid:
-          paidPayments,
+        paid: paidPayments,
 
-        pending:
-          pendingPayments,
+        pending: pendingPayments,
 
-        failed:
-          failedPayments,
+        failed: failedPayments,
 
-        cancelled:
-          cancelledPayments,
+        cancelled: cancelledPayments,
 
-        expired:
-          expiredPayments,
+        expired: expiredPayments,
 
-        refunded:
-          refundedPayments,
+        refunded: refundedPayments,
       },
 
       transactions: {
-        succeeded:
-          transactions.length,
+        succeeded: transactions.length,
       },
 
       rooms: {
-        total:
-          totalRooms,
+        total: totalRooms,
 
-        available:
-          availableRooms,
+        available: availableRooms,
 
-        occupied:
-          occupiedRooms,
+        occupied: occupiedRooms,
 
-        maintenance:
-          maintenanceRooms,
+        maintenance: maintenanceRooms,
 
         occupancyPercent,
       },

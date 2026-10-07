@@ -1,32 +1,17 @@
-import {
-  useState,
-} from 'react';
+import { useState } from 'react';
 
-import {
-  KeyRound,
-} from 'lucide-react';
+import { KeyRound } from 'lucide-react';
 
-import {
-  useNavigate,
-} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-import {
-  changeMyPassword,
-} from './authApi';
+import { changeMyPassword } from './authApi';
 
-import {
-  useAuth,
-} from './useAuth';
+import { useAuth } from './useAuth';
 
 import './profile.css';
 
-function getHomeRoute(
-  role,
-) {
-  if (
-    role === 'ADMIN' ||
-    role === 'STAFF'
-  ) {
+function getHomeRoute(role) {
+  if (role === 'ADMIN' || role === 'STAFF') {
     return '/admin/dashboard';
   }
 
@@ -34,57 +19,29 @@ function getHomeRoute(
 }
 
 export default function ChangePasswordPage() {
-  const {
-    user,
-    refreshUser,
-  } = useAuth();
+  const { user, refreshUser } = useAuth();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [
-    currentPassword,
-    setCurrentPassword,
-  ] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
 
-  const [
-    newPassword,
-    setNewPassword,
-  ] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
-  const [
-    confirmPassword,
-    setConfirmPassword,
-  ] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [
-    saving,
-    setSaving,
-  ] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  async function handleSubmit(
-    event,
-  ) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
-    if (
-      newPassword !==
-      confirmPassword
-    ) {
-      window.alert(
-        'New passwords do not match.',
-      );
+    if (newPassword !== confirmPassword) {
+      window.alert('New passwords do not match.');
 
       return;
     }
 
-    if (
-      newPassword.length <
-      8
-    ) {
-      window.alert(
-        'New password must be at least 8 characters.',
-      );
+    if (newPassword.length < 8) {
+      window.alert('New password must be at least 8 characters.');
 
       return;
     }
@@ -98,36 +55,18 @@ export default function ChangePasswordPage() {
       });
 
       // Refresh the password-change flag before navigation to avoid redirecting back here.
-      const updatedUser =
-        await refreshUser();
+      const updatedUser = await refreshUser();
 
-      window.alert(
-        'Password changed successfully.',
-      );
+      window.alert('Password changed successfully.');
 
-      navigate(
-        getHomeRoute(
-          updatedUser.role,
-        ),
-        {
-          replace: true,
-        },
-      );
+      navigate(getHomeRoute(updatedUser.role), {
+        replace: true,
+      });
     } catch (error) {
       const message =
-        error.response?.data
-          ?.message ||
-        'Unable to change password.';
+        error.response?.data?.message || 'Unable to change password.';
 
-      window.alert(
-        Array.isArray(
-          message,
-        )
-          ? message.join(
-              ' ',
-            )
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
       setSaving(false);
     }
@@ -135,21 +74,12 @@ export default function ChangePasswordPage() {
 
   return (
     <main className="change-password-page">
-      <form
-        className="change-password-card"
-        onSubmit={
-          handleSubmit
-        }
-      >
+      <form className="change-password-card" onSubmit={handleSubmit}>
         <div className="change-password-icon">
-          <KeyRound
-            size={28}
-          />
+          <KeyRound size={28} />
         </div>
 
-        <h1>
-          Change Password
-        </h1>
+        <h1>Change Password</h1>
 
         <p>
           {user?.mustChangePassword
@@ -159,20 +89,10 @@ export default function ChangePasswordPage() {
 
         <label>
           Current Password
-
           <input
             type="password"
-            value={
-              currentPassword
-            }
-            onChange={(
-              event,
-            ) =>
-              setCurrentPassword(
-                event.target
-                  .value,
-              )
-            }
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
             autoComplete="current-password"
             maxLength={128}
             required
@@ -181,20 +101,10 @@ export default function ChangePasswordPage() {
 
         <label>
           New Password
-
           <input
             type="password"
-            value={
-              newPassword
-            }
-            onChange={(
-              event,
-            ) =>
-              setNewPassword(
-                event.target
-                  .value,
-              )
-            }
+            value={newPassword}
+            onChange={(event) => setNewPassword(event.target.value)}
             minLength={8}
             maxLength={128}
             autoComplete="new-password"
@@ -204,20 +114,10 @@ export default function ChangePasswordPage() {
 
         <label>
           Confirm New Password
-
           <input
             type="password"
-            value={
-              confirmPassword
-            }
-            onChange={(
-              event,
-            ) =>
-              setConfirmPassword(
-                event.target
-                  .value,
-              )
-            }
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
             minLength={8}
             maxLength={128}
             autoComplete="new-password"
@@ -225,13 +125,8 @@ export default function ChangePasswordPage() {
           />
         </label>
 
-        <button
-          type="submit"
-          disabled={saving}
-        >
-          {saving
-            ? 'Changing...'
-            : 'Change Password'}
+        <button type="submit" disabled={saving}>
+          {saving ? 'Changing...' : 'Change Password'}
         </button>
       </form>
     </main>

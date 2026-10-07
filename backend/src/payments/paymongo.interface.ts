@@ -72,10 +72,7 @@ export interface PaymongoCheckoutSessionResource {
   attributes?: {
     reference_number?: string;
 
-    metadata?: Record<
-      string,
-      string
-    >;
+    metadata?: Record<string, string>;
 
     payment_intent?: {
       id?: string;
@@ -114,10 +111,7 @@ export interface PaymongoWebhookEvent {
 
       data?: PaymongoCheckoutSessionResource;
 
-      previous_data?: Record<
-        string,
-        unknown
-      >;
+      previous_data?: Record<string, unknown>;
 
       pending_webhooks?: number;
 

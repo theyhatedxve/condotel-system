@@ -13,10 +13,7 @@ export function saveAccessToken(token, rememberMe = false) {
 }
 
 export function getAccessToken() {
-  return (
-    localStorage.getItem(TOKEN_KEY) ||
-    sessionStorage.getItem(TOKEN_KEY)
-  );
+  return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
 }
 
 export function clearAccessToken() {

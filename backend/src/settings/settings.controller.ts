@@ -1,81 +1,41 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Patch,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Patch, UseGuards } from '@nestjs/common';
 
-import {
-  UserRole,
-} from '../generated/prisma/enums';
+import { UserRole } from '../generated/prisma/enums';
 
-import type {
-  AuthenticatedUser,
-} from '../auth/interfaces/authenticated-user.interface';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
-import {
-  CurrentUser,
-} from '../auth/decorators/current-user.decorator';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
-import {
-  Roles,
-} from '../auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-import {
-  JwtAuthGuard,
-} from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-import {
-  RolesGuard,
-} from '../auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
-import {
-  UpdateSettingsDto,
-} from './update-settings.dto';
+import { UpdateSettingsDto } from './update-settings.dto';
 
-import {
-  SettingsService,
-} from './settings.service';
+import { SettingsService } from './settings.service';
 
 @Controller('settings')
-@UseGuards(
-  JwtAuthGuard,
-  RolesGuard,
-)
-@Roles(
-  UserRole.STAFF,
-  UserRole.ADMIN,
-)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.STAFF, UserRole.ADMIN)
 export class SettingsController {
-  constructor(
-    private readonly settingsService:
-      SettingsService,
-  ) {}
+  constructor(private readonly settingsService: SettingsService) {}
 
   @Get()
   getSettings() {
-    return this.settingsService
-      .getSettings();
+    return this.settingsService.getSettings();
   }
 
   @Patch()
-  @Roles(
-    UserRole.ADMIN,
-  )
+  @Roles(UserRole.ADMIN)
   updateSettings(
     @Body()
-    dto:
-      UpdateSettingsDto,
+    dto: UpdateSettingsDto,
 
     @CurrentUser()
-    user:
-      AuthenticatedUser,
+    user: AuthenticatedUser,
   ) {
-    return this.settingsService
-      .updateSettings(
-        dto,
-        user,
-      );
+    return this.settingsService.updateSettings(dto, user);
   }
 }

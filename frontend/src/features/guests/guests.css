@@ -11,15 +11,13 @@
 .guests-header h1 {
   margin: 0;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .guests-header p {
   margin: 6px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 .guests-header .primary-button {
@@ -38,12 +36,9 @@
 
   padding: 10px 12px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 }
@@ -58,17 +53,13 @@
 .guest-table-wrapper {
   overflow-x: auto;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .guest-table {
@@ -81,9 +72,7 @@
 .guest-table td {
   padding: 14px;
 
-  border-bottom:
-    1px solid
-    #edf2f6;
+  border-bottom: 1px solid #edf2f6;
 
   text-align: left;
 
@@ -91,8 +80,7 @@
 }
 
 .guest-table th {
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 .guest-active-badge {
@@ -115,9 +103,7 @@
   display: grid;
   place-items: center;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
   border-radius: 6px;
 
@@ -125,16 +111,13 @@
 }
 
 .guest-modal {
-  width:
-    min(100%, 760px);
+  width: min(100%, 760px);
 
-  max-height:
-    calc(100vh - 48px);
+  max-height: calc(100vh - 48px);
 
   overflow-y: auto;
 
-  border-radius:
-    var(--radius-lg);
+  border-radius: var(--radius-lg);
 
   background: #ffffff;
 }
@@ -145,9 +128,7 @@
 
   padding: 22px 24px;
 
-  border-bottom:
-    1px solid
-    var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .guest-modal-header h2 {
@@ -157,8 +138,7 @@
 .guest-modal-header p {
   margin: 5px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 12px;
 }
@@ -175,11 +155,7 @@
 .guest-form-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 16px;
 }
@@ -197,12 +173,9 @@
 .guest-form input {
   padding: 11px 12px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-sm);
+  border-radius: var(--radius-sm);
 
   outline: none;
 }
@@ -217,9 +190,7 @@
 
   padding-top: 18px;
 
-  border-top:
-    1px solid
-    var(--color-border);
+  border-top: 1px solid var(--color-border);
 }
 
 @media (max-width: 700px) {

@@ -4,14 +4,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import {
-  ConfigService,
-} from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 
-import {
-  createHmac,
-  timingSafeEqual,
-} from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import type {
   PaymongoCheckoutSession,
@@ -34,69 +29,43 @@ export class PaymongoService {
 
   private readonly webhookSecret: string;
 
-  private readonly webhookMode:
-    | 'test'
-    | 'live';
+  private readonly webhookMode: 'test' | 'live';
 
   private readonly frontendUrl: string;
 
-  private readonly paymentMethods:
-    string[];
+  private readonly paymentMethods: string[];
 
-  constructor(
-    private readonly configService:
-      ConfigService,
-  ) {
-    const secretKey =
-      this.configService.get<string>(
-        'PAYMONGO_SECRET_KEY',
-      );
+  constructor(private readonly configService: ConfigService) {
+    const secretKey = this.configService.get<string>('PAYMONGO_SECRET_KEY');
 
     if (!secretKey) {
-      throw new Error(
-        'PAYMONGO_SECRET_KEY is missing.',
-      );
+      throw new Error('PAYMONGO_SECRET_KEY is missing.');
     }
 
     this.secretKey = secretKey;
 
     this.webhookSecret =
-      this.configService.get<string>(
-        'PAYMONGO_WEBHOOK_SECRET',
-      ) ?? '';
+      this.configService.get<string>('PAYMONGO_WEBHOOK_SECRET') ?? '';
 
     this.webhookMode =
-      this.configService.get<string>(
-        'PAYMONGO_WEBHOOK_MODE',
-      ) === 'live'
+      this.configService.get<string>('PAYMONGO_WEBHOOK_MODE') === 'live'
         ? 'live'
         : 'test';
 
     this.frontendUrl =
-      this.configService.get<string>(
-        'FRONTEND_URL',
-      ) ??
-      'http://localhost:5173';
+      this.configService.get<string>('FRONTEND_URL') ?? 'http://localhost:5173';
 
     const configuredMethods =
-      this.configService.get<string>(
-        'PAYMONGO_PAYMENT_METHODS',
-      ) ?? 'qrph';
+      this.configService.get<string>('PAYMONGO_PAYMENT_METHODS') ?? 'qrph';
 
-    this.paymentMethods =
-      configuredMethods
-        .split(',')
-        .map((method) =>
-          method.trim(),
-        )
-        .filter(Boolean);
+    this.paymentMethods = configuredMethods
+      .split(',')
+      .map((method) => method.trim())
+      .filter(Boolean);
   }
 
   private getAuthorizationHeader() {
-    const credentials =
-      Buffer.from(
-        `${this.secretKey}:`,
-      ).toString('base64');
+    const credentials = Buffer.from(`${this.secretKey}:`).toString('base64');
 
     return `Basic ${credentials}`;
   }
@@ -110,11 +79,9 @@ export class PaymongoService {
         method: 'POST',
 
         headers: {
-          Authorization:
-            this.getAuthorizationHeader(),
+          Authorization: this.getAuthorizationHeader(),
 
-          'Content-Type':
-            'application/json',
+          'Content-Type': 'application/json',
         },
 
         body: JSON.stringify({
@@ -122,11 +89,9 @@ export class PaymongoService {
             attributes: {
               line_items: [
                 {
-                  name:
-                    `Room ${input.roomNumber} Reservation`,
+                  name: `Room ${input.roomNumber} Reservation`,
 
-                  amount:
-                    input.totalAmountCentavos,
+                  amount: input.totalAmountCentavos,
 
                   currency: 'PHP',
 
@@ -134,30 +99,22 @@ export class PaymongoService {
                 },
               ],
 
-              payment_method_types:
-                this.paymentMethods,
+              payment_method_types: this.paymentMethods,
 
-              success_url:
-                `${this.frontendUrl}/payment/success?reservationId=${input.reservationId}`,
+              success_url: `${this.frontendUrl}/payment/success?reservationId=${input.reservationId}`,
 
-              cancel_url:
-                `${this.frontendUrl}/payment/cancelled?reservationId=${input.reservationId}`,
+              cancel_url: `${this.frontendUrl}/payment/cancelled?reservationId=${input.reservationId}`,
 
-              reference_number:
-                input.referenceNo,
+              reference_number: input.referenceNo,
 
-              send_email_receipt:
-                true,
+              send_email_receipt: true,
 
-              pass_on_fees:
-                false,
+              pass_on_fees: false,
 
               metadata: {
-                reservation_id:
-                  input.reservationId,
+                reservation_id: input.reservationId,
 
-                reservation_reference:
-                  input.referenceNo,
+                reservation_reference: input.referenceNo,
               },
             },
           },
@@ -165,75 +122,53 @@ export class PaymongoService {
       },
     );
 
-    const result =
-      (await response.json()) as
-        | PaymongoCheckoutSession
-        | PaymongoErrorResponse;
+    const result = (await response.json()) as
+      PaymongoCheckoutSession | PaymongoErrorResponse;
 
-    if (
-      !response.ok ||
-      !('data' in result)
-    ) {
+    if (!response.ok || !('data' in result)) {
       const detail =
-        'errors' in result
-          ? result.errors?.[0]?.detail
-          : undefined;
+        'errors' in result ? result.errors?.[0]?.detail : undefined;
 
       throw new BadGatewayException(
-        detail ??
-          'Unable to create PayMongo checkout session.',
+        detail ?? 'Unable to create PayMongo checkout session.',
       );
     }
 
     return result;
   }
 
-  async expireCheckoutSession(
-  checkoutSessionId: string,
-) {
-  const response = await fetch(
-    `https://api.paymongo.com/v1/checkout_sessions/${checkoutSessionId}/expire`,
-    {
-      method: 'POST',
+  async expireCheckoutSession(checkoutSessionId: string) {
+    const response = await fetch(
+      `https://api.paymongo.com/v1/checkout_sessions/${checkoutSessionId}/expire`,
+      {
+        method: 'POST',
 
-      headers: {
-        Authorization:
-          this.getAuthorizationHeader(),
+        headers: {
+          Authorization: this.getAuthorizationHeader(),
 
-        Accept:
-          'application/json',
+          Accept: 'application/json',
+        },
       },
-    },
-  );
-
-  if (!response.ok) {
-    let detail:
-      | string
-      | undefined;
-
-    try {
-      const result =
-        (await response.json()) as
-          PaymongoErrorResponse;
-
-      detail =
-        result.errors?.[0]
-          ?.detail;
-    } catch {
-      detail = undefined;
-    }
-
-    throw new BadGatewayException(
-      detail ??
-        'Unable to expire PayMongo checkout session.',
     );
-  }
-}
 
-  verifyWebhookSignature(
-    rawBody: Buffer,
-    signatureHeader?: string,
-  ) {
+    if (!response.ok) {
+      let detail: string | undefined;
+
+      try {
+        const result = (await response.json()) as PaymongoErrorResponse;
+
+        detail = result.errors?.[0]?.detail;
+      } catch {
+        detail = undefined;
+      }
+
+      throw new BadGatewayException(
+        detail ?? 'Unable to expire PayMongo checkout session.',
+      );
+    }
+  }
+
+  verifyWebhookSignature(rawBody: Buffer, signatureHeader?: string) {
     if (!this.webhookSecret) {
       throw new UnauthorizedException(
         'PayMongo webhook secret is not configured.',
@@ -241,68 +176,35 @@ export class PaymongoService {
     }
 
     if (!signatureHeader) {
-      throw new UnauthorizedException(
-        'Missing PayMongo signature.',
-      );
+      throw new UnauthorizedException('Missing PayMongo signature.');
     }
 
-    const parts =
-      Object.fromEntries(
-        signatureHeader
-          .split(',')
-          .map((part) => {
-            const [
-              key,
-              ...valueParts
-            ] = part
-              .trim()
-              .split('=');
+    const parts = Object.fromEntries(
+      signatureHeader.split(',').map((part) => {
+        const [key, ...valueParts] = part.trim().split('=');
 
-            return [
-              key,
-              valueParts.join('='),
-            ];
-          }),
-      );
+        return [key, valueParts.join('=')];
+      }),
+    );
 
-    const timestamp =
-      parts.t;
+    const timestamp = parts.t;
 
-    const providedSignature =
-      this.webhookMode === 'live'
-        ? parts.li
-        : parts.te;
+    const providedSignature = this.webhookMode === 'live' ? parts.li : parts.te;
 
-    if (
-      !timestamp ||
-      !providedSignature
-    ) {
-      throw new UnauthorizedException(
-        'Invalid PayMongo signature header.',
-      );
+    if (!timestamp || !providedSignature) {
+      throw new UnauthorizedException('Invalid PayMongo signature header.');
     }
 
-    const timestampNumber =
-      Number(timestamp);
+    const timestampNumber = Number(timestamp);
 
-    if (
-      !Number.isFinite(
-        timestampNumber,
-      )
-    ) {
-      throw new UnauthorizedException(
-        'Invalid PayMongo webhook timestamp.',
-      );
+    if (!Number.isFinite(timestampNumber)) {
+      throw new UnauthorizedException('Invalid PayMongo webhook timestamp.');
     }
 
     // Limit replay of signed requests to a five-minute window around the server clock.
-    const ageInSeconds =
-      Math.abs(
-        Math.floor(
-          Date.now() / 1000,
-        ) -
-          timestampNumber,
-      );
+    const ageInSeconds = Math.abs(
+      Math.floor(Date.now() / 1000) - timestampNumber,
+    );
 
     if (ageInSeconds > 300) {
       throw new UnauthorizedException(
@@ -311,43 +213,22 @@ export class PaymongoService {
     }
 
     // Verify the timestamp and original body together; JSON re-serialization can change the signature.
-    const signedPayload =
-      `${timestamp}.${rawBody.toString(
-        'utf8',
-      )}`;
+    const signedPayload = `${timestamp}.${rawBody.toString('utf8')}`;
 
-    const expectedSignature =
-      createHmac(
-        'sha256',
-        this.webhookSecret,
-      )
-        .update(signedPayload)
-        .digest('hex');
+    const expectedSignature = createHmac('sha256', this.webhookSecret)
+      .update(signedPayload)
+      .digest('hex');
 
-    const expectedBuffer =
-      Buffer.from(
-        expectedSignature,
-        'utf8',
-      );
+    const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
 
-    const providedBuffer =
-      Buffer.from(
-        providedSignature,
-        'utf8',
-      );
+    const providedBuffer = Buffer.from(providedSignature, 'utf8');
 
     // Check lengths before the constant-time comparison, which requires equal-sized buffers.
     if (
-      expectedBuffer.length !==
-        providedBuffer.length ||
-      !timingSafeEqual(
-        expectedBuffer,
-        providedBuffer,
-      )
+      expectedBuffer.length !== providedBuffer.length ||
+      !timingSafeEqual(expectedBuffer, providedBuffer)
     ) {
-      throw new UnauthorizedException(
-        'Invalid PayMongo webhook signature.',
-      );
+      throw new UnauthorizedException('Invalid PayMongo webhook signature.');
     }
   }
 }

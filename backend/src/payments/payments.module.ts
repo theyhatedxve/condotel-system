@@ -1,44 +1,22 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  AuthModule,
-} from '../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
-import {
-  PaymongoService,
-} from './paymongo.service';
+import { PaymongoService } from './paymongo.service';
 
-import {
-  PaymentsController,
-} from './payments.controller';
+import { PaymentsController } from './payments.controller';
 
-import {
-  PaymentsService,
-} from './payments.service';
+import { PaymentsService } from './payments.service';
 
-import {
-  NotificationsModule,
-} from '../notifications/notifications.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [
-    AuthModule,
-    NotificationsModule,
-  ],
+  imports: [AuthModule, NotificationsModule],
 
-  controllers: [
-    PaymentsController,
-  ],
+  controllers: [PaymentsController],
 
-  providers: [
-    PaymentsService,
-    PaymongoService,
-  ],
+  providers: [PaymentsService, PaymongoService],
 
-  exports: [
-    PaymentsService,
-  ],
+  exports: [PaymentsService],
 })
 export class PaymentsModule {}

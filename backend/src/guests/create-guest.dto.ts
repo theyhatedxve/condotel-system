@@ -12,9 +12,7 @@ import {
 export class CreateGuestDto {
   @IsEmail()
   @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim().toLowerCase()
-      : value,
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   email: string;
 
@@ -31,12 +29,9 @@ export class CreateGuestDto {
       return value;
     }
 
-    const username =
-      value.trim().toLowerCase();
+    const username = value.trim().toLowerCase();
 
-    return username === ''
-      ? undefined
-      : username;
+    return username === '' ? undefined : username;
   })
   username?: string;
 
@@ -48,21 +43,13 @@ export class CreateGuestDto {
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   firstName: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   lastName: string;
 
   @IsOptional()

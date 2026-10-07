@@ -1,11 +1,7 @@
-import apiClient from
-  '../../services/apiClient';
+import apiClient from '../../services/apiClient';
 
 export async function getTransactions() {
-  const response =
-    await apiClient.get(
-      '/transactions',
-    );
+  const response = await apiClient.get('/transactions');
 
   return response.data;
 }

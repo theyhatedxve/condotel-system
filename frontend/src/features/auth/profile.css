@@ -9,15 +9,13 @@
 .profile-header h1 {
   margin: 0;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .profile-header p {
   margin: 6px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 .profile-card {
@@ -26,17 +24,13 @@
 
   padding: 22px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .profile-card-heading {
@@ -48,22 +42,19 @@
   margin-bottom: 22px;
 }
 
-.profile-card-heading >
-div:last-child {
+.profile-card-heading > div:last-child {
   display: flex;
   flex-direction: column;
 }
 
 .profile-card-heading strong {
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .profile-card-heading span {
   margin-top: 3px;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 10px;
 }
@@ -81,18 +72,13 @@ div:last-child {
 
   background: #e8f3fb;
 
-  color:
-    var(--color-blue-700);
+  color: var(--color-blue-700);
 }
 
 .profile-form-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 14px;
 }
@@ -104,8 +90,7 @@ div:last-child {
 
   gap: 6px;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 
   font-size: 11px;
   font-weight: 600;
@@ -120,39 +105,32 @@ div:last-child {
 
   padding: 0 11px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-sm);
+  border-radius: var(--radius-sm);
 
   outline: none;
 
   background: #ffffff;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .profile-form-grid input:focus,
 .change-password-card input:focus {
-  border-color:
-    var(--color-blue-700);
+  border-color: var(--color-blue-700);
 }
 
 .profile-form-grid input:disabled {
   background: #f6f8fa;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   cursor: not-allowed;
 }
 
 .profile-full-field {
-  grid-column:
-    1 / -1;
+  grid-column: 1 / -1;
 }
 
 .profile-actions {
@@ -176,11 +154,9 @@ div:last-child {
 
   border: none;
 
-  border-radius:
-    var(--radius-sm);
+  border-radius: var(--radius-sm);
 
-  background:
-    var(--color-blue-700);
+  background: var(--color-blue-700);
 
   color: #ffffff;
 
@@ -204,16 +180,11 @@ div:last-child {
 
   padding: 24px;
 
-  background:
-    var(--color-background);
+  background: var(--color-background);
 }
 
 .change-password-card {
-  width:
-    min(
-      100%,
-      430px
-    );
+  width: min(100%, 430px);
 
   display: flex;
   flex-direction: column;
@@ -222,34 +193,27 @@ div:last-child {
 
   padding: 28px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .change-password-card h1 {
   margin: 0;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 
   font-size: 22px;
 }
 
 .change-password-card > p {
-  margin:
-    -5px 0 4px;
+  margin: -5px 0 4px;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 11px;
 }
@@ -265,16 +229,12 @@ div:last-child {
 
   background: #e8f3fb;
 
-  color:
-    var(--color-blue-700);
+  color: var(--color-blue-700);
 }
 
-@media (
-  max-width: 650px
-) {
+@media (max-width: 650px) {
   .profile-form-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
   .profile-full-field {

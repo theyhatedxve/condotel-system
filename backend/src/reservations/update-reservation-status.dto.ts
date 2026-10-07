@@ -1,10 +1,6 @@
-import {
-  IsEnum,
-} from 'class-validator';
+import { IsEnum } from 'class-validator';
 
-import {
-  ReservationStatus,
-} from '../generated/prisma/enums';
+import { ReservationStatus } from '../generated/prisma/enums';
 
 export class UpdateReservationStatusDto {
   @IsEnum(ReservationStatus)

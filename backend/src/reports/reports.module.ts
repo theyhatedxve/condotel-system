@@ -1,34 +1,18 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  AuthModule,
-} from '../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
-import {
-  ReportsController,
-} from './reports.controller';
+import { ReportsController } from './reports.controller';
 
-import {
-  ReportsService,
-} from './reports.service';
+import { ReportsService } from './reports.service';
 
 @Module({
-  imports: [
-    AuthModule,
-  ],
+  imports: [AuthModule],
 
-  controllers: [
-    ReportsController,
-  ],
+  controllers: [ReportsController],
 
-  providers: [
-    ReportsService,
-  ],
+  providers: [ReportsService],
 
-  exports: [
-    ReportsService,
-  ],
+  exports: [ReportsService],
 })
 export class ReportsModule {}

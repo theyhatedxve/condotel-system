@@ -48,7 +48,10 @@ export class EncryptionService {
     const key = this.getMasterKey();
 
     try {
-      const ciphertext = this.decodeBase64(encrypted.ciphertext, DECRYPTION_ERROR);
+      const ciphertext = this.decodeBase64(
+        encrypted.ciphertext,
+        DECRYPTION_ERROR,
+      );
       const iv = this.decodeBase64(encrypted.iv, DECRYPTION_ERROR);
       const authTag = this.decodeBase64(encrypted.authTag, DECRYPTION_ERROR);
 

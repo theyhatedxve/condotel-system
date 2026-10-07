@@ -1,8 +1,6 @@
 import { useState } from 'react';
 
-import {
-  X,
-} from 'lucide-react';
+import { X } from 'lucide-react';
 
 function createInitialForm(room) {
   if (!room) {
@@ -20,37 +18,23 @@ function createInitialForm(room) {
   }
 
   return {
-    roomNumber:
-      room.roomNumber ?? '',
+    roomNumber: room.roomNumber ?? '',
 
-    name:
-      room.name ?? '',
+    name: room.name ?? '',
 
-    roomType:
-      room.roomType ?? '',
+    roomType: room.roomType ?? '',
 
-    description:
-      room.description ?? '',
+    description: room.description ?? '',
 
-    floor:
-      room.floor ?? '',
+    floor: room.floor ?? '',
 
-    capacity:
-      String(
-        room.capacity ?? 2,
-      ),
+    capacity: String(room.capacity ?? 2),
 
-    ratePerNight:
-      String(
-        (room.ratePerNightCentavos ?? 0) /
-          100,
-      ),
+    ratePerNight: String((room.ratePerNightCentavos ?? 0) / 100),
 
-    status:
-      room.status ?? 'AVAILABLE',
+    status: room.status ?? 'AVAILABLE',
 
-    imageUrl:
-      room.imageUrl ?? '',
+    imageUrl: room.imageUrl ?? '',
   };
 }
 
@@ -60,14 +44,9 @@ export default function RoomFormModal({
   onClose,
   onSubmit,
 }) {
-  const [form, setForm] = useState(
-    () => createInitialForm(room),
-  );
+  const [form, setForm] = useState(() => createInitialForm(room));
 
-  function updateField(
-    field,
-    value,
-  ) {
+  function updateField(field, value) {
     setForm((current) => ({
       ...current,
       [field]: value,
@@ -77,43 +56,27 @@ export default function RoomFormModal({
   function handleSubmit(event) {
     event.preventDefault();
 
-    const ratePerNight =
-      Number(form.ratePerNight);
+    const ratePerNight = Number(form.ratePerNight);
 
     const payload = {
-      roomNumber:
-        form.roomNumber.trim(),
+      roomNumber: form.roomNumber.trim(),
 
-      name:
-        form.name.trim(),
+      name: form.name.trim(),
 
-      roomType:
-        form.roomType.trim(),
+      roomType: form.roomType.trim(),
 
-      description:
-        form.description.trim() ||
-        undefined,
+      description: form.description.trim() || undefined,
 
-      floor:
-        form.floor === ''
-          ? undefined
-          : Number(form.floor),
+      floor: form.floor === '' ? undefined : Number(form.floor),
 
-      capacity:
-        Number(form.capacity),
+      capacity: Number(form.capacity),
 
       // The form accepts pesos; the API stores integer centavos.
-      ratePerNightCentavos:
-        Math.round(
-          ratePerNight * 100,
-        ),
+      ratePerNightCentavos: Math.round(ratePerNight * 100),
 
-      status:
-        form.status,
+      status: form.status,
 
-      imageUrl:
-        form.imageUrl.trim() ||
-        undefined,
+      imageUrl: form.imageUrl.trim() || undefined,
     };
 
     onSubmit(payload);
@@ -124,11 +87,7 @@ export default function RoomFormModal({
       <section className="room-modal">
         <header className="room-modal-header">
           <div>
-            <h2>
-              {room
-                ? 'Edit Room'
-                : 'Add Room'}
-            </h2>
+            <h2>{room ? 'Edit Room' : 'Add Room'}</h2>
 
             <p>
               {room
@@ -147,88 +106,59 @@ export default function RoomFormModal({
           </button>
         </header>
 
-        <form
-          className="room-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="room-form" onSubmit={handleSubmit}>
           <div className="room-form-grid">
             <label>
-              <span>
-                Room Number
-              </span>
+              <span>Room Number</span>
 
               <input
                 required
                 value={form.roomNumber}
                 onChange={(event) =>
-                  updateField(
-                    'roomNumber',
-                    event.target.value,
-                  )
+                  updateField('roomNumber', event.target.value)
                 }
                 placeholder="101"
               />
             </label>
 
             <label>
-              <span>
-                Room Name
-              </span>
+              <span>Room Name</span>
 
               <input
                 required
                 value={form.name}
-                onChange={(event) =>
-                  updateField(
-                    'name',
-                    event.target.value,
-                  )
-                }
+                onChange={(event) => updateField('name', event.target.value)}
                 placeholder="Room 101"
               />
             </label>
 
             <label>
-              <span>
-                Room Type
-              </span>
+              <span>Room Type</span>
 
               <input
                 required
                 value={form.roomType}
                 onChange={(event) =>
-                  updateField(
-                    'roomType',
-                    event.target.value,
-                  )
+                  updateField('roomType', event.target.value)
                 }
                 placeholder="Deluxe Room"
               />
             </label>
 
             <label>
-              <span>
-                Floor
-              </span>
+              <span>Floor</span>
 
               <input
                 type="number"
                 min="0"
                 value={form.floor}
-                onChange={(event) =>
-                  updateField(
-                    'floor',
-                    event.target.value,
-                  )
-                }
+                onChange={(event) => updateField('floor', event.target.value)}
                 placeholder="1"
               />
             </label>
 
             <label>
-              <span>
-                Capacity
-              </span>
+              <span>Capacity</span>
 
               <input
                 required
@@ -236,77 +166,49 @@ export default function RoomFormModal({
                 min="1"
                 value={form.capacity}
                 onChange={(event) =>
-                  updateField(
-                    'capacity',
-                    event.target.value,
-                  )
+                  updateField('capacity', event.target.value)
                 }
               />
             </label>
 
             <label>
-              <span>
-                Rate / Night (₱)
-              </span>
+              <span>Rate / Night (₱)</span>
 
               <input
                 required
                 type="number"
                 min="1"
                 step="0.01"
-                value={
-                  form.ratePerNight
-                }
+                value={form.ratePerNight}
                 onChange={(event) =>
-                  updateField(
-                    'ratePerNight',
-                    event.target.value,
-                  )
+                  updateField('ratePerNight', event.target.value)
                 }
                 placeholder="2500"
               />
             </label>
 
             <label>
-              <span>
-                Status
-              </span>
+              <span>Status</span>
 
               <select
                 value={form.status}
-                onChange={(event) =>
-                  updateField(
-                    'status',
-                    event.target.value,
-                  )
-                }
+                onChange={(event) => updateField('status', event.target.value)}
               >
-                <option value="AVAILABLE">
-                  Available
-                </option>
+                <option value="AVAILABLE">Available</option>
 
-                <option value="OCCUPIED">
-                  Occupied
-                </option>
+                <option value="OCCUPIED">Occupied</option>
 
-                <option value="MAINTENANCE">
-                  Maintenance
-                </option>
+                <option value="MAINTENANCE">Maintenance</option>
               </select>
             </label>
 
             <label>
-              <span>
-                Image URL
-              </span>
+              <span>Image URL</span>
 
               <input
                 value={form.imageUrl}
                 onChange={(event) =>
-                  updateField(
-                    'imageUrl',
-                    event.target.value,
-                  )
+                  updateField('imageUrl', event.target.value)
                 }
                 placeholder="Optional"
               />
@@ -314,20 +216,13 @@ export default function RoomFormModal({
           </div>
 
           <label className="room-description-field">
-            <span>
-              Description
-            </span>
+            <span>Description</span>
 
             <textarea
               rows="4"
-              value={
-                form.description
-              }
+              value={form.description}
               onChange={(event) =>
-                updateField(
-                  'description',
-                  event.target.value,
-                )
+                updateField('description', event.target.value)
               }
               placeholder="Room description..."
             />
@@ -348,11 +243,7 @@ export default function RoomFormModal({
               className="primary-button"
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? 'Saving...'
-                : room
-                  ? 'Save Changes'
-                  : 'Add Room'}
+              {isSubmitting ? 'Saving...' : room ? 'Save Changes' : 'Add Room'}
             </button>
           </footer>
         </form>

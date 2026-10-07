@@ -1,19 +1,10 @@
-import {
-  useState,
-} from 'react';
+import { useState } from 'react';
 
-import {
-  Search,
-  X,
-} from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
-import {
-  getAvailableRooms,
-} from './reservationApi';
+import { getAvailableRooms } from './reservationApi';
 
-import {
-  formatCurrency,
-} from '../../utils/formatCurrency';
+import { formatCurrency } from '../../utils/formatCurrency';
 
 export default function ReservationFormModal({
   guests,
@@ -21,69 +12,42 @@ export default function ReservationFormModal({
   onClose,
   onSubmit,
 }) {
-  const [form, setForm] =
-    useState({
-      guestId: '',
-      roomId: '',
-      checkIn: '',
-      checkOut: '',
-      adults: '1',
-      children: '0',
-      specialRequests: '',
-    });
+  const [form, setForm] = useState({
+    guestId: '',
+    roomId: '',
+    checkIn: '',
+    checkOut: '',
+    adults: '1',
+    children: '0',
+    specialRequests: '',
+  });
 
-  const [
-    availableRooms,
-    setAvailableRooms,
-  ] = useState([]);
+  const [availableRooms, setAvailableRooms] = useState([]);
 
-  const [
-    checkingAvailability,
-    setCheckingAvailability,
-  ] = useState(false);
+  const [checkingAvailability, setCheckingAvailability] = useState(false);
 
-  function updateField(
-    field,
-    value,
-  ) {
+  function updateField(field, value) {
     // Date or guest-count changes invalidate both the selected room and its availability results.
     setForm((current) => ({
       ...current,
 
       [field]: value,
 
-      ...([
-        'checkIn',
-        'checkOut',
-        'adults',
-        'children',
-      ].includes(field)
+      ...(['checkIn', 'checkOut', 'adults', 'children'].includes(field)
         ? {
             roomId: '',
           }
         : {}),
     }));
 
-    if (
-      [
-        'checkIn',
-        'checkOut',
-        'adults',
-        'children',
-      ].includes(field)
-    ) {
+    if (['checkIn', 'checkOut', 'adults', 'children'].includes(field)) {
       setAvailableRooms([]);
     }
   }
 
   async function checkAvailability() {
-    if (
-      !form.checkIn ||
-      !form.checkOut
-    ) {
-      window.alert(
-        'Select check-in and check-out dates first.',
-      );
+    if (!form.checkIn || !form.checkOut) {
+      window.alert('Select check-in and check-out dates first.');
 
       return;
     }
@@ -91,47 +55,28 @@ export default function ReservationFormModal({
     setCheckingAvailability(true);
 
     try {
-      const capacity =
-        Number(form.adults) +
-        Number(form.children);
+      const capacity = Number(form.adults) + Number(form.children);
 
-      const rooms =
-        await getAvailableRooms({
-          checkIn:
-            form.checkIn,
+      const rooms = await getAvailableRooms({
+        checkIn: form.checkIn,
 
-          checkOut:
-            form.checkOut,
+        checkOut: form.checkOut,
 
-          capacity,
-        });
+        capacity,
+      });
 
-      setAvailableRooms(
-        rooms,
-      );
+      setAvailableRooms(rooms);
 
-      if (
-        rooms.length === 0
-      ) {
-        window.alert(
-          'No rooms are available for those dates.',
-        );
+      if (rooms.length === 0) {
+        window.alert('No rooms are available for those dates.');
       }
     } catch (error) {
       const message =
-        error.response?.data
-          ?.message ||
-        'Unable to check availability.';
+        error.response?.data?.message || 'Unable to check availability.';
 
-      window.alert(
-        Array.isArray(message)
-          ? message.join(' ')
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
-      setCheckingAvailability(
-        false,
-      );
+      setCheckingAvailability(false);
     }
   }
 
@@ -139,35 +84,25 @@ export default function ReservationFormModal({
     event.preventDefault();
 
     if (!form.roomId) {
-      window.alert(
-        'Check availability and select a room.',
-      );
+      window.alert('Check availability and select a room.');
 
       return;
     }
 
     onSubmit({
-      guestId:
-        form.guestId,
+      guestId: form.guestId,
 
-      roomId:
-        form.roomId,
+      roomId: form.roomId,
 
-      checkIn:
-        form.checkIn,
+      checkIn: form.checkIn,
 
-      checkOut:
-        form.checkOut,
+      checkOut: form.checkOut,
 
-      adults:
-        Number(form.adults),
+      adults: Number(form.adults),
 
-      children:
-        Number(form.children),
+      children: Number(form.children),
 
-      specialRequests:
-        form.specialRequests ||
-        undefined,
+      specialRequests: form.specialRequests || undefined,
     });
   }
 
@@ -176,14 +111,9 @@ export default function ReservationFormModal({
       <section className="reservation-modal">
         <header className="reservation-modal-header">
           <div>
-            <h2>
-              New Reservation
-            </h2>
+            <h2>New Reservation</h2>
 
-            <p>
-              Select guest, dates,
-              and an available room.
-            </p>
+            <p>Select guest, dates, and an available room.</p>
           </div>
 
           <button
@@ -195,96 +125,46 @@ export default function ReservationFormModal({
           </button>
         </header>
 
-        <form
-          className="reservation-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="reservation-form" onSubmit={handleSubmit}>
           <label>
             <span>Guest</span>
 
             <select
               required
-              value={
-                form.guestId
-              }
-              onChange={(event) =>
-                updateField(
-                  'guestId',
-                  event.target.value,
-                )
-              }
+              value={form.guestId}
+              onChange={(event) => updateField('guestId', event.target.value)}
             >
-              <option value="">
-                Select guest
-              </option>
+              <option value="">Select guest</option>
 
-              {guests.map(
-                (guest) => (
-                  <option
-                    key={
-                      guest.id
-                    }
-                    value={
-                      guest.id
-                    }
-                  >
-                    {
-                      guest.firstName
-                    }{' '}
-                    {
-                      guest.lastName
-                    }
-                  </option>
-                ),
-              )}
+              {guests.map((guest) => (
+                <option key={guest.id} value={guest.id}>
+                  {guest.firstName} {guest.lastName}
+                </option>
+              ))}
             </select>
           </label>
 
           <div className="reservation-form-grid">
             <label>
-              <span>
-                Check-in
-              </span>
+              <span>Check-in</span>
 
               <input
                 required
                 type="date"
-                value={
-                  form.checkIn
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'checkIn',
-                    event
-                      .target
-                      .value,
-                  )
-                }
+                value={form.checkIn}
+                onChange={(event) => updateField('checkIn', event.target.value)}
               />
             </label>
 
             <label>
-              <span>
-                Check-out
-              </span>
+              <span>Check-out</span>
 
               <input
                 required
                 type="date"
-                value={
-                  form.checkOut
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'checkOut',
-                    event
-                      .target
-                      .value,
-                  )
+                value={form.checkOut}
+                onChange={(event) =>
+                  updateField('checkOut', event.target.value)
                 }
               />
             </label>
@@ -295,42 +175,20 @@ export default function ReservationFormModal({
               <input
                 type="number"
                 min="1"
-                value={
-                  form.adults
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'adults',
-                    event
-                      .target
-                      .value,
-                  )
-                }
+                value={form.adults}
+                onChange={(event) => updateField('adults', event.target.value)}
               />
             </label>
 
             <label>
-              <span>
-                Children
-              </span>
+              <span>Children</span>
 
               <input
                 type="number"
                 min="0"
-                value={
-                  form.children
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'children',
-                    event
-                      .target
-                      .value,
-                  )
+                value={form.children}
+                onChange={(event) =>
+                  updateField('children', event.target.value)
                 }
               />
             </label>
@@ -339,85 +197,42 @@ export default function ReservationFormModal({
           <button
             type="button"
             className="availability-button"
-            onClick={
-              checkAvailability
-            }
-            disabled={
-              checkingAvailability
-            }
+            onClick={checkAvailability}
+            disabled={checkingAvailability}
           >
             <Search size={16} />
 
-            {checkingAvailability
-              ? 'Checking...'
-              : 'Check Availability'}
+            {checkingAvailability ? 'Checking...' : 'Check Availability'}
           </button>
 
           <label>
-            <span>
-              Available Room
-            </span>
+            <span>Available Room</span>
 
             <select
               required
-              value={
-                form.roomId
-              }
-              onChange={(event) =>
-                updateField(
-                  'roomId',
-                  event.target.value,
-                )
-              }
+              value={form.roomId}
+              onChange={(event) => updateField('roomId', event.target.value)}
             >
-              <option value="">
-                Select available room
-              </option>
+              <option value="">Select available room</option>
 
-              {availableRooms.map(
-                (room) => (
-                  <option
-                    key={
-                      room.id
-                    }
-                    value={
-                      room.id
-                    }
-                  >
-                    Room{' '}
-                    {
-                      room.roomNumber
-                    }{' '}
-                    —{' '}
-                    {
-                      room.roomType
-                    }{' '}
-                    —{' '}
-                    {formatCurrency(
-                      room.ratePerNightCentavos,
-                    )}
-                    /night
-                  </option>
-                ),
-              )}
+              {availableRooms.map((room) => (
+                <option key={room.id} value={room.id}>
+                  {'Room'} {room.roomNumber} {'—'} {room.roomType} {'—'}{' '}
+                  {formatCurrency(room.ratePerNightCentavos)}
+                  /night
+                </option>
+              ))}
             </select>
           </label>
 
           <label>
-            <span>
-              Special Requests
-            </span>
+            <span>Special Requests</span>
 
             <textarea
               rows="3"
-              value={
-                form.specialRequests
-              }
+              value={form.specialRequests}
               onChange={(event) =>
-                updateField(
-                  'specialRequests',
-                  event.target.value,
-                )
+                updateField('specialRequests', event.target.value)
               }
             />
           </label>
@@ -434,13 +249,9 @@ export default function ReservationFormModal({
             <button
               type="submit"
               className="primary-button"
-              disabled={
-                isSubmitting
-              }
+              disabled={isSubmitting}
             >
-              {isSubmitting
-                ? 'Creating...'
-                : 'Create Reservation'}
+              {isSubmitting ? 'Creating...' : 'Create Reservation'}
             </button>
           </footer>
         </form>

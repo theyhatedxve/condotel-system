@@ -1,78 +1,40 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  ConfigModule,
-} from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 
-import {
-  AppController,
-} from './app.controller';
+import { AppController } from './app.controller';
 
-import {
-  AppService,
-} from './app.service';
+import { AppService } from './app.service';
 
-import {
-  AuthModule,
-} from './auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 
-import {
-  GuestsModule,
-} from './guests/guests.module';
+import { GuestsModule } from './guests/guests.module';
 
-import {
-  HealthModule,
-} from './health/health.module';
+import { HealthModule } from './health/health.module';
 
-import {
-  NotificationsModule,
-} from './notifications/notifications.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
-import {
-  PaymentsModule,
-} from './payments/payments.module';
+import { PaymentsModule } from './payments/payments.module';
 
-import {
-  PrismaModule,
-} from './prisma/prisma.module';
+import { PrismaModule } from './prisma/prisma.module';
 
-import {
-  ReportsModule,
-} from './reports/reports.module';
+import { ReportsModule } from './reports/reports.module';
 
-import {
-  ReservationsModule,
-} from './reservations/reservations.module';
+import { ReservationsModule } from './reservations/reservations.module';
 
-import {
-  RoomsModule,
-} from './rooms/rooms.module';
+import { RoomsModule } from './rooms/rooms.module';
 
-import {
-  SearchModule,
-} from './search/search.module';
+import { SearchModule } from './search/search.module';
 
-import {
-  SecurityModule,
-} from './security/security.module';
+import { SecurityModule } from './security/security.module';
 
-import {
-  SettingsModule,
-} from './settings/settings.module';
+import { SettingsModule } from './settings/settings.module';
 
-import {
-  TransactionsModule,
-} from './transactions/transactions.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
-import {
-  UserManagementModule,
-} from './user-management/user-management.module';
+import { UserManagementModule } from './user-management/user-management.module';
 
-import {
-  UsersModule,
-} from './users/users.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -111,12 +73,8 @@ import {
     UserManagementModule,
   ],
 
-  controllers: [
-    AppController,
-  ],
+  controllers: [AppController],
 
-  providers: [
-    AppService,
-  ],
+  providers: [AppService],
 })
 export class AppModule {}

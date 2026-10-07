@@ -1,14 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  KeyRound,
-  Search,
-  UserCog,
-  X,
-} from 'lucide-react';
+import { KeyRound, Search, UserCog, X } from 'lucide-react';
 
 import {
   getManagedUsers,
@@ -16,82 +8,44 @@ import {
   updateManagedUser,
 } from './userManagementApi';
 
-import {
-  useAuth,
-} from '../auth/useAuth';
+import { useAuth } from '../auth/useAuth';
 
 import './user-management.css';
 
-function formatDateTime(
-  value,
-) {
+function formatDateTime(value) {
   if (!value) {
     return 'Never';
   }
 
-  const date =
-    new Date(value);
+  const date = new Date(value);
 
-  if (
-    Number.isNaN(
-      date.getTime(),
-    )
-  ) {
+  if (Number.isNaN(date.getTime())) {
     return '—';
   }
 
-  return new Intl.DateTimeFormat(
-    'en-PH',
-    {
-      dateStyle:
-        'medium',
+  return new Intl.DateTimeFormat('en-PH', {
+    dateStyle: 'medium',
 
-      timeStyle:
-        'short',
-    },
-  ).format(date);
+    timeStyle: 'short',
+  }).format(date);
 }
 
 export default function UserManagementPage() {
-  const {
-    user:
-      currentUser,
-  } = useAuth();
+  const { user: currentUser } = useAuth();
 
-  const [
-    users,
-    setUsers,
-  ] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [
-    search,
-    setSearch,
-  ] = useState('');
+  const [search, setSearch] = useState('');
 
-  const [
-    roleFilter,
-    setRoleFilter,
-  ] = useState('');
+  const [roleFilter, setRoleFilter] = useState('');
 
-  const [
-    statusFilter,
-    setStatusFilter,
-  ] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const [
-    editingUser,
-    setEditingUser,
-  ] = useState(null);
+  const [editingUser, setEditingUser] = useState(null);
 
-  const [
-    editForm,
-    setEditForm,
-  ] = useState({
+  const [editForm, setEditForm] = useState({
     firstName: '',
     lastName: '',
     email: '',
@@ -101,182 +55,106 @@ export default function UserManagementPage() {
     status: 'ACTIVE',
   });
 
-  const [
-    resetUser,
-    setResetUser,
-  ] = useState(null);
+  const [resetUser, setResetUser] = useState(null);
 
-  const [
-    newPassword,
-    setNewPassword,
-  ] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
-  const [
-    confirmPassword,
-    setConfirmPassword,
-  ] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const [
-    savingUser,
-    setSavingUser,
-  ] = useState(false);
+  const [savingUser, setSavingUser] = useState(false);
 
-  const [
-    resettingPassword,
-    setResettingPassword,
-  ] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   async function loadUsers() {
     setLoading(true);
 
     try {
-      const result =
-        await getManagedUsers();
+      const result = await getManagedUsers();
 
-      setUsers(
-        Array.isArray(result)
-          ? result
-          : [],
-      );
+      setUsers(Array.isArray(result) ? result : []);
     } catch {
-      window.alert(
-        'Unable to load users.',
-      );
+      window.alert('Unable to load users.');
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(() => {
-    let cancelled =
-      false;
+    let cancelled = false;
 
     getManagedUsers()
       .then((result) => {
         if (!cancelled) {
-          setUsers(
-            Array.isArray(result)
-              ? result
-              : [],
-          );
+          setUsers(Array.isArray(result) ? result : []);
         }
       })
       .catch(() => {
         if (!cancelled) {
-          window.alert(
-            'Unable to load users.',
-          );
+          window.alert('Unable to load users.');
         }
       })
       .finally(() => {
         if (!cancelled) {
-          setLoading(
-            false,
-          );
+          setLoading(false);
         }
       });
 
     return () => {
-      cancelled =
-        true;
+      cancelled = true;
     };
   }, []);
 
-  const normalizedSearch =
-    search
-      .trim()
+  const normalizedSearch = search.trim().toLowerCase();
+
+  const filteredUsers = users.filter((user) => {
+    const searchable = [
+      user.firstName,
+      user.lastName,
+      user.email,
+      user.username,
+      user.phone,
+    ]
+      .filter(Boolean)
+      .join(' ')
       .toLowerCase();
 
-  const filteredUsers =
-    users.filter(
-      (user) => {
-        const searchable =
-          [
-            user.firstName,
-            user.lastName,
-            user.email,
-            user.username,
-            user.phone,
-          ]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
+    const matchesSearch =
+      !normalizedSearch || searchable.includes(normalizedSearch);
 
-        const matchesSearch =
-          !normalizedSearch ||
-          searchable.includes(
-            normalizedSearch,
-          );
+    const matchesRole = !roleFilter || user.role === roleFilter;
 
-        const matchesRole =
-          !roleFilter ||
-          user.role ===
-            roleFilter;
+    const matchesStatus = !statusFilter || user.status === statusFilter;
 
-        const matchesStatus =
-          !statusFilter ||
-          user.status ===
-            statusFilter;
+    return matchesSearch && matchesRole && matchesStatus;
+  });
 
-        return (
-          matchesSearch &&
-          matchesRole &&
-          matchesStatus
-        );
-      },
-    );
+  const totalStaff = users.filter((user) => user.role === 'STAFF').length;
 
-  const totalStaff =
-    users.filter(
-      (user) =>
-        user.role ===
-        'STAFF',
-    ).length;
+  const totalCustomers = users.filter(
+    (user) => user.role === 'CUSTOMER',
+  ).length;
 
-  const totalCustomers =
-    users.filter(
-      (user) =>
-        user.role ===
-        'CUSTOMER',
-    ).length;
+  const totalSuspended = users.filter(
+    (user) => user.status === 'SUSPENDED',
+  ).length;
 
-  const totalSuspended =
-    users.filter(
-      (user) =>
-        user.status ===
-        'SUSPENDED',
-    ).length;
-
-  function openEdit(
-    user,
-  ) {
-    setEditingUser(
-      user,
-    );
+  function openEdit(user) {
+    setEditingUser(user);
 
     setEditForm({
-      firstName:
-        user.firstName,
+      firstName: user.firstName,
 
-      lastName:
-        user.lastName,
+      lastName: user.lastName,
 
-      email:
-        user.email,
+      email: user.email,
 
-      username:
-        user.username ??
-        '',
+      username: user.username ?? '',
 
-      phone:
-        user.phone ??
-        '',
+      phone: user.phone ?? '',
 
-      role:
-        user.role,
+      role: user.role,
 
-      status:
-        user.status,
+      status: user.status,
     });
   }
 
@@ -285,17 +163,11 @@ export default function UserManagementPage() {
       return;
     }
 
-    setEditingUser(
-      null,
-    );
+    setEditingUser(null);
   }
 
-  function openResetPassword(
-    user,
-  ) {
-    setResetUser(
-      user,
-    );
+  function openResetPassword(user) {
+    setResetUser(user);
 
     setNewPassword('');
 
@@ -303,9 +175,7 @@ export default function UserManagementPage() {
   }
 
   function closeResetPassword() {
-    if (
-      resettingPassword
-    ) {
+    if (resettingPassword) {
       return;
     }
 
@@ -316,24 +186,15 @@ export default function UserManagementPage() {
     setConfirmPassword('');
   }
 
-  async function handleEditSubmit(
-    event,
-  ) {
+  async function handleEditSubmit(event) {
     event.preventDefault();
 
     if (!editingUser) {
       return;
     }
 
-    if (
-      !editForm.firstName
-        .trim() ||
-      !editForm.lastName
-        .trim()
-    ) {
-      window.alert(
-        'First name and last name are required.',
-      );
+    if (!editForm.firstName.trim() || !editForm.lastName.trim()) {
+      window.alert('First name and last name are required.');
 
       return;
     }
@@ -341,118 +202,68 @@ export default function UserManagementPage() {
     // Omit protected role/status fields entirely: the backend rejects their presence
     // for administrator accounts, even when their values are unchanged.
     const canManageRoleAndStatus =
-      editingUser.id !==
-        currentUser?.id &&
-      editingUser.role !==
-        'ADMIN';
+      editingUser.id !== currentUser?.id && editingUser.role !== 'ADMIN';
 
     setSavingUser(true);
 
     try {
-      await updateManagedUser(
-        editingUser.id,
-        {
-          firstName:
-            editForm.firstName
-              .trim(),
+      await updateManagedUser(editingUser.id, {
+        firstName: editForm.firstName.trim(),
 
-          lastName:
-            editForm.lastName
-              .trim(),
+        lastName: editForm.lastName.trim(),
 
-          email:
-            editForm.email
-              .trim(),
+        email: editForm.email.trim(),
 
-          username:
-            editForm.username
-              .trim() ||
-            null,
+        username: editForm.username.trim() || null,
 
-          phone:
-            editForm.phone
-              .trim() ||
-            null,
+        phone: editForm.phone.trim() || null,
 
-          ...(canManageRoleAndStatus
-            ? {
-                role:
-                  editForm.role,
+        ...(canManageRoleAndStatus
+          ? {
+              role: editForm.role,
 
-                status:
-                  editForm.status,
-              }
-            : {}),
-        },
-      );
+              status: editForm.status,
+            }
+          : {}),
+      });
 
       setEditingUser(null);
 
       await loadUsers();
 
-      window.alert(
-        'User account updated successfully.',
-      );
+      window.alert('User account updated successfully.');
     } catch (error) {
-      const message =
-        error.response?.data
-          ?.message ||
-        'Unable to update user.';
+      const message = error.response?.data?.message || 'Unable to update user.';
 
-      window.alert(
-        Array.isArray(
-          message,
-        )
-          ? message.join(
-              ' ',
-            )
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
       setSavingUser(false);
     }
   }
 
-  async function handleResetPassword(
-    event,
-  ) {
+  async function handleResetPassword(event) {
     event.preventDefault();
 
     if (!resetUser) {
       return;
     }
 
-    if (
-      newPassword !==
-      confirmPassword
-    ) {
-      window.alert(
-        'Passwords do not match.',
-      );
+    if (newPassword !== confirmPassword) {
+      window.alert('Passwords do not match.');
 
       return;
     }
 
-    if (
-      newPassword.length <
-      8
-    ) {
-      window.alert(
-        'Temporary password must be at least 8 characters.',
-      );
+    if (newPassword.length < 8) {
+      window.alert('Temporary password must be at least 8 characters.');
 
       return;
     }
 
-    setResettingPassword(
-      true,
-    );
+    setResettingPassword(true);
 
     try {
-      await resetManagedUserPassword(
-        resetUser.id,
-        newPassword,
-      );
+      await resetManagedUserPassword(resetUser.id, newPassword);
 
       setResetUser(null);
 
@@ -467,167 +278,89 @@ export default function UserManagementPage() {
       );
     } catch (error) {
       const message =
-        error.response?.data
-          ?.message ||
-        'Unable to reset password.';
+        error.response?.data?.message || 'Unable to reset password.';
 
-      window.alert(
-        Array.isArray(
-          message,
-        )
-          ? message.join(
-              ' ',
-            )
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
-      setResettingPassword(
-        false,
-      );
+      setResettingPassword(false);
     }
   }
 
   return (
     <section className="user-management-page">
       <header className="user-management-header">
-        <h1>
-          User Management
-        </h1>
+        <h1>User Management</h1>
 
-        <p>
-          Manage Staff and Customer
-          accounts.
-        </p>
+        <p>Manage Staff and Customer accounts.</p>
       </header>
 
       <div className="user-management-summary">
         <article>
-          <span>
-            Total Users
-          </span>
+          <span>Total Users</span>
 
-          <strong>
-            {users.length}
-          </strong>
+          <strong>{users.length}</strong>
         </article>
 
         <article>
-          <span>
-            Staff
-          </span>
+          <span>Staff</span>
 
-          <strong>
-            {totalStaff}
-          </strong>
+          <strong>{totalStaff}</strong>
         </article>
 
         <article>
-          <span>
-            Customers
-          </span>
+          <span>Customers</span>
 
-          <strong>
-            {totalCustomers}
-          </strong>
+          <strong>{totalCustomers}</strong>
         </article>
 
         <article>
-          <span>
-            Suspended
-          </span>
+          <span>Suspended</span>
 
-          <strong>
-            {totalSuspended}
-          </strong>
+          <strong>{totalSuspended}</strong>
         </article>
       </div>
 
       <div className="user-management-toolbar">
         <div className="user-management-search">
-          <Search
-            size={17}
-          />
+          <Search size={17} />
 
           <input
             type="search"
             value={search}
             placeholder="Search name, email, username, or phone..."
-            onChange={(
-              event,
-            ) =>
-              setSearch(
-                event.target
-                  .value,
-              )
-            }
+            onChange={(event) => setSearch(event.target.value)}
           />
         </div>
 
         <select
-          value={
-            roleFilter
-          }
-          onChange={(
-            event,
-          ) =>
-            setRoleFilter(
-              event.target
-                .value,
-            )
-          }
+          value={roleFilter}
+          onChange={(event) => setRoleFilter(event.target.value)}
         >
-          <option value="">
-            All Roles
-          </option>
+          <option value="">All Roles</option>
 
-          <option value="ADMIN">
-            Admin
-          </option>
+          <option value="ADMIN">Admin</option>
 
-          <option value="STAFF">
-            Staff
-          </option>
+          <option value="STAFF">Staff</option>
 
-          <option value="CUSTOMER">
-            Customer
-          </option>
+          <option value="CUSTOMER">Customer</option>
         </select>
 
         <select
-          value={
-            statusFilter
-          }
-          onChange={(
-            event,
-          ) =>
-            setStatusFilter(
-              event.target
-                .value,
-            )
-          }
+          value={statusFilter}
+          onChange={(event) => setStatusFilter(event.target.value)}
         >
-          <option value="">
-            All Statuses
-          </option>
+          <option value="">All Statuses</option>
 
-          <option value="ACTIVE">
-            Active
-          </option>
+          <option value="ACTIVE">Active</option>
 
-          <option value="INACTIVE">
-            Inactive
-          </option>
+          <option value="INACTIVE">Inactive</option>
 
-          <option value="SUSPENDED">
-            Suspended
-          </option>
+          <option value="SUSPENDED">Suspended</option>
         </select>
       </div>
 
       {loading ? (
-        <div className="user-management-empty">
-          Loading users...
-        </div>
+        <div className="user-management-empty">Loading users...</div>
       ) : (
         <div className="user-management-table-wrapper">
           <table className="user-management-table">
@@ -638,129 +371,70 @@ export default function UserManagementPage() {
                 <th>Role</th>
                 <th>Status</th>
 
-                <th>
-                  Password
-                </th>
+                <th>Password</th>
 
-                <th>
-                  Last Login
-                </th>
+                <th>Last Login</th>
 
-                <th>
-                  Actions
-                </th>
+                <th>Actions</th>
               </tr>
             </thead>
 
             <tbody>
-              {filteredUsers.length ===
-              0 ? (
+              {filteredUsers.length === 0 ? (
                 <tr>
-                  <td
-                    colSpan="7"
-                    className="user-management-no-results"
-                  >
-                    No users match your
-                    filters.
+                  <td colSpan="7" className="user-management-no-results">
+                    No users match your filters.
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map(
-                  (user) => (
-                    <tr
-                      key={
-                        user.id
-                      }
-                    >
-                      <td>
-                        <strong>
-                          {
-                            user.firstName
-                          }{' '}
-                          {
-                            user.lastName
-                          }
-                        </strong>
+                filteredUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>
+                      <strong>
+                        {user.firstName} {user.lastName}
+                      </strong>
 
-                        <small>
-                          {
-                            user.email
-                          }
-                        </small>
-                      </td>
+                      <small>{user.email}</small>
+                    </td>
 
-                      <td>
-                        {
-                          user.username ??
-                          '—'
-                        }
-                      </td>
+                    <td>{user.username ?? '—'}</td>
 
-                      <td>
-                        {user.role}
-                      </td>
+                    <td>{user.role}</td>
 
-                      <td>
-                        <span
-                          className={`managed-user-status ${user.status.toLowerCase()}`}
-                        >
-                          {
-                            user.status
-                          }
-                        </span>
-                      </td>
+                    <td>
+                      <span
+                        className={`managed-user-status ${user.status.toLowerCase()}`}
+                      >
+                        {user.status}
+                      </span>
+                    </td>
 
-                      <td>
-                        {user.mustChangePassword
-                          ? 'Change required'
-                          : 'Normal'}
-                      </td>
+                    <td>
+                      {user.mustChangePassword ? 'Change required' : 'Normal'}
+                    </td>
 
-                      <td>
-                        {formatDateTime(
-                          user.lastLoginAt,
-                        )}
-                      </td>
+                    <td>{formatDateTime(user.lastLoginAt)}</td>
 
-                      <td>
-                        <div className="managed-user-actions">
+                    <td>
+                      <div className="managed-user-actions">
+                        <button type="button" onClick={() => openEdit(user)}>
+                          <UserCog size={14} />
+                          Edit
+                        </button>
+
+                        {user.role !== 'ADMIN' && (
                           <button
                             type="button"
-                            onClick={() =>
-                              openEdit(
-                                user,
-                              )
-                            }
+                            onClick={() => openResetPassword(user)}
                           >
-                            <UserCog
-                              size={14}
-                            />
-
-                            Edit
+                            <KeyRound size={14} />
+                            Reset
                           </button>
-
-                          {user.role !==
-                            'ADMIN' && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                openResetPassword(
-                                  user,
-                                )
-                              }
-                            >
-                              <KeyRound
-                                size={14}
-                              />
-
-                              Reset
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ),
-                )
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
@@ -769,54 +443,32 @@ export default function UserManagementPage() {
 
       {editingUser && (
         <div className="managed-user-modal-backdrop">
-          <form
-            className="managed-user-modal"
-            onSubmit={
-              handleEditSubmit
-            }
-          >
+          <form className="managed-user-modal" onSubmit={handleEditSubmit}>
             <header>
-              <h2>
-                Edit Account
-              </h2>
+              <h2>Edit Account</h2>
 
               <button
                 type="button"
                 aria-label="Close edit user"
-                onClick={
-                  closeEdit
-                }
+                onClick={closeEdit}
               >
-                <X
-                  size={18}
-                />
+                <X size={18} />
               </button>
             </header>
 
             <div className="managed-user-form-grid">
               <label>
                 First Name
-
                 <input
                   type="text"
-                  value={
-                    editForm.firstName
-                  }
+                  value={editForm.firstName}
                   maxLength={80}
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        firstName:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      firstName: event.target.value,
+                    }))
                   }
                   required
                 />
@@ -824,27 +476,16 @@ export default function UserManagementPage() {
 
               <label>
                 Last Name
-
                 <input
                   type="text"
-                  value={
-                    editForm.lastName
-                  }
+                  value={editForm.lastName}
                   maxLength={80}
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        lastName:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      lastName: event.target.value,
+                    }))
                   }
                   required
                 />
@@ -852,27 +493,16 @@ export default function UserManagementPage() {
 
               <label>
                 Email
-
                 <input
                   type="email"
-                  value={
-                    editForm.email
-                  }
+                  value={editForm.email}
                   maxLength={160}
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        email:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      email: event.target.value,
+                    }))
                   }
                   required
                 />
@@ -880,178 +510,100 @@ export default function UserManagementPage() {
 
               <label>
                 Username
-
                 <input
                   type="text"
-                  value={
-                    editForm.username
-                  }
+                  value={editForm.username}
                   maxLength={80}
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        username:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      username: event.target.value,
+                    }))
                   }
                 />
               </label>
 
               <label>
                 Phone
-
                 <input
                   type="text"
-                  value={
-                    editForm.phone
-                  }
+                  value={editForm.phone}
                   maxLength={30}
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        phone:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      phone: event.target.value,
+                    }))
                   }
                 />
               </label>
 
               <label>
                 Role
-
                 <select
-                  value={
-                    editForm.role
-                  }
+                  value={editForm.role}
                   disabled={
-                    editingUser.id ===
-                      currentUser?.id ||
-                    editingUser.role ===
-                      'ADMIN'
+                    editingUser.id === currentUser?.id ||
+                    editingUser.role === 'ADMIN'
                   }
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        role:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      role: event.target.value,
+                    }))
                   }
                 >
-                  {editingUser.role ===
-                    'ADMIN' && (
-                    <option value="ADMIN">
-                      Admin
-                    </option>
+                  {editingUser.role === 'ADMIN' && (
+                    <option value="ADMIN">Admin</option>
                   )}
 
-                  <option value="STAFF">
-                    Staff
-                  </option>
+                  <option value="STAFF">Staff</option>
 
-                  <option value="CUSTOMER">
-                    Customer
-                  </option>
+                  <option value="CUSTOMER">Customer</option>
                 </select>
               </label>
 
               <label>
                 Status
-
                 <select
-                  value={
-                    editForm.status
-                  }
+                  value={editForm.status}
                   disabled={
-                    editingUser.id ===
-                      currentUser?.id ||
-                    editingUser.role ===
-                      'ADMIN'
+                    editingUser.id === currentUser?.id ||
+                    editingUser.role === 'ADMIN'
                   }
-                  onChange={(
-                    event,
-                  ) =>
-                    setEditForm(
-                      (
-                        current,
-                      ) => ({
-                        ...current,
+                  onChange={(event) =>
+                    setEditForm((current) => ({
+                      ...current,
 
-                        status:
-                          event.target
-                            .value,
-                      }),
-                    )
+                      status: event.target.value,
+                    }))
                   }
                 >
-                  <option value="ACTIVE">
-                    Active
-                  </option>
+                  <option value="ACTIVE">Active</option>
 
-                  <option value="INACTIVE">
-                    Inactive
-                  </option>
+                  <option value="INACTIVE">Inactive</option>
 
-                  <option value="SUSPENDED">
-                    Suspended
-                  </option>
+                  <option value="SUSPENDED">Suspended</option>
                 </select>
               </label>
             </div>
 
-            {editingUser.role ===
-              'ADMIN' && (
+            {editingUser.role === 'ADMIN' && (
               <p className="managed-user-admin-note">
-                Administrator role and
-                status are protected.
+                Administrator role and status are protected.
               </p>
             )}
 
             <footer>
-              <button
-                type="button"
-                onClick={
-                  closeEdit
-                }
-                disabled={
-                  savingUser
-                }
-              >
+              <button type="button" onClick={closeEdit} disabled={savingUser}>
                 Cancel
               </button>
 
-              <button
-                type="submit"
-                disabled={
-                  savingUser
-                }
-              >
-                {savingUser
-                  ? 'Saving...'
-                  : 'Save Changes'}
+              <button type="submit" disabled={savingUser}>
+                {savingUser ? 'Saving...' : 'Save Changes'}
               </button>
             </footer>
           </form>
@@ -1062,57 +614,34 @@ export default function UserManagementPage() {
         <div className="managed-user-modal-backdrop">
           <form
             className="managed-user-modal managed-user-reset-modal"
-            onSubmit={
-              handleResetPassword
-            }
+            onSubmit={handleResetPassword}
           >
             <header>
-              <h2>
-                Reset Password
-              </h2>
+              <h2>Reset Password</h2>
 
               <button
                 type="button"
                 aria-label="Close reset password"
-                onClick={
-                  closeResetPassword
-                }
+                onClick={closeResetPassword}
               >
-                <X
-                  size={18}
-                />
+                <X size={18} />
               </button>
             </header>
 
             <p>
               Reset password for{' '}
               <strong>
-                {
-                  resetUser.firstName
-                }{' '}
-                {
-                  resetUser.lastName
-                }
+                {resetUser.firstName} {resetUser.lastName}
               </strong>
               .
             </p>
 
             <label>
               Temporary Password
-
               <input
                 type="password"
-                value={
-                  newPassword
-                }
-                onChange={(
-                  event,
-                ) =>
-                  setNewPassword(
-                    event.target
-                      .value,
-                  )
-                }
+                value={newPassword}
+                onChange={(event) => setNewPassword(event.target.value)}
                 minLength={8}
                 maxLength={128}
                 autoComplete="new-password"
@@ -1122,20 +651,10 @@ export default function UserManagementPage() {
 
             <label>
               Confirm Temporary Password
-
               <input
                 type="password"
-                value={
-                  confirmPassword
-                }
-                onChange={(
-                  event,
-                ) =>
-                  setConfirmPassword(
-                    event.target
-                      .value,
-                  )
-                }
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
                 minLength={8}
                 maxLength={128}
                 autoComplete="new-password"
@@ -1144,34 +663,21 @@ export default function UserManagementPage() {
             </label>
 
             <small>
-              The temporary password is
-              stored only as an Argon2id
-              hash. The user must change
-              it on their next login.
+              The temporary password is stored only as an Argon2id hash. The
+              user must change it on their next login.
             </small>
 
             <footer>
               <button
                 type="button"
-                onClick={
-                  closeResetPassword
-                }
-                disabled={
-                  resettingPassword
-                }
+                onClick={closeResetPassword}
+                disabled={resettingPassword}
               >
                 Cancel
               </button>
 
-              <button
-                type="submit"
-                disabled={
-                  resettingPassword
-                }
-              >
-                {resettingPassword
-                  ? 'Resetting...'
-                  : 'Reset Password'}
+              <button type="submit" disabled={resettingPassword}>
+                {resettingPassword ? 'Resetting...' : 'Reset Password'}
               </button>
             </footer>
           </form>

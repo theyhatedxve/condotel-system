@@ -9,66 +9,37 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import {
-  UserRole,
-} from '../generated/prisma/enums';
+import { UserRole } from '../generated/prisma/enums';
 
-import {
-  Roles,
-} from '../auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-import {
-  JwtAuthGuard,
-} from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-import {
-  RolesGuard,
-} from '../auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
-import {
-  CreateGuestDto,
-} from './create-guest.dto';
+import { CreateGuestDto } from './create-guest.dto';
 
-import {
-  UpdateGuestDto,
-} from './update-guest.dto';
+import { UpdateGuestDto } from './update-guest.dto';
 
-import {
-  GuestsService,
-} from './guests.service';
+import { GuestsService } from './guests.service';
 
 @Controller('guests')
-@UseGuards(
-  JwtAuthGuard,
-  RolesGuard,
-)
-@Roles(
-  UserRole.STAFF,
-  UserRole.ADMIN,
-)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.STAFF, UserRole.ADMIN)
 export class GuestsController {
-  constructor(
-    private readonly guestsService:
-      GuestsService,
-  ) {}
+  constructor(private readonly guestsService: GuestsService) {}
 
   @Get()
   findAll(
     @Query('search')
     search?: string,
   ) {
-    return this.guestsService.findAll(
-      search,
-    );
+    return this.guestsService.findAll(search);
   }
 
   @Get(':id')
-  findOne(
-    @Param('id') id: string,
-  ) {
-    return this.guestsService.findOne(
-      id,
-    );
+  findOne(@Param('id') id: string) {
+    return this.guestsService.findOne(id);
   }
 
   @Post()
@@ -76,9 +47,7 @@ export class GuestsController {
     @Body()
     dto: CreateGuestDto,
   ) {
-    return this.guestsService.create(
-      dto,
-    );
+    return this.guestsService.create(dto);
   }
 
   @Patch(':id')
@@ -88,9 +57,6 @@ export class GuestsController {
     @Body()
     dto: UpdateGuestDto,
   ) {
-    return this.guestsService.update(
-      id,
-      dto,
-    );
+    return this.guestsService.update(id, dto);
   }
 }

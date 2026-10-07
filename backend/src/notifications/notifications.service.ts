@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import {
   NotificationType,
@@ -11,9 +7,7 @@ import {
   UserStatus,
 } from '../generated/prisma/enums';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 interface CreateStaffNotificationInput {
   type: NotificationType;
@@ -31,252 +25,163 @@ interface CreateStaffNotificationInput {
 
 @Injectable()
 export class NotificationsService {
-  private readonly logger =
-    new Logger(
-      NotificationsService.name,
-    );
+  private readonly logger = new Logger(NotificationsService.name);
 
-  constructor(
-    private readonly prisma:
-      PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  private async createForStaffAndAdmins(
-    input:
-      CreateStaffNotificationInput,
-  ) {
-    const recipients =
-      await this.prisma
-        .user
-        .findMany({
-          where: {
-            role: {
-              in: [
-                UserRole.STAFF,
-                UserRole.ADMIN,
-              ],
-            },
+  private async createForStaffAndAdmins(input: CreateStaffNotificationInput) {
+    const recipients = await this.prisma.user.findMany({
+      where: {
+        role: {
+          in: [UserRole.STAFF, UserRole.ADMIN],
+        },
 
-            status:
-              UserStatus.ACTIVE,
-          },
+        status: UserStatus.ACTIVE,
+      },
 
-          select: {
-            id: true,
-          },
-        });
+      select: {
+        id: true,
+      },
+    });
 
-    for (
-      const recipient
-      of recipients
-    ) {
+    for (const recipient of recipients) {
       // Deduplicate per event and recipient; an empty update preserves an existing read state.
-      const dedupeKey =
-        input.dedupeKeyPrefix
-          ? `${input.dedupeKeyPrefix}:${recipient.id}`
-          : null;
+      const dedupeKey = input.dedupeKeyPrefix
+        ? `${input.dedupeKeyPrefix}:${recipient.id}`
+        : null;
 
       if (dedupeKey) {
-        await this.prisma
-          .notification
-          .upsert({
-            where: {
-              dedupeKey,
-            },
+        await this.prisma.notification.upsert({
+          where: {
+            dedupeKey,
+          },
 
-            update: {},
+          update: {},
 
-            create: {
-              userId:
-                recipient.id,
+          create: {
+            userId: recipient.id,
 
-              type:
-                input.type,
+            type: input.type,
 
-              title:
-                input.title,
+            title: input.title,
 
-              message:
-                input.message,
+            message: input.message,
 
-              entityType:
-                input.entityType ??
-                null,
+            entityType: input.entityType ?? null,
 
-              entityId:
-                input.entityId ??
-                null,
+            entityId: input.entityId ?? null,
 
-              path:
-                input.path ??
-                null,
+            path: input.path ?? null,
 
-              dedupeKey,
-            },
-          });
+            dedupeKey,
+          },
+        });
 
         continue;
       }
 
-      await this.prisma
-        .notification
-        .create({
-          data: {
-            userId:
-              recipient.id,
+      await this.prisma.notification.create({
+        data: {
+          userId: recipient.id,
 
-            type:
-              input.type,
+          type: input.type,
 
-            title:
-              input.title,
+          title: input.title,
 
-            message:
-              input.message,
+          message: input.message,
 
-            entityType:
-              input.entityType ??
-              null,
+          entityType: input.entityType ?? null,
 
-            entityId:
-              input.entityId ??
-              null,
+          entityId: input.entityId ?? null,
 
-            path:
-              input.path ??
-              null,
-          },
-        });
+          path: input.path ?? null,
+        },
+      });
     }
   }
 
   // Notification failures must not turn a completed reservation or payment operation into an error.
-  private async safelyCreate(
-    input:
-      CreateStaffNotificationInput,
-  ) {
+  private async safelyCreate(input: CreateStaffNotificationInput) {
     try {
-      await this
-        .createForStaffAndAdmins(
-          input,
-        );
+      await this.createForStaffAndAdmins(input);
     } catch (error) {
       this.logger.error(
         'Unable to create notification.',
-        error instanceof Error
-          ? error.stack
-          : undefined,
+        error instanceof Error ? error.stack : undefined,
       );
     }
   }
 
-  async notifyReservationCreated(
-    input: {
-      reservationId: string;
-      referenceNo: string;
-      guestName: string;
-      roomNumber: string;
-    },
-  ) {
+  async notifyReservationCreated(input: {
+    reservationId: string;
+    referenceNo: string;
+    guestName: string;
+    roomNumber: string;
+  }) {
     await this.safelyCreate({
-      type:
-        NotificationType
-          .RESERVATION_CREATED,
+      type: NotificationType.RESERVATION_CREATED,
 
-      title:
-        'New reservation',
+      title: 'New reservation',
 
-      message:
-        `${input.guestName} created reservation ${input.referenceNo} for Room ${input.roomNumber}.`,
+      message: `${input.guestName} created reservation ${input.referenceNo} for Room ${input.roomNumber}.`,
 
-      entityType:
-        'Reservation',
+      entityType: 'Reservation',
 
-      entityId:
-        input.reservationId,
+      entityId: input.reservationId,
 
-      path:
-        '/admin/reservations',
+      path: '/admin/reservations',
 
-      dedupeKeyPrefix:
-        `RESERVATION_CREATED:${input.reservationId}`,
+      dedupeKeyPrefix: `RESERVATION_CREATED:${input.reservationId}`,
     });
   }
 
-  async notifyReservationCancelled(
-    input: {
-      reservationId: string;
-      referenceNo: string;
-      guestName: string;
-    },
-  ) {
+  async notifyReservationCancelled(input: {
+    reservationId: string;
+    referenceNo: string;
+    guestName: string;
+  }) {
     await this.safelyCreate({
-      type:
-        NotificationType
-          .RESERVATION_CANCELLED,
+      type: NotificationType.RESERVATION_CANCELLED,
 
-      title:
-        'Reservation cancelled',
+      title: 'Reservation cancelled',
 
-      message:
-        `${input.referenceNo} for ${input.guestName} was cancelled.`,
+      message: `${input.referenceNo} for ${input.guestName} was cancelled.`,
 
-      entityType:
-        'Reservation',
+      entityType: 'Reservation',
 
-      entityId:
-        input.reservationId,
+      entityId: input.reservationId,
 
-      path:
-        '/admin/reservations',
+      path: '/admin/reservations',
 
-      dedupeKeyPrefix:
-        `RESERVATION_CANCELLED:${input.reservationId}`,
+      dedupeKeyPrefix: `RESERVATION_CANCELLED:${input.reservationId}`,
     });
   }
 
-  async notifyPaymentReceived(
-    input: {
-      paymentId: string;
-      reservationId: string;
-      referenceNo: string;
-      amountCentavos: number;
-    },
-  ) {
-    const amount =
-      new Intl.NumberFormat(
-        'en-PH',
-        {
-          style: 'currency',
-          currency: 'PHP',
-        },
-      ).format(
-        input.amountCentavos /
-          100,
-      );
+  async notifyPaymentReceived(input: {
+    paymentId: string;
+    reservationId: string;
+    referenceNo: string;
+    amountCentavos: number;
+  }) {
+    const amount = new Intl.NumberFormat('en-PH', {
+      style: 'currency',
+      currency: 'PHP',
+    }).format(input.amountCentavos / 100);
 
     await this.safelyCreate({
-      type:
-        NotificationType
-          .PAYMENT_RECEIVED,
+      type: NotificationType.PAYMENT_RECEIVED,
 
-      title:
-        'Payment received',
+      title: 'Payment received',
 
-      message:
-        `${amount} was received for reservation ${input.referenceNo}.`,
+      message: `${amount} was received for reservation ${input.referenceNo}.`,
 
-      entityType:
-        'Payment',
+      entityType: 'Payment',
 
-      entityId:
-        input.paymentId,
+      entityId: input.paymentId,
 
-      path:
-        '/admin/payments',
+      path: '/admin/payments',
 
-      dedupeKeyPrefix:
-        `PAYMENT_RECEIVED:${input.paymentId}`,
+      dedupeKeyPrefix: `PAYMENT_RECEIVED:${input.paymentId}`,
     });
   }
 
@@ -284,219 +189,144 @@ export class NotificationsService {
   // Per-reservation dedupe keys keep repeated polling from creating duplicate reminders.
   private async createUpcomingCheckInNotifications() {
     try {
-      const now =
-        new Date();
+      const now = new Date();
 
-      const upcomingUntil =
-        new Date(
-          now.getTime() +
-            24 *
-              60 *
-              60 *
-              1000,
-        );
+      const upcomingUntil = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-      const reservations =
-        await this.prisma
-          .reservation
-          .findMany({
-            where: {
-              status:
-                ReservationStatus
-                  .CONFIRMED,
+      const reservations = await this.prisma.reservation.findMany({
+        where: {
+          status: ReservationStatus.CONFIRMED,
 
-              checkIn: {
-                gte: now,
-                lte:
-                  upcomingUntil,
-              },
+          checkIn: {
+            gte: now,
+            lte: upcomingUntil,
+          },
+        },
+
+        include: {
+          guest: {
+            select: {
+              firstName: true,
+              lastName: true,
             },
+          },
 
-            include: {
-              guest: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                },
-              },
-
-              room: {
-                select: {
-                  roomNumber: true,
-                },
-              },
+          room: {
+            select: {
+              roomNumber: true,
             },
-          });
+          },
+        },
+      });
 
-      for (
-        const reservation
-        of reservations
-      ) {
-        const guestName =
-          `${reservation.guest.firstName} ${reservation.guest.lastName}`;
+      for (const reservation of reservations) {
+        const guestName = `${reservation.guest.firstName} ${reservation.guest.lastName}`;
 
-        await this
-          .createForStaffAndAdmins({
-            type:
-              NotificationType
-                .UPCOMING_CHECK_IN,
+        await this.createForStaffAndAdmins({
+          type: NotificationType.UPCOMING_CHECK_IN,
 
-            title:
-              'Upcoming check-in',
+          title: 'Upcoming check-in',
 
-            message:
-              `${guestName} is scheduled to check in to Room ${reservation.room.roomNumber} within the next 24 hours.`,
+          message: `${guestName} is scheduled to check in to Room ${reservation.room.roomNumber} within the next 24 hours.`,
 
-            entityType:
-              'Reservation',
+          entityType: 'Reservation',
 
-            entityId:
-              reservation.id,
+          entityId: reservation.id,
 
-            path:
-              '/admin/reservations',
+          path: '/admin/reservations',
 
-            dedupeKeyPrefix:
-              `UPCOMING_CHECK_IN:${reservation.id}`,
-          });
+          dedupeKeyPrefix: `UPCOMING_CHECK_IN:${reservation.id}`,
+        });
       }
     } catch (error) {
       this.logger.error(
         'Unable to create upcoming check-in notifications.',
-        error instanceof Error
-          ? error.stack
-          : undefined,
+        error instanceof Error ? error.stack : undefined,
       );
     }
   }
 
-  async findForUser(
-    userId: string,
-    take = 10,
-  ) {
-    await this
-      .createUpcomingCheckInNotifications();
+  async findForUser(userId: string, take = 10) {
+    await this.createUpcomingCheckInNotifications();
 
-    const safeTake =
-      Math.min(
-        Math.max(
-          take,
-          1,
-        ),
-        20,
-      );
+    const safeTake = Math.min(Math.max(take, 1), 20);
 
-    return this.prisma
-      .notification
-      .findMany({
-        where: {
-          userId,
-        },
+    return this.prisma.notification.findMany({
+      where: {
+        userId,
+      },
 
-        orderBy: {
-          createdAt: 'desc',
-        },
+      orderBy: {
+        createdAt: 'desc',
+      },
 
-        take:
-          safeTake,
-      });
+      take: safeTake,
+    });
   }
 
-  async getUnreadCount(
-    userId: string,
-  ) {
-    await this
-      .createUpcomingCheckInNotifications();
+  async getUnreadCount(userId: string) {
+    await this.createUpcomingCheckInNotifications();
 
-    const count =
-      await this.prisma
-        .notification
-        .count({
-          where: {
-            userId,
+    const count = await this.prisma.notification.count({
+      where: {
+        userId,
 
-            isRead:
-              false,
-          },
-        });
+        isRead: false,
+      },
+    });
 
     return {
       count,
     };
   }
 
-  async markAsRead(
-    notificationId: string,
-    userId: string,
-  ) {
-    const notification =
-      await this.prisma
-        .notification
-        .findFirst({
-          where: {
-            id:
-              notificationId,
+  async markAsRead(notificationId: string, userId: string) {
+    const notification = await this.prisma.notification.findFirst({
+      where: {
+        id: notificationId,
 
-            userId,
-          },
-        });
+        userId,
+      },
+    });
 
     if (!notification) {
-      throw new NotFoundException(
-        'Notification not found.',
-      );
+      throw new NotFoundException('Notification not found.');
     }
 
-    if (
-      notification.isRead
-    ) {
+    if (notification.isRead) {
       return notification;
     }
 
-    return this.prisma
-      .notification
-      .update({
-        where: {
-          id:
-            notification.id,
-        },
+    return this.prisma.notification.update({
+      where: {
+        id: notification.id,
+      },
 
-        data: {
-          isRead:
-            true,
+      data: {
+        isRead: true,
 
-          readAt:
-            new Date(),
-        },
-      });
+        readAt: new Date(),
+      },
+    });
   }
 
-  async markAllAsRead(
-    userId: string,
-  ) {
-    const result =
-      await this.prisma
-        .notification
-        .updateMany({
-          where: {
-            userId,
+  async markAllAsRead(userId: string) {
+    const result = await this.prisma.notification.updateMany({
+      where: {
+        userId,
 
-            isRead:
-              false,
-          },
+        isRead: false,
+      },
 
-          data: {
-            isRead:
-              true,
+      data: {
+        isRead: true,
 
-            readAt:
-              new Date(),
-          },
-        });
+        readAt: new Date(),
+      },
+    });
 
     return {
-      updated:
-        result.count,
+      updated: result.count,
     };
   }
 }

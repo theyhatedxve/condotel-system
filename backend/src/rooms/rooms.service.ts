@@ -4,31 +4,19 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 
-import {
-  RoomStatus,
-} from '../generated/prisma/enums';
+import { RoomStatus } from '../generated/prisma/enums';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
-import {
-  CreateRoomDto,
-} from './create-room.dto';
+import { CreateRoomDto } from './create-room.dto';
 
-import {
-  UpdateRoomDto,
-} from './update-room.dto';
+import { UpdateRoomDto } from './update-room.dto';
 
 @Injectable()
 export class RoomsService {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(
-    status?: RoomStatus,
-  ) {
+  async findAll(status?: RoomStatus) {
     return this.prisma.room.findMany({
       where: {
         isActive: true,
@@ -46,9 +34,7 @@ export class RoomsService {
     });
   }
 
-  async findAllForManagement(
-    status?: RoomStatus,
-  ) {
+  async findAllForManagement(status?: RoomStatus) {
     return this.prisma.room.findMany({
       where: {
         ...(status
@@ -70,99 +56,67 @@ export class RoomsService {
   }
 
   async findOne(id: string) {
-    const room =
-      await this.prisma.room.findUnique({
-        where: {
-          id,
-        },
-      });
+    const room = await this.prisma.room.findUnique({
+      where: {
+        id,
+      },
+    });
 
     if (!room) {
-      throw new NotFoundException(
-        'Room not found.',
-      );
+      throw new NotFoundException('Room not found.');
     }
 
     return room;
   }
 
   async create(dto: CreateRoomDto) {
-    const existingRoom =
-      await this.prisma.room.findUnique({
+    const existingRoom = await this.prisma.room.findUnique({
+      where: {
+        roomNumber: dto.roomNumber,
+      },
+    });
+
+    if (existingRoom) {
+      throw new ConflictException('Room number already exists.');
+    }
+
+    return this.prisma.room.create({
+      data: {
+        roomNumber: dto.roomNumber,
+
+        name: dto.name,
+
+        roomType: dto.roomType,
+
+        description: dto.description ?? null,
+
+        floor: dto.floor ?? null,
+
+        capacity: dto.capacity,
+
+        ratePerNightCentavos: dto.ratePerNightCentavos,
+
+        status: dto.status ?? RoomStatus.AVAILABLE,
+
+        imageUrl: dto.imageUrl ?? null,
+
+        isActive: dto.isActive ?? true,
+      },
+    });
+  }
+
+  async update(id: string, dto: UpdateRoomDto) {
+    const room = await this.findOne(id);
+
+    if (dto.roomNumber && dto.roomNumber !== room.roomNumber) {
+      const existingRoom = await this.prisma.room.findUnique({
         where: {
           roomNumber: dto.roomNumber,
         },
       });
 
-    if (existingRoom) {
-      throw new ConflictException(
-        'Room number already exists.',
-      );
-    }
-
-    return this.prisma.room.create({
-      data: {
-        roomNumber:
-          dto.roomNumber,
-
-        name:
-          dto.name,
-
-        roomType:
-          dto.roomType,
-
-        description:
-          dto.description ?? null,
-
-        floor:
-          dto.floor ?? null,
-
-        capacity:
-          dto.capacity,
-
-        ratePerNightCentavos:
-          dto.ratePerNightCentavos,
-
-        status:
-          dto.status ??
-          RoomStatus.AVAILABLE,
-
-        imageUrl:
-          dto.imageUrl ?? null,
-
-        isActive:
-          dto.isActive ?? true,
-      },
-    });
-  }
-
-  async update(
-    id: string,
-    dto: UpdateRoomDto,
-  ) {
-    const room =
-      await this.findOne(id);
-
-    if (
-      dto.roomNumber &&
-      dto.roomNumber !==
-        room.roomNumber
-    ) {
-      const existingRoom =
-        await this.prisma.room.findUnique({
-          where: {
-            roomNumber:
-              dto.roomNumber,
-          },
-        });
-
-      if (
-        existingRoom &&
-        existingRoom.id !== id
-      ) {
-        throw new ConflictException(
-          'Room number already exists.',
-        );
+      if (existingRoom && existingRoom.id !== id) {
+        throw new ConflictException('Room number already exists.');
       }
     }
 
@@ -172,11 +126,9 @@ export class RoomsService {
       },
 
       data: {
-        ...(dto.roomNumber !==
-        undefined
+        ...(dto.roomNumber !== undefined
           ? {
-              roomNumber:
-                dto.roomNumber,
+              roomNumber: dto.roomNumber,
             }
           : {}),
 
@@ -188,71 +140,56 @@ export class RoomsService {
 
         ...(dto.roomType !== undefined
           ? {
-              roomType:
-                dto.roomType,
+              roomType: dto.roomType,
             }
           : {}),
 
-        ...(dto.description !==
-        undefined
+        ...(dto.description !== undefined
           ? {
-              description:
-                dto.description ??
-                null,
+              description: dto.description ?? null,
             }
           : {}),
 
         ...(dto.floor !== undefined
           ? {
-              floor:
-                dto.floor ?? null,
+              floor: dto.floor ?? null,
             }
           : {}),
 
         ...(dto.capacity !== undefined
           ? {
-              capacity:
-                dto.capacity,
+              capacity: dto.capacity,
             }
           : {}),
 
-        ...(dto.ratePerNightCentavos !==
-        undefined
+        ...(dto.ratePerNightCentavos !== undefined
           ? {
-              ratePerNightCentavos:
-                dto.ratePerNightCentavos,
+              ratePerNightCentavos: dto.ratePerNightCentavos,
             }
           : {}),
 
         ...(dto.status !== undefined
           ? {
-              status:
-                dto.status,
+              status: dto.status,
             }
           : {}),
 
         ...(dto.imageUrl !== undefined
           ? {
-              imageUrl:
-                dto.imageUrl ??
-                null,
+              imageUrl: dto.imageUrl ?? null,
             }
           : {}),
 
         ...(dto.isActive !== undefined
           ? {
-              isActive:
-                dto.isActive,
+              isActive: dto.isActive,
             }
           : {}),
       },
     });
   }
 
-  async changeStatus(
-    id: string,
-    status: RoomStatus,
-  ) {
+  async changeStatus(id: string, status: RoomStatus) {
     await this.findOne(id);
 
     return this.prisma.room.update({
@@ -268,8 +205,7 @@ export class RoomsService {
 
   // Hide the room from active inventory while retaining its reservation/payment history.
   async deactivate(id: string) {
-    const room =
-      await this.findOne(id);
+    const room = await this.findOne(id);
 
     if (!room.isActive) {
       return room;

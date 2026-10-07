@@ -1,157 +1,92 @@
-import {
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
-import type {
-  AuthenticatedUser,
-} from '../auth/interfaces/authenticated-user.interface';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
-import {
-  UpdateSettingsDto,
-} from './update-settings.dto';
+import { UpdateSettingsDto } from './update-settings.dto';
 
-const SYSTEM_SETTINGS_ID =
-  'system';
+const SYSTEM_SETTINGS_ID = 'system';
 
 @Injectable()
 export class SettingsService {
-  constructor(
-    private readonly prisma:
-      PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   // Create the singleton lazily so a fresh database needs no separate settings seed.
   async getSettings() {
-    return this.prisma
-      .systemSetting
-      .upsert({
-        where: {
-          id:
-            SYSTEM_SETTINGS_ID,
-        },
+    return this.prisma.systemSetting.upsert({
+      where: {
+        id: SYSTEM_SETTINGS_ID,
+      },
 
-        update: {},
+      update: {},
 
-        create: {
-          id:
-            SYSTEM_SETTINGS_ID,
-        },
-      });
+      create: {
+        id: SYSTEM_SETTINGS_ID,
+      },
+    });
   }
 
-  async updateSettings(
-    dto: UpdateSettingsDto,
-    user: AuthenticatedUser,
-  ) {
-    const propertyName =
-      dto.propertyName
-        .trim();
+  async updateSettings(dto: UpdateSettingsDto, user: AuthenticatedUser) {
+    const propertyName = dto.propertyName.trim();
 
     if (!propertyName) {
-      throw new BadRequestException(
-        'Property name is required.',
-      );
+      throw new BadRequestException('Property name is required.');
     }
 
     const data = {
       propertyName,
 
-      propertyAddress:
-        dto.propertyAddress
-          ?.trim() ||
-        null,
+      propertyAddress: dto.propertyAddress?.trim() || null,
 
-      propertyCity:
-        dto.propertyCity
-          ?.trim() ||
-        null,
+      propertyCity: dto.propertyCity?.trim() || null,
 
-      propertyProvince:
-        dto.propertyProvince
-          ?.trim() ||
-        null,
+      propertyProvince: dto.propertyProvince?.trim() || null,
 
-      postalCode:
-        dto.postalCode
-          ?.trim() ||
-        null,
+      postalCode: dto.postalCode?.trim() || null,
 
-      contactEmail:
-        dto.contactEmail
-          ?.trim() ||
-        null,
+      contactEmail: dto.contactEmail?.trim() || null,
 
-      contactPhone:
-        dto.contactPhone
-          ?.trim() ||
-        null,
+      contactPhone: dto.contactPhone?.trim() || null,
 
-      checkInTime:
-        dto.checkInTime,
+      checkInTime: dto.checkInTime,
 
-      checkOutTime:
-        dto.checkOutTime,
+      checkOutTime: dto.checkOutTime,
     };
 
     // Save the settings and audit entry together so a change cannot commit without its audit trail.
-    return this.prisma
-      .$transaction(
-        async (
-          transaction,
-        ) => {
-          const settings =
-            await transaction
-              .systemSetting
-              .upsert({
-                where: {
-                  id:
-                    SYSTEM_SETTINGS_ID,
-                },
-
-                update:
-                  data,
-
-                create: {
-                  id:
-                    SYSTEM_SETTINGS_ID,
-
-                  ...data,
-                },
-              });
-
-          await transaction
-            .auditLog
-            .create({
-              data: {
-                actorId:
-                  user.id,
-
-                action:
-                  'SETTINGS_UPDATED',
-
-                entityType:
-                  'SystemSetting',
-
-                entityId:
-                  SYSTEM_SETTINGS_ID,
-
-                details:
-                  JSON.stringify({
-                    updatedFields:
-                      Object.keys(
-                        data,
-                      ),
-                  }),
-              },
-            });
-
-          return settings;
+    return this.prisma.$transaction(async (transaction) => {
+      const settings = await transaction.systemSetting.upsert({
+        where: {
+          id: SYSTEM_SETTINGS_ID,
         },
-      );
+
+        update: data,
+
+        create: {
+          id: SYSTEM_SETTINGS_ID,
+
+          ...data,
+        },
+      });
+
+      await transaction.auditLog.create({
+        data: {
+          actorId: user.id,
+
+          action: 'SETTINGS_UPDATED',
+
+          entityType: 'SystemSetting',
+
+          entityId: SYSTEM_SETTINGS_ID,
+
+          details: JSON.stringify({
+            updatedFields: Object.keys(data),
+          }),
+        },
+      });
+
+      return settings;
+    });
   }
 }

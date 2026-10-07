@@ -1,58 +1,28 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 
-import {
-  UserRole,
-} from '../generated/prisma/enums';
+import { UserRole } from '../generated/prisma/enums';
 
-import {
-  Roles,
-} from '../auth/decorators/roles.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-import {
-  JwtAuthGuard,
-} from '../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
-import {
-  RolesGuard,
-} from '../auth/guards/roles.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
-import {
-  SearchQueryDto,
-} from './search-query.dto';
+import { SearchQueryDto } from './search-query.dto';
 
-import {
-  SearchService,
-} from './search.service';
+import { SearchService } from './search.service';
 
 @Controller('search')
-@UseGuards(
-  JwtAuthGuard,
-  RolesGuard,
-)
-@Roles(
-  UserRole.STAFF,
-  UserRole.ADMIN,
-)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.STAFF, UserRole.ADMIN)
 export class SearchController {
-  constructor(
-    private readonly searchService:
-      SearchService,
-  ) {}
+  constructor(private readonly searchService: SearchService) {}
 
   @Get()
   search(
     @Query()
-    query:
-      SearchQueryDto,
+    query: SearchQueryDto,
   ) {
-    return this.searchService
-      .search(
-        query.q,
-      );
+    return this.searchService.search(query.q);
   }
 }

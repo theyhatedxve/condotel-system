@@ -1,14 +1,6 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  MaxLength,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 
-import {
-  UserRole,
-  UserStatus,
-} from '../generated/prisma/enums';
+import { UserRole, UserStatus } from '../generated/prisma/enums';
 
 export class UserManagementQueryDto {
   @IsOptional()

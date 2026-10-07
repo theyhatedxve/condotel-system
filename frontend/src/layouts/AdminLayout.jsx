@@ -1,12 +1,8 @@
-import {
-  Outlet,
-} from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 
-import Sidebar from
-  '../layouts/Sidebar';
+import Sidebar from '../layouts/Sidebar';
 
-import Topbar from
-  '../layouts/Topbar';
+import Topbar from '../layouts/Topbar';
 
 import './layout.css';
 

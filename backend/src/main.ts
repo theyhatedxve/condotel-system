@@ -4,14 +4,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-    const app =
-      await NestFactory.create(
-        AppModule,
-        {
-          // PayMongo signatures require the original body bytes, not re-serialized JSON.
-          rawBody: true,
-        },
-      );
+  const app = await NestFactory.create(AppModule, {
+    // PayMongo signatures require the original body bytes, not re-serialized JSON.
+    rawBody: true,
+  });
 
   app.setGlobalPrefix('api');
 

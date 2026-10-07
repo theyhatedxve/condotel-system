@@ -1,34 +1,18 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  AuthModule,
-} from '../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
-import {
-  SearchController,
-} from './search.controller';
+import { SearchController } from './search.controller';
 
-import {
-  SearchService,
-} from './search.service';
+import { SearchService } from './search.service';
 
 @Module({
-  imports: [
-    AuthModule,
-  ],
+  imports: [AuthModule],
 
-  controllers: [
-    SearchController,
-  ],
+  controllers: [SearchController],
 
-  providers: [
-    SearchService,
-  ],
+  providers: [SearchService],
 
-  exports: [
-    SearchService,
-  ],
+  exports: [SearchService],
 })
 export class SearchModule {}

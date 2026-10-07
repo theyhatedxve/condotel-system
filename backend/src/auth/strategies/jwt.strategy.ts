@@ -1,119 +1,66 @@
-import {
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
-import {
-  ConfigService,
-} from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 
-import {
-  PassportStrategy,
-} from '@nestjs/passport';
+import { PassportStrategy } from '@nestjs/passport';
 
-import {
-  ExtractJwt,
-  Strategy,
-} from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import {
-  UserStatus,
-} from '../../generated/prisma/enums';
+import { UserStatus } from '../../generated/prisma/enums';
 
-import {
-  UsersService,
-} from '../../users/users.service';
+import { UsersService } from '../../users/users.service';
 
-import {
-  JwtPayload,
-} from '../interfaces/jwt-payload.interface';
+import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
 @Injectable()
-export class JwtStrategy
-  extends PassportStrategy(
-    Strategy,
-  )
-{
+export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private readonly configService:
-      ConfigService,
+    private readonly configService: ConfigService,
 
-    private readonly usersService:
-      UsersService,
+    private readonly usersService: UsersService,
   ) {
-    const jwtSecret =
-      configService.get<string>(
-        'JWT_SECRET',
-      );
+    const jwtSecret = configService.get<string>('JWT_SECRET');
 
     if (!jwtSecret) {
-      throw new Error(
-        'JWT_SECRET is missing from the .env file.',
-      );
+      throw new Error('JWT_SECRET is missing from the .env file.');
     }
 
     super({
-      jwtFromRequest:
-        ExtractJwt
-          .fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
 
-      ignoreExpiration:
-        false,
+      ignoreExpiration: false,
 
-      secretOrKey:
-        jwtSecret,
+      secretOrKey: jwtSecret,
     });
   }
 
-  async validate(
-    payload:
-      JwtPayload,
-  ) {
+  async validate(payload: JwtPayload) {
     // Reload account status and role for each authenticated request so existing tokens
     // reflect account suspension and role changes without waiting for token expiry.
-    const user =
-      await this.usersService
-        .findById(
-          payload.sub,
-        );
+    const user = await this.usersService.findById(payload.sub);
 
-    if (
-      !user ||
-      user.status !==
-        UserStatus.ACTIVE
-    ) {
-      throw new UnauthorizedException(
-        'User account is unavailable.',
-      );
+    if (!user || user.status !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException('User account is unavailable.');
     }
 
     return {
-      id:
-        user.id,
+      id: user.id,
 
-      email:
-        user.email,
+      email: user.email,
 
-      username:
-        user.username,
+      username: user.username,
 
-      firstName:
-        user.firstName,
+      firstName: user.firstName,
 
-      lastName:
-        user.lastName,
+      lastName: user.lastName,
 
-      phone:
-        user.phone,
+      phone: user.phone,
 
-      role:
-        user.role,
+      role: user.role,
 
-      status:
-        user.status,
+      status: user.status,
 
-      mustChangePassword:
-        user.mustChangePassword,
+      mustChangePassword: user.mustChangePassword,
     };
   }
 }

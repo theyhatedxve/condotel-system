@@ -1,34 +1,18 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  AuthModule,
-} from '../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
-import {
-  TransactionsController,
-} from './transactions.controller';
+import { TransactionsController } from './transactions.controller';
 
-import {
-  TransactionsService,
-} from './transactions.service';
+import { TransactionsService } from './transactions.service';
 
 @Module({
-  imports: [
-    AuthModule,
-  ],
+  imports: [AuthModule],
 
-  controllers: [
-    TransactionsController,
-  ],
+  controllers: [TransactionsController],
 
-  providers: [
-    TransactionsService,
-  ],
+  providers: [TransactionsService],
 
-  exports: [
-    TransactionsService,
-  ],
+  exports: [TransactionsService],
 })
 export class TransactionsModule {}

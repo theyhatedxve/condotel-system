@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import {
   PaymentMethod,
@@ -10,197 +8,138 @@ import {
   UserRole,
 } from '../generated/prisma/enums';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class SearchService {
-  constructor(
-    private readonly prisma:
-      PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async search(
-    query: string,
-  ) {
-    const normalizedQuery =
-      query.trim();
+  async search(query: string) {
+    const normalizedQuery = query.trim();
 
-    const lowerQuery =
-      normalizedQuery
-        .toLowerCase();
+    const lowerQuery = normalizedQuery.toLowerCase();
 
     // Convert partial status/method text into enum values before building Prisma filters.
-    const matchingPaymentStatuses =
-      Object.values(
-        PaymentStatus,
-      ).filter(
-        (status) =>
-          status
-            .toLowerCase()
-            .includes(
-              lowerQuery,
-            ),
-      );
+    const matchingPaymentStatuses = Object.values(PaymentStatus).filter(
+      (status) => status.toLowerCase().includes(lowerQuery),
+    );
 
-    const matchingPaymentMethods =
-      Object.values(
-        PaymentMethod,
-      ).filter(
-        (method) =>
-          method
-            .toLowerCase()
-            .includes(
-              lowerQuery,
-            ),
-      );
+    const matchingPaymentMethods = Object.values(PaymentMethod).filter(
+      (method) => method.toLowerCase().includes(lowerQuery),
+    );
 
-    const matchingTransactionTypes =
-      Object.values(
-        TransactionType,
-      ).filter(
-        (type) =>
-          type
-            .toLowerCase()
-            .includes(
-              lowerQuery,
-            ),
-      );
+    const matchingTransactionTypes = Object.values(TransactionType).filter(
+      (type) => type.toLowerCase().includes(lowerQuery),
+    );
 
-    const matchingTransactionStatuses =
-      Object.values(
-        TransactionStatus,
-      ).filter(
-        (status) =>
-          status
-            .toLowerCase()
-            .includes(
-              lowerQuery,
-            ),
-      );
+    const matchingTransactionStatuses = Object.values(TransactionStatus).filter(
+      (status) => status.toLowerCase().includes(lowerQuery),
+    );
 
-    const [
-      guests,
-      rooms,
-      reservations,
-      payments,
-      transactions,
-    ] = await Promise.all([
-      this.prisma.user.findMany({
-        where: {
-          role:
-            UserRole.CUSTOMER,
+    const [guests, rooms, reservations, payments, transactions] =
+      await Promise.all([
+        this.prisma.user.findMany({
+          where: {
+            role: UserRole.CUSTOMER,
 
-          OR: [
-            {
-              firstName: {
-                contains:
-                  normalizedQuery,
+            OR: [
+              {
+                firstName: {
+                  contains: normalizedQuery,
+                },
               },
+              {
+                lastName: {
+                  contains: normalizedQuery,
+                },
+              },
+              {
+                email: {
+                  contains: normalizedQuery,
+                },
+              },
+              {
+                username: {
+                  contains: normalizedQuery,
+                },
+              },
+              {
+                phone: {
+                  contains: normalizedQuery,
+                },
+              },
+            ],
+          },
+
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+            phone: true,
+            status: true,
+          },
+
+          orderBy: [
+            {
+              lastName: 'asc',
             },
             {
-              lastName: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-            {
-              email: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-            {
-              username: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-            {
-              phone: {
-                contains:
-                  normalizedQuery,
-              },
+              firstName: 'asc',
             },
           ],
-        },
 
-        select: {
-          id: true,
-          firstName: true,
-          lastName: true,
-          email: true,
-          phone: true,
-          status: true,
-        },
+          take: 5,
+        }),
 
-        orderBy: [
-          {
-            lastName: 'asc',
+        this.prisma.room.findMany({
+          where: {
+            OR: [
+              {
+                roomNumber: {
+                  contains: normalizedQuery,
+                },
+              },
+              {
+                name: {
+                  contains: normalizedQuery,
+                },
+              },
+              {
+                roomType: {
+                  contains: normalizedQuery,
+                },
+              },
+              {
+                description: {
+                  contains: normalizedQuery,
+                },
+              },
+            ],
           },
-          {
-            firstName: 'asc',
+
+          select: {
+            id: true,
+            roomNumber: true,
+            name: true,
+            roomType: true,
+            status: true,
+            isActive: true,
           },
-        ],
 
-        take: 5,
-      }),
+          orderBy: {
+            roomNumber: 'asc',
+          },
 
-      this.prisma.room.findMany({
-        where: {
-          OR: [
-            {
-              roomNumber: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-            {
-              name: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-            {
-              roomType: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-            {
-              description: {
-                contains:
-                  normalizedQuery,
-              },
-            },
-          ],
-        },
+          take: 5,
+        }),
 
-        select: {
-          id: true,
-          roomNumber: true,
-          name: true,
-          roomType: true,
-          status: true,
-          isActive: true,
-        },
-
-        orderBy: {
-          roomNumber: 'asc',
-        },
-
-        take: 5,
-      }),
-
-      this.prisma.reservation
-        .findMany({
+        this.prisma.reservation.findMany({
           where: {
             OR: [
               {
                 referenceNo: {
-                  contains:
-                    normalizedQuery,
+                  contains: normalizedQuery,
                 },
               },
 
@@ -210,20 +149,17 @@ export class SearchService {
                     OR: [
                       {
                         firstName: {
-                          contains:
-                            normalizedQuery,
+                          contains: normalizedQuery,
                         },
                       },
                       {
                         lastName: {
-                          contains:
-                            normalizedQuery,
+                          contains: normalizedQuery,
                         },
                       },
                       {
                         email: {
-                          contains:
-                            normalizedQuery,
+                          contains: normalizedQuery,
                         },
                       },
                     ],
@@ -237,14 +173,12 @@ export class SearchService {
                     OR: [
                       {
                         roomNumber: {
-                          contains:
-                            normalizedQuery,
+                          contains: normalizedQuery,
                         },
                       },
                       {
                         name: {
-                          contains:
-                            normalizedQuery,
+                          contains: normalizedQuery,
                         },
                       },
                     ],
@@ -260,8 +194,7 @@ export class SearchService {
             status: true,
             checkIn: true,
             checkOut: true,
-            totalAmountCentavos:
-              true,
+            totalAmountCentavos: true,
 
             guest: {
               select: {
@@ -286,54 +219,40 @@ export class SearchService {
           take: 5,
         }),
 
-      this.prisma.payment
-        .findMany({
+        this.prisma.payment.findMany({
           where: {
             OR: [
               {
                 provider: {
-                  contains:
-                    normalizedQuery,
+                  contains: normalizedQuery,
                 },
               },
 
               {
-                paymongoCheckoutSessionId:
-                  {
-                    contains:
-                      normalizedQuery,
-                  },
+                paymongoCheckoutSessionId: {
+                  contains: normalizedQuery,
+                },
               },
 
               {
-                paymongoPaymentIntentId:
-                  {
-                    contains:
-                      normalizedQuery,
-                  },
+                paymongoPaymentIntentId: {
+                  contains: normalizedQuery,
+                },
               },
 
               {
-                paymongoPaymentId:
-                  {
-                    contains:
-                      normalizedQuery,
-                  },
+                paymongoPaymentId: {
+                  contains: normalizedQuery,
+                },
               },
 
-              ...matchingPaymentStatuses
-                .map(
-                  (status) => ({
-                    status,
-                  }),
-                ),
+              ...matchingPaymentStatuses.map((status) => ({
+                status,
+              })),
 
-              ...matchingPaymentMethods
-                .map(
-                  (method) => ({
-                    method,
-                  }),
-                ),
+              ...matchingPaymentMethods.map((method) => ({
+                method,
+              })),
 
               {
                 reservation: {
@@ -341,8 +260,7 @@ export class SearchService {
                     OR: [
                       {
                         referenceNo: {
-                          contains:
-                            normalizedQuery,
+                          contains: normalizedQuery,
                         },
                       },
 
@@ -352,20 +270,17 @@ export class SearchService {
                             OR: [
                               {
                                 firstName: {
-                                  contains:
-                                    normalizedQuery,
+                                  contains: normalizedQuery,
                                 },
                               },
                               {
                                 lastName: {
-                                  contains:
-                                    normalizedQuery,
+                                  contains: normalizedQuery,
                                 },
                               },
                               {
                                 email: {
-                                  contains:
-                                    normalizedQuery,
+                                  contains: normalizedQuery,
                                 },
                               },
                             ],
@@ -377,8 +292,7 @@ export class SearchService {
                         room: {
                           is: {
                             roomNumber: {
-                              contains:
-                                normalizedQuery,
+                              contains: normalizedQuery,
                             },
                           },
                         },
@@ -396,8 +310,7 @@ export class SearchService {
             method: true,
             status: true,
             provider: true,
-            paymongoPaymentId:
-              true,
+            paymongoPaymentId: true,
 
             reservation: {
               select: {
@@ -426,55 +339,43 @@ export class SearchService {
           take: 5,
         }),
 
-      this.prisma.transaction
-        .findMany({
+        this.prisma.transaction.findMany({
           where: {
             OR: [
               {
                 id: {
-                  contains:
-                    normalizedQuery,
+                  contains: normalizedQuery,
                 },
               },
 
               {
                 providerReference: {
-                  contains:
-                    normalizedQuery,
+                  contains: normalizedQuery,
                 },
               },
 
               {
                 description: {
-                  contains:
-                    normalizedQuery,
+                  contains: normalizedQuery,
                 },
               },
 
-              ...matchingTransactionTypes
-                .map(
-                  (type) => ({
-                    type,
-                  }),
-                ),
+              ...matchingTransactionTypes.map((type) => ({
+                type,
+              })),
 
-              ...matchingTransactionStatuses
-                .map(
-                  (status) => ({
-                    status,
-                  }),
-                ),
+              ...matchingTransactionStatuses.map((status) => ({
+                status,
+              })),
 
               {
                 payment: {
                   is: {
                     OR: [
                       {
-                        paymongoPaymentId:
-                          {
-                            contains:
-                              normalizedQuery,
-                          },
+                        paymongoPaymentId: {
+                          contains: normalizedQuery,
+                        },
                       },
 
                       {
@@ -483,8 +384,7 @@ export class SearchService {
                             OR: [
                               {
                                 referenceNo: {
-                                  contains:
-                                    normalizedQuery,
+                                  contains: normalizedQuery,
                                 },
                               },
 
@@ -494,14 +394,12 @@ export class SearchService {
                                     OR: [
                                       {
                                         firstName: {
-                                          contains:
-                                            normalizedQuery,
+                                          contains: normalizedQuery,
                                         },
                                       },
                                       {
                                         lastName: {
-                                          contains:
-                                            normalizedQuery,
+                                          contains: normalizedQuery,
                                         },
                                       },
                                     ],
@@ -513,8 +411,7 @@ export class SearchService {
                                 room: {
                                   is: {
                                     roomNumber: {
-                                      contains:
-                                        normalizedQuery,
+                                      contains: normalizedQuery,
                                     },
                                   },
                                 },
@@ -571,155 +468,100 @@ export class SearchService {
 
           take: 5,
         }),
-    ]);
+      ]);
 
     const results = [
-      ...guests.map(
-        (guest) => ({
-          type: 'GUEST',
+      ...guests.map((guest) => ({
+        type: 'GUEST',
 
-          id:
-            guest.id,
+        id: guest.id,
 
-          title:
-            `${guest.firstName} ${guest.lastName}`,
+        title: `${guest.firstName} ${guest.lastName}`,
 
-          subtitle:
-            guest.email,
+        subtitle: guest.email,
 
-          status:
-            guest.status,
+        status: guest.status,
 
-          path:
-            '/admin/guests',
-        }),
-      ),
+        path: '/admin/guests',
+      })),
 
-      ...rooms.map(
-        (room) => ({
-          type: 'ROOM',
+      ...rooms.map((room) => ({
+        type: 'ROOM',
 
-          id:
-            room.id,
+        id: room.id,
 
-          title:
-            `Room ${room.roomNumber}`,
+        title: `Room ${room.roomNumber}`,
 
-          subtitle:
-            `${room.name} • ${room.roomType}`,
+        subtitle: `${room.name} • ${room.roomType}`,
 
-          status:
-            room.isActive
-              ? room.status
-              : 'INACTIVE',
+        status: room.isActive ? room.status : 'INACTIVE',
 
-          path:
-            '/admin/rooms',
-        }),
-      ),
+        path: '/admin/rooms',
+      })),
 
-      ...reservations.map(
-        (reservation) => ({
-          type:
-            'RESERVATION',
+      ...reservations.map((reservation) => ({
+        type: 'RESERVATION',
 
-          id:
-            reservation.id,
+        id: reservation.id,
 
-          title:
-            reservation
-              .referenceNo,
+        title: reservation.referenceNo,
 
-          subtitle:
-            `${reservation.guest.firstName} ${reservation.guest.lastName} • Room ${reservation.room.roomNumber}`,
+        subtitle: `${reservation.guest.firstName} ${reservation.guest.lastName} • Room ${reservation.room.roomNumber}`,
 
-          status:
-            reservation.status,
+        status: reservation.status,
 
-          path:
-            '/admin/reservations',
-        }),
-      ),
+        path: '/admin/reservations',
+      })),
 
-      ...payments.map(
-        (payment) => ({
-          type:
-            'PAYMENT',
+      ...payments.map((payment) => ({
+        type: 'PAYMENT',
 
-          id:
-            payment.id,
+        id: payment.id,
 
-          title:
-            payment
-              .reservation
-              .referenceNo,
+        title: payment.reservation.referenceNo,
 
-          subtitle:
-            `${payment.reservation.guest.firstName} ${payment.reservation.guest.lastName} • ${payment.method ?? payment.provider}`,
+        subtitle: `${payment.reservation.guest.firstName} ${payment.reservation.guest.lastName} • ${payment.method ?? payment.provider}`,
 
-          status:
-            payment.status,
+        status: payment.status,
 
-          amountCentavos:
-            payment
-              .amountCentavos,
+        amountCentavos: payment.amountCentavos,
 
-          path:
-            '/admin/payments',
-        }),
-      ),
+        path: '/admin/payments',
+      })),
 
-      ...transactions.map(
-        (transaction) => ({
-          type:
-            'TRANSACTION',
+      ...transactions.map((transaction) => ({
+        type: 'TRANSACTION',
 
-          id:
-            transaction.id,
+        id: transaction.id,
 
-          title:
-            transaction
-              .providerReference ??
-            transaction.id,
+        title: transaction.providerReference ?? transaction.id,
 
-          subtitle:
-            `${transaction.payment.reservation.referenceNo} • ${transaction.type}`,
+        subtitle: `${transaction.payment.reservation.referenceNo} • ${transaction.type}`,
 
-          status:
-            transaction.status,
+        status: transaction.status,
 
-          amountCentavos:
-            transaction
-              .amountCentavos,
+        amountCentavos: transaction.amountCentavos,
 
-          path:
-            '/admin/transactions',
-        }),
-      ),
+        path: '/admin/transactions',
+      })),
     ];
 
     // Each category is capped at five matches; counts describe this result set, not all matches.
     return {
-      query:
-        normalizedQuery,
+      query: normalizedQuery,
 
       results,
 
       counts: {
-        guests:
-          guests.length,
+        guests: guests.length,
 
-        rooms:
-          rooms.length,
+        rooms: rooms.length,
 
-        reservations:
-          reservations.length,
+        reservations: reservations.length,
 
-        payments:
-          payments.length,
+        payments: payments.length,
 
-        transactions:
-          transactions.length,
+        transactions: transactions.length,
       },
     };
   }

@@ -1,34 +1,18 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  AuthModule,
-} from '../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
-import {
-  NotificationsController,
-} from './notifications.controller';
+import { NotificationsController } from './notifications.controller';
 
-import {
-  NotificationsService,
-} from './notifications.service';
+import { NotificationsService } from './notifications.service';
 
 @Module({
-  imports: [
-    AuthModule,
-  ],
+  imports: [AuthModule],
 
-  controllers: [
-    NotificationsController,
-  ],
+  controllers: [NotificationsController],
 
-  providers: [
-    NotificationsService,
-  ],
+  providers: [NotificationsService],
 
-  exports: [
-    NotificationsService,
-  ],
+  exports: [NotificationsService],
 })
 export class NotificationsModule {}

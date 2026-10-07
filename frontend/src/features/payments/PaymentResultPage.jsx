@@ -1,69 +1,39 @@
-import {
-  CheckCircle2,
-  XCircle,
-} from 'lucide-react';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
-import {
-  useEffect,
-} from 'react';
+import { useEffect } from 'react';
 
-import {
-  cancelPendingCheckout,
-} from './paymentApi';
+import { cancelPendingCheckout } from './paymentApi';
 
-import {
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
 import './payment-result.css';
 
 export default function PaymentResultPage() {
-  const location =
-    useLocation();
+  const location = useLocation();
 
-  const navigate =
-    useNavigate();
+  const navigate = useNavigate();
 
-  const [
-    searchParams,
-  ] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
-  const reservationId =
-    searchParams.get(
-      'reservationId',
-    );
+  const reservationId = searchParams.get('reservationId');
 
   // This URL controls presentation only; the verified backend webhook confirms payment.
-  const success =
-    location.pathname ===
-    '/payment/success';
+  const success = location.pathname === '/payment/success';
 
-    useEffect(() => {
-        if (
-          success ||
-          !reservationId
-        ) {
-          return;
-        }
+  useEffect(() => {
+    if (success || !reservationId) {
+      return;
+    }
 
-        cancelPendingCheckout(
-          reservationId,
-        ).catch(() => {
-          // The result page should still load
-          // even if checkout cancellation
-          // synchronization fails.
-        });
-      }, [
-        reservationId,
-        success,
-      ]);
+    cancelPendingCheckout(reservationId).catch(() => {
+      // The result page should still load
+      // even if checkout cancellation
+      // synchronization fails.
+    });
+  }, [reservationId, success]);
 
   function handleReturn() {
-    navigate(
-      '/admin/reservations',
-    );
+    navigate('/admin/reservations');
   }
 
   return (
@@ -76,22 +46,10 @@ export default function PaymentResultPage() {
               : 'payment-result-icon cancelled'
           }
         >
-          {success ? (
-            <CheckCircle2
-              size={54}
-            />
-          ) : (
-            <XCircle
-              size={54}
-            />
-          )}
+          {success ? <CheckCircle2 size={54} /> : <XCircle size={54} />}
         </div>
 
-        <h1>
-          {success
-            ? 'Payment Submitted'
-            : 'Payment Cancelled'}
-        </h1>
+        <h1>{success ? 'Payment Submitted' : 'Payment Cancelled'}</h1>
 
         <p>
           {success
@@ -102,19 +60,11 @@ export default function PaymentResultPage() {
         {reservationId && (
           <div className="payment-result-reference">
             Reservation ID:
-            <strong>
-              {' '}
-              {reservationId}
-            </strong>
+            <strong> {reservationId}</strong>
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={
-            handleReturn
-          }
-        >
+        <button type="button" onClick={handleReturn}>
           Back to Reservations
         </button>
       </div>

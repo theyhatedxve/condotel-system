@@ -11,39 +11,25 @@ import {
   MinLength,
 } from 'class-validator';
 
-import {
-  RoomStatus,
-} from '../generated/prisma/enums';
+import { RoomStatus } from '../generated/prisma/enums';
 
 export class CreateRoomDto {
   @IsString()
   @MinLength(1)
   @MaxLength(20)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   roomNumber: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   name: string;
 
   @IsString()
   @MinLength(1)
   @MaxLength(100)
-  @Transform(({ value }) =>
-    typeof value === 'string'
-      ? value.trim()
-      : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   roomType: string;
 
   @IsOptional()
@@ -56,9 +42,7 @@ export class CreateRoomDto {
 
     const result = value.trim();
 
-    return result === ''
-      ? undefined
-      : result;
+    return result === '' ? undefined : result;
   })
   description?: string;
 

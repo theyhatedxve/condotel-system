@@ -7,16 +7,13 @@
 
   font-size: 26px;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .dashboard-header p {
-  margin:
-    7px 0 0;
+  margin: 7px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 14px;
 }
@@ -24,11 +21,7 @@
 .stat-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      4,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 
   gap: 16px;
 
@@ -45,13 +38,11 @@
 
   padding: 19px;
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   color: #ffffff;
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .stat-card > div {
@@ -78,39 +69,19 @@
 }
 
 .stat-card.blue {
-  background:
-    linear-gradient(
-      135deg,
-      #0f96ee,
-      #0871da
-    );
+  background: linear-gradient(135deg, #0f96ee, #0871da);
 }
 
 .stat-card.green {
-  background:
-    linear-gradient(
-      135deg,
-      #18b97a,
-      #099864
-    );
+  background: linear-gradient(135deg, #18b97a, #099864);
 }
 
 .stat-card.orange {
-  background:
-    linear-gradient(
-      135deg,
-      #ffb329,
-      #ff9514
-    );
+  background: linear-gradient(135deg, #ffb329, #ff9514);
 }
 
 .stat-card.purple {
-  background:
-    linear-gradient(
-      135deg,
-      #9164ed,
-      #7047dc
-    );
+  background: linear-gradient(135deg, #9164ed, #7047dc);
 }
 
 .stat-title {
@@ -130,25 +101,19 @@
 .dashboard-panel {
   padding: 20px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
-  background:
-    var(--color-surface);
+  background: var(--color-surface);
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .panel-heading {
   display: flex;
 
-  justify-content:
-    space-between;
+  justify-content: space-between;
 
   align-items: center;
 
@@ -160,16 +125,14 @@
 
   font-size: 15px;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .panel-heading button {
   border: none;
   background: transparent;
 
-  color:
-    var(--color-blue-700);
+  color: var(--color-blue-700);
 
   font-size: 12px;
 }
@@ -181,29 +144,24 @@
 .dashboard-table {
   width: 100%;
 
-  border-collapse:
-    collapse;
+  border-collapse: collapse;
 
   font-size: 12px;
 }
 
 .dashboard-table th,
 .dashboard-table td {
-  padding:
-    13px 9px;
+  padding: 13px 9px;
 
   text-align: left;
 
-  border-bottom:
-    1px solid
-    #edf2f6;
+  border-bottom: 1px solid #edf2f6;
 
   white-space: nowrap;
 }
 
 .dashboard-table th {
-  color:
-    #63798e;
+  color: #63798e;
 
   font-weight: 600;
 }
@@ -211,11 +169,9 @@
 .status-badge {
   display: inline-flex;
 
-  padding:
-    4px 8px;
+  padding: 4px 8px;
 
-  border-radius:
-    999px;
+  border-radius: 999px;
 
   font-size: 10px;
 
@@ -223,27 +179,21 @@
 }
 
 .status-badge.checked-in {
-  background:
-    #dcf6eb;
+  background: #dcf6eb;
 
-  color:
-    #11845b;
+  color: #11845b;
 }
 
 .status-badge.confirmed {
-  background:
-    #dceeff;
+  background: #dceeff;
 
-  color:
-    #1374b9;
+  color: #1374b9;
 }
 
 .status-badge.pending {
-  background:
-    #fff0d4;
+  background: #fff0d4;
 
-  color:
-    #c97804;
+  color: #c97804;
 }
 
 .occupancy-panel {
@@ -256,20 +206,14 @@
   width: 150px;
   height: 150px;
 
-  margin:
-    28px auto;
+  margin: 28px auto;
 
   display: grid;
   place-items: center;
 
-  background:
-  conic-gradient(
-    #0874c9
-    0
-    var(--occupancy),
-    #e6edf4
-    var(--occupancy)
-    100%
+  background: conic-gradient(
+    #0874c9 0 var(--occupancy),
+    #e6edf4 var(--occupancy) 100%
   );
 }
 
@@ -277,14 +221,13 @@
 .dashboard-empty {
   padding: 30px;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   text-align: center;
 }
 
 .occupancy-circle::before {
-  content: "";
+  content: '';
 
   position: absolute;
 }
@@ -301,20 +244,17 @@
 
   border-radius: 50%;
 
-  background:
-    #ffffff;
+  background: #ffffff;
 }
 
 .occupancy-circle strong {
   font-size: 27px;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .occupancy-circle span {
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 11px;
 }
@@ -331,8 +271,7 @@
 .occupancy-legend span {
   display: grid;
 
-  grid-template-columns:
-    10px 1fr auto;
+  grid-template-columns: 10px 1fr auto;
 
   align-items: center;
 
@@ -358,28 +297,18 @@
   background: #9aaabb;
 }
 
-@media (
-  max-width: 1150px
-) {
+@media (max-width: 1150px) {
   .stat-grid {
-    grid-template-columns:
-      repeat(
-        2,
-        minmax(0, 1fr)
-      );
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .dashboard-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 }
 
-@media (
-  max-width: 650px
-) {
+@media (max-width: 650px) {
   .stat-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 }

@@ -1,14 +1,6 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import {
-  getCurrentUser,
-  loginUser,
-} from './authApi';
+import { getCurrentUser, loginUser } from './authApi';
 
 import {
   clearAccessToken,
@@ -16,99 +8,55 @@ import {
   saveAccessToken,
 } from './authStorage';
 
-import {
-  AuthContext,
-} from './auth-context';
+import { AuthContext } from './auth-context';
 
-export function AuthProvider({
-  children,
-}) {
-  const [
-    user,
-    setUser,
-  ] = useState(null);
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
 
-  const [
-    isLoading,
-    setIsLoading,
-  ] = useState(
-    () =>
-      Boolean(
-        getAccessToken(),
-      ),
-  );
+  const [isLoading, setIsLoading] = useState(() => Boolean(getAccessToken()));
 
-  const refreshUser =
-    useCallback(
-      async () => {
-        const result =
-          await getCurrentUser();
+  const refreshUser = useCallback(async () => {
+    const result = await getCurrentUser();
 
-        setUser(
-          result.user,
-        );
+    setUser(result.user);
 
-        return result.user;
-      },
-      [],
-    );
+    return result.user;
+  }, []);
 
-  const login =
-    useCallback(
-      async ({
-        identifier,
-        password,
-        rememberMe,
-      }) => {
-        const result =
-          await loginUser({
-            identifier,
-            password,
-          });
+  const login = useCallback(async ({ identifier, password, rememberMe }) => {
+    const result = await loginUser({
+      identifier,
+      password,
+    });
 
-        saveAccessToken(
-          result.accessToken,
-          rememberMe,
-        );
+    saveAccessToken(result.accessToken, rememberMe);
 
-        setUser(
-          result.user,
-        );
+    setUser(result.user);
 
-        return result.user;
-      },
-      [],
-    );
+    return result.user;
+  }, []);
 
-  const logout =
-    useCallback(
-      () => {
-        clearAccessToken();
+  const logout = useCallback(() => {
+    clearAccessToken();
 
-        setUser(null);
-      },
-      [],
-    );
+    setUser(null);
+  }, []);
 
   // Validate a stored token with the backend before treating the session as authenticated.
   // ProtectedRoute waits for this initialization before deciding whether to redirect.
   useEffect(() => {
-    const token =
-      getAccessToken();
+    const token = getAccessToken();
 
     if (!token) {
       return;
     }
 
-    let cancelled =
-      false;
+    let cancelled = false;
 
     getCurrentUser()
       .then((result) => {
         if (!cancelled) {
-          setUser(
-            result.user,
-          );
+          setUser(result.user);
         }
       })
       .catch(() => {
@@ -120,48 +68,31 @@ export function AuthProvider({
       })
       .finally(() => {
         if (!cancelled) {
-          setIsLoading(
-            false,
-          );
+          setIsLoading(false);
         }
       });
 
     return () => {
-      cancelled =
-        true;
+      cancelled = true;
     };
   }, []);
 
-  const value =
-    useMemo(
-      () => ({
-        user,
+  const value = useMemo(
+    () => ({
+      user,
 
-        isLoading,
+      isLoading,
 
-        isAuthenticated:
-          Boolean(user),
+      isAuthenticated: Boolean(user),
 
-        login,
+      login,
 
-        logout,
+      logout,
 
-        refreshUser,
-      }),
-      [
-        user,
-        isLoading,
-        login,
-        logout,
-        refreshUser,
-      ],
-    );
-
-  return (
-    <AuthContext.Provider
-      value={value}
-    >
-      {children}
-    </AuthContext.Provider>
+      refreshUser,
+    }),
+    [user, isLoading, login, logout, refreshUser],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,11 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  Plus,
-} from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 import {
   createReservation,
@@ -13,24 +8,15 @@ import {
   updateReservationStatus,
 } from './reservationApi';
 
-import {
-  getGuests,
-} from '../guests/guestApi';
+import { getGuests } from '../guests/guestApi';
 
-import ReservationFormModal from
-  './ReservationFormModal';
+import ReservationFormModal from './ReservationFormModal';
 
-import {
-  formatCurrency,
-} from '../../utils/formatCurrency';
+import { formatCurrency } from '../../utils/formatCurrency';
 
-import {
-  formatDate,
-} from '../../utils/formatDate';
+import { formatDate } from '../../utils/formatDate';
 
-import {
-  createCheckout,
-} from '../payments/paymentApi';
+import { createCheckout } from '../payments/paymentApi';
 
 import './reservations.css';
 
@@ -58,65 +44,34 @@ const filters = [
 ];
 
 export default function ReservationsPage() {
-  const [
-    reservations,
-    setReservations,
-  ] = useState([]);
+  const [reservations, setReservations] = useState([]);
 
-  const [guests, setGuests] =
-    useState([]);
+  const [guests, setGuests] = useState([]);
 
-  const [
-    statusFilter,
-    setStatusFilter,
-  ] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [
-    modalOpen,
-    setModalOpen,
-  ] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [
-    submitting,
-    setSubmitting,
-  ] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([
-      getReservations(
-        statusFilter ||
-          undefined,
-      ),
-      getGuests(),
-    ])
-      .then(
-        ([
-          reservationResult,
-          guestResult,
-        ]) => {
-          if (cancelled) {
-            return;
-          }
+    Promise.all([getReservations(statusFilter || undefined), getGuests()])
+      .then(([reservationResult, guestResult]) => {
+        if (cancelled) {
+          return;
+        }
 
-          setReservations(
-            reservationResult,
-          );
+        setReservations(reservationResult);
 
-          setGuests(
-            guestResult,
-          );
-        },
-      )
+        setGuests(guestResult);
+      })
       .catch(() => {
         if (!cancelled) {
-          window.alert(
-            'Unable to load reservation data.',
-          );
+          window.alert('Unable to load reservation data.');
         }
       })
       .finally(() => {
@@ -134,105 +89,62 @@ export default function ReservationsPage() {
     setLoading(true);
 
     try {
-      const result =
-        await getReservations(
-          statusFilter ||
-            undefined,
-        );
+      const result = await getReservations(statusFilter || undefined);
 
-      setReservations(
-        result,
-      );
+      setReservations(result);
     } finally {
       setLoading(false);
     }
   }
 
-  async function handleCreate(
-    payload,
-  ) {
+  async function handleCreate(payload) {
     setSubmitting(true);
 
     try {
-      await createReservation(
-        payload,
-      );
+      await createReservation(payload);
 
       setModalOpen(false);
 
       await refreshReservations();
     } catch (error) {
       const message =
-        error.response?.data
-          ?.message ||
-        'Unable to create reservation.';
+        error.response?.data?.message || 'Unable to create reservation.';
 
-      window.alert(
-        Array.isArray(message)
-          ? message.join(' ')
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
       setSubmitting(false);
     }
   }
 
-  async function handlePayment(
-  reservation,
-) {
-  try {
-    const result =
-      await createCheckout(
-        reservation.id,
-      );
-
-    if (!result.checkoutUrl) {
-      window.alert(
-        'Checkout URL was not returned.',
-      );
-
-      return;
-    }
-
-    window.location.assign(
-      result.checkoutUrl,
-    );
-  } catch (error) {
-    const message =
-      error.response?.data
-        ?.message ||
-      'Unable to start payment.';
-
-    window.alert(
-      Array.isArray(message)
-        ? message.join(' ')
-        : message,
-    );
-  }
-}
-
-  async function handleStatus(
-    reservation,
-    status,
-  ) {
+  async function handlePayment(reservation) {
     try {
-      await updateReservationStatus(
-        reservation.id,
-        status,
-      );
+      const result = await createCheckout(reservation.id);
+
+      if (!result.checkoutUrl) {
+        window.alert('Checkout URL was not returned.');
+
+        return;
+      }
+
+      window.location.assign(result.checkoutUrl);
+    } catch (error) {
+      const message =
+        error.response?.data?.message || 'Unable to start payment.';
+
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
+    }
+  }
+
+  async function handleStatus(reservation, status) {
+    try {
+      await updateReservationStatus(reservation.id, status);
 
       await refreshReservations();
     } catch (error) {
       const message =
-        error.response?.data
-          ?.message ||
-        'Unable to update reservation.';
+        error.response?.data?.message || 'Unable to update reservation.';
 
-      window.alert(
-        Array.isArray(message)
-          ? message.join(' ')
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     }
   }
 
@@ -240,22 +152,15 @@ export default function ReservationsPage() {
     <section className="reservations-page">
       <header className="reservations-header">
         <div>
-          <h1>
-            Reservations
-          </h1>
+          <h1>Reservations</h1>
 
-          <p>
-            Manage bookings and
-            room availability.
-          </p>
+          <p>Manage bookings and room availability.</p>
         </div>
 
         <button
           type="button"
           className="primary-button"
-          onClick={() =>
-            setModalOpen(true)
-          }
+          onClick={() => setModalOpen(true)}
         >
           <Plus size={17} />
           New Reservation
@@ -263,48 +168,37 @@ export default function ReservationsPage() {
       </header>
 
       <div className="reservation-filters">
-        {filters.map(
-          (filter) => (
-            <button
-              key={
-                filter.label
-              }
-              type="button"
-              className={
-                statusFilter ===
-                filter.value
-                  ? 'room-filter active'
-                  : 'room-filter'
-              }
-              onClick={() => {
-                setLoading(true);
+        {filters.map((filter) => (
+          <button
+            key={filter.label}
+            type="button"
+            className={
+              statusFilter === filter.value
+                ? 'room-filter active'
+                : 'room-filter'
+            }
+            onClick={() => {
+              setLoading(true);
 
-                setStatusFilter(
-                  filter.value,
-                );
-              }}
-            >
-              {filter.label}
-            </button>
-          ),
-        )}
+              setStatusFilter(filter.value);
+            }}
+          >
+            {filter.label}
+          </button>
+        ))}
       </div>
 
       {loading ? (
-        <div className="rooms-loading">
-          Loading reservations...
-        </div>
+        <div className="rooms-loading">Loading reservations...</div>
       ) : (
         <div className="reservation-table-wrapper">
           <table className="reservation-table">
             <thead>
               <tr>
-                <th>
-                  Reference No.
-                </th>
+                <th>Reference No.</th>
 
                 <th>Guest</th>
-                <th>Room</th>
+                <th>{'Room'}</th>
                 <th>Check-in</th>
                 <th>Check-out</th>
                 <th>Total</th>
@@ -314,102 +208,57 @@ export default function ReservationsPage() {
             </thead>
 
             <tbody>
-              {reservations.map(
-                (reservation) => (
-                  <tr
-                    key={
-                      reservation.id
-                    }
-                  >
-                    <td>
-                      {
-                        reservation.referenceNo
-                      }
-                    </td>
+              {reservations.map((reservation) => (
+                <tr key={reservation.id}>
+                  <td>{reservation.referenceNo}</td>
 
-                    <td>
-                      {
-                        reservation.guest.firstName
-                      }{' '}
-                      {
-                        reservation.guest.lastName
-                      }
-                    </td>
+                  <td>
+                    {reservation.guest.firstName} {reservation.guest.lastName}
+                  </td>
 
-                    <td>
-                      Room{' '}
-                      {
-                        reservation.room.roomNumber
-                      }
-                    </td>
+                  <td>
+                    {'Room'} {reservation.room.roomNumber}
+                  </td>
 
-                    <td>
-                      {formatDate(
-                        reservation.checkIn,
+                  <td>{formatDate(reservation.checkIn)}</td>
+
+                  <td>{formatDate(reservation.checkOut)}</td>
+
+                  <td>{formatCurrency(reservation.totalAmountCentavos)}</td>
+
+                  <td>
+                    <span
+                      className={`reservation-status ${reservation.status.toLowerCase()}`}
+                    >
+                      {reservation.status}
+                    </span>
+                  </td>
+
+                  <td>
+                    <div className="reservation-actions">
+                      {reservation.status === 'PENDING' && (
+                        <button
+                          type="button"
+                          onClick={() => handlePayment(reservation)}
+                        >
+                          Pay
+                        </button>
                       )}
-                    </td>
 
-                    <td>
-                      {formatDate(
-                        reservation.checkOut,
+                      {['PENDING', 'CONFIRMED'].includes(
+                        reservation.status,
+                      ) && (
+                        <button
+                          type="button"
+                          onClick={() => handleStatus(reservation, 'CANCELLED')}
+                        >
+                          Cancel
+                        </button>
                       )}
-                    </td>
-
-                    <td>
-                      {formatCurrency(
-                        reservation.totalAmountCentavos,
-                      )}
-                    </td>
-
-                    <td>
-                      <span
-                        className={`reservation-status ${reservation.status.toLowerCase()}`}
-                      >
-                        {
-                          reservation.status
-                        }
-                      </span>
-                    </td>
-
-                    <td>
-                      <div className="reservation-actions">
-                        {reservation.status ===
-                          'PENDING' && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handlePayment(
-                                reservation,
-                              )
-                            }
-                          >
-                            Pay
-                          </button>
-                        )}
-
-                        {[
-                          'PENDING',
-                          'CONFIRMED',
-                        ].includes(
-                          reservation.status,
-                        ) && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              handleStatus(
-                                reservation,
-                                'CANCELLED',
-                              )
-                            }
-                          >
-                            Cancel
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ),
-              )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -419,19 +268,13 @@ export default function ReservationsPage() {
         <ReservationFormModal
           key="new-reservation"
           guests={guests}
-          isSubmitting={
-            submitting
-          }
+          isSubmitting={submitting}
           onClose={() => {
             if (!submitting) {
-              setModalOpen(
-                false,
-              );
+              setModalOpen(false);
             }
           }}
-          onSubmit={
-            handleCreate
-          }
+          onSubmit={handleCreate}
         />
       )}
     </section>

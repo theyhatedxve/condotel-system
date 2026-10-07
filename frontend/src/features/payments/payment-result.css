@@ -15,9 +15,7 @@
   background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  box-shadow:
-    0 10px 30px
-    rgba(16, 24, 40, 0.08);
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
 }
 
 .payment-result-icon {

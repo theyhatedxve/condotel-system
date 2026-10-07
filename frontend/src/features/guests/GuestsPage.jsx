@@ -1,66 +1,35 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useEffect, useState } from 'react';
 
-import {
-  Pencil,
-  Plus,
-  Search,
-} from 'lucide-react';
+import { Pencil, Plus, Search } from 'lucide-react';
 
-import {
-  createGuest,
-  getGuests,
-  updateGuest,
-} from './guestApi';
+import { createGuest, getGuests, updateGuest } from './guestApi';
 
-import GuestFormModal from
-  './GuestFormModal';
+import GuestFormModal from './GuestFormModal';
 
 import './guests.css';
 
 export default function GuestsPage() {
-  const [guests, setGuests] =
-    useState([]);
+  const [guests, setGuests] = useState([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState('');
+  const [error, setError] = useState('');
 
-  const [search, setSearch] =
-    useState('');
+  const [search, setSearch] = useState('');
 
   // Only submitted searches reach the API; typing alone does not reload the guest list.
-  const [
-    appliedSearch,
-    setAppliedSearch,
-  ] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
 
-  const [
-    selectedGuest,
-    setSelectedGuest,
-  ] = useState(null);
+  const [selectedGuest, setSelectedGuest] = useState(null);
 
-  const [
-    modalOpen,
-    setModalOpen,
-  ] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [
-    submitting,
-    setSubmitting,
-  ] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    getGuests(
-      appliedSearch ||
-        undefined,
-    )
+    getGuests(appliedSearch || undefined)
       .then((result) => {
         if (!cancelled) {
           setGuests(result);
@@ -69,9 +38,7 @@ export default function GuestsPage() {
       })
       .catch(() => {
         if (!cancelled) {
-          setError(
-            'Unable to load guests.',
-          );
+          setError('Unable to load guests.');
         }
       })
       .finally(() => {
@@ -89,18 +56,12 @@ export default function GuestsPage() {
     setLoading(true);
 
     try {
-      const result =
-        await getGuests(
-          appliedSearch ||
-            undefined,
-        );
+      const result = await getGuests(appliedSearch || undefined);
 
       setGuests(result);
       setError('');
     } catch {
-      setError(
-        'Unable to load guests.',
-      );
+      setError('Unable to load guests.');
     } finally {
       setLoading(false);
     }
@@ -110,9 +71,7 @@ export default function GuestsPage() {
     event.preventDefault();
 
     setLoading(true);
-    setAppliedSearch(
-      search.trim(),
-    );
+    setAppliedSearch(search.trim());
   }
 
   function openCreate() {
@@ -125,21 +84,14 @@ export default function GuestsPage() {
     setModalOpen(true);
   }
 
-  async function handleSave(
-    payload,
-  ) {
+  async function handleSave(payload) {
     setSubmitting(true);
 
     try {
       if (selectedGuest) {
-        await updateGuest(
-          selectedGuest.id,
-          payload,
-        );
+        await updateGuest(selectedGuest.id, payload);
       } else {
-        await createGuest(
-          payload,
-        );
+        await createGuest(payload);
       }
 
       setModalOpen(false);
@@ -148,15 +100,9 @@ export default function GuestsPage() {
       await refreshGuests();
     } catch (requestError) {
       const message =
-        requestError.response
-          ?.data?.message ||
-        'Unable to save guest.';
+        requestError.response?.data?.message || 'Unable to save guest.';
 
-      window.alert(
-        Array.isArray(message)
-          ? message.join(' ')
-          : message,
-      );
+      window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
       setSubmitting(false);
     }
@@ -166,60 +112,35 @@ export default function GuestsPage() {
     <section className="guests-page">
       <header className="guests-header">
         <div>
-          <h1>
-            Guest Management
-          </h1>
+          <h1>Guest Management</h1>
 
-          <p>
-            Manage registered and
-            walk-in guests.
-          </p>
+          <p>Manage registered and walk-in guests.</p>
         </div>
 
-        <button
-          type="button"
-          className="primary-button"
-          onClick={openCreate}
-        >
+        <button type="button" className="primary-button" onClick={openCreate}>
           <Plus size={17} />
           Add Guest
         </button>
       </header>
 
-      <form
-        className="guest-search"
-        onSubmit={handleSearch}
-      >
+      <form className="guest-search" onSubmit={handleSearch}>
         <Search size={17} />
 
         <input
           value={search}
-          onChange={(event) =>
-            setSearch(
-              event.target.value,
-            )
-          }
+          onChange={(event) => setSearch(event.target.value)}
           placeholder="Search by name, email, username, or phone..."
         />
 
-        <button
-          type="submit"
-          className="primary-button"
-        >
+        <button type="submit" className="primary-button">
           Search
         </button>
       </form>
 
-      {error && (
-        <div className="rooms-error">
-          {error}
-        </div>
-      )}
+      {error && <div className="rooms-error">{error}</div>}
 
       {loading ? (
-        <div className="rooms-loading">
-          Loading guests...
-        </div>
+        <div className="rooms-loading">Loading guests...</div>
       ) : (
         <div className="guest-table-wrapper">
           <table className="guest-table">
@@ -234,47 +155,31 @@ export default function GuestsPage() {
             </thead>
 
             <tbody>
-              {guests.map(
-                (guest) => (
-                  <tr key={guest.id}>
-                    <td>
-                      {guest.firstName}{' '}
-                      {guest.lastName}
-                    </td>
+              {guests.map((guest) => (
+                <tr key={guest.id}>
+                  <td>
+                    {guest.firstName} {guest.lastName}
+                  </td>
 
-                    <td>
-                      {guest.email}
-                    </td>
+                  <td>{guest.email}</td>
 
-                    <td>
-                      {guest.phone ||
-                        '-'}
-                    </td>
+                  <td>{guest.phone || '-'}</td>
 
-                    <td>
-                      <span className="guest-active-badge">
-                        {guest.status}
-                      </span>
-                    </td>
+                  <td>
+                    <span className="guest-active-badge">{guest.status}</span>
+                  </td>
 
-                    <td>
-                      <button
-                        type="button"
-                        className="table-icon-button"
-                        onClick={() =>
-                          openEdit(
-                            guest,
-                          )
-                        }
-                      >
-                        <Pencil
-                          size={15}
-                        />
-                      </button>
-                    </td>
-                  </tr>
-                ),
-              )}
+                  <td>
+                    <button
+                      type="button"
+                      className="table-icon-button"
+                      onClick={() => openEdit(guest)}
+                    >
+                      <Pencil size={15} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -282,27 +187,16 @@ export default function GuestsPage() {
 
       {modalOpen && (
         <GuestFormModal
-          key={
-            selectedGuest?.id ??
-            'new-guest'
-          }
-          guest={
-            selectedGuest
-          }
-          isSubmitting={
-            submitting
-          }
+          key={selectedGuest?.id ?? 'new-guest'}
+          guest={selectedGuest}
+          isSubmitting={submitting}
           onClose={() => {
             if (!submitting) {
               setModalOpen(false);
-              setSelectedGuest(
-                null,
-              );
+              setSelectedGuest(null);
             }
           }}
-          onSubmit={
-            handleSave
-          }
+          onSubmit={handleSave}
         />
       )}
     </section>

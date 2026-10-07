@@ -1,12 +1,6 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-import {
-  ReservationStatus,
-} from '../generated/prisma/enums';
+import { ReservationStatus } from '../generated/prisma/enums';
 
 export class ReservationQueryDto {
   @IsOptional()

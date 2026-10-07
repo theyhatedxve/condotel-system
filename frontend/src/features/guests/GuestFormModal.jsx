@@ -1,14 +1,8 @@
-import {
-  useState,
-} from 'react';
+import { useState } from 'react';
 
-import {
-  X,
-} from 'lucide-react';
+import { X } from 'lucide-react';
 
-function createInitialForm(
-  guest,
-) {
+function createInitialForm(guest) {
   if (!guest) {
     return {
       email: '',
@@ -27,48 +21,29 @@ function createInitialForm(
   }
 
   return {
-    email:
-      guest.email ?? '',
+    email: guest.email ?? '',
 
-    username:
-      guest.username ?? '',
+    username: guest.username ?? '',
 
     password: '',
 
-    firstName:
-      guest.firstName ?? '',
+    firstName: guest.firstName ?? '',
 
-    lastName:
-      guest.lastName ?? '',
+    lastName: guest.lastName ?? '',
 
-    phone:
-      guest.phone ?? '',
+    phone: guest.phone ?? '',
 
-    address:
-      guest.guestProfile
-        ?.address ?? '',
+    address: guest.guestProfile?.address ?? '',
 
-    city:
-      guest.guestProfile
-        ?.city ?? '',
+    city: guest.guestProfile?.city ?? '',
 
-    province:
-      guest.guestProfile
-        ?.province ?? '',
+    province: guest.guestProfile?.province ?? '',
 
-    postalCode:
-      guest.guestProfile
-        ?.postalCode ?? '',
+    postalCode: guest.guestProfile?.postalCode ?? '',
 
-    emergencyContactName:
-      guest.guestProfile
-        ?.emergencyContactName ??
-      '',
+    emergencyContactName: guest.guestProfile?.emergencyContactName ?? '',
 
-    emergencyContactPhone:
-      guest.guestProfile
-        ?.emergencyContactPhone ??
-      '',
+    emergencyContactPhone: guest.guestProfile?.emergencyContactPhone ?? '',
   };
 }
 
@@ -78,69 +53,45 @@ export default function GuestFormModal({
   onClose,
   onSubmit,
 }) {
-  const [form, setForm] =
-    useState(
-      () =>
-        createInitialForm(
-          guest,
-        ),
-    );
+  const [form, setForm] = useState(() => createInitialForm(guest));
 
-  function updateField(
-    field,
-    value,
-  ) {
-    setForm(
-      (current) => ({
-        ...current,
-        [field]: value,
-      }),
-    );
+  function updateField(field, value) {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }));
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
     const payload = {
-      firstName:
-        form.firstName,
+      firstName: form.firstName,
 
-      lastName:
-        form.lastName,
+      lastName: form.lastName,
 
-      phone:
-        form.phone,
+      phone: form.phone,
 
-      address:
-        form.address,
+      address: form.address,
 
-      city:
-        form.city,
+      city: form.city,
 
-      province:
-        form.province,
+      province: form.province,
 
-      postalCode:
-        form.postalCode,
+      postalCode: form.postalCode,
 
-      emergencyContactName:
-        form.emergencyContactName,
+      emergencyContactName: form.emergencyContactName,
 
-      emergencyContactPhone:
-        form.emergencyContactPhone,
+      emergencyContactPhone: form.emergencyContactPhone,
     };
 
     // Account credentials belong to creation; the guest edit endpoint accepts profile fields only.
     if (!guest) {
-      payload.email =
-        form.email;
+      payload.email = form.email;
 
-      payload.username =
-        form.username ||
-        undefined;
+      payload.username = form.username || undefined;
 
-      payload.password =
-        form.password;
+      payload.password = form.password;
     }
 
     onSubmit(payload);
@@ -151,16 +102,9 @@ export default function GuestFormModal({
       <section className="guest-modal">
         <header className="guest-modal-header">
           <div>
-            <h2>
-              {guest
-                ? 'Edit Guest'
-                : 'Add Guest'}
-            </h2>
+            <h2>{guest ? 'Edit Guest' : 'Add Guest'}</h2>
 
-            <p>
-              Manage guest contact
-              and profile details.
-            </p>
+            <p>Manage guest contact and profile details.</p>
           </div>
 
           <button
@@ -172,10 +116,7 @@ export default function GuestFormModal({
           </button>
         </header>
 
-        <form
-          onSubmit={handleSubmit}
-          className="guest-form"
-        >
+        <form onSubmit={handleSubmit} className="guest-form">
           <div className="guest-form-grid">
             {!guest && (
               <>
@@ -185,65 +126,34 @@ export default function GuestFormModal({
                   <input
                     type="email"
                     required
-                    value={
-                      form.email
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      updateField(
-                        'email',
-                        event
-                          .target
-                          .value,
-                      )
+                    value={form.email}
+                    onChange={(event) =>
+                      updateField('email', event.target.value)
                     }
                   />
                 </label>
 
                 <label>
-                  <span>
-                    Username
-                  </span>
+                  <span>Username</span>
 
                   <input
-                    value={
-                      form.username
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      updateField(
-                        'username',
-                        event
-                          .target
-                          .value,
-                      )
+                    value={form.username}
+                    onChange={(event) =>
+                      updateField('username', event.target.value)
                     }
                   />
                 </label>
 
                 <label>
-                  <span>
-                    Temporary Password
-                  </span>
+                  <span>Temporary Password</span>
 
                   <input
                     type="password"
                     required
                     minLength="8"
-                    value={
-                      form.password
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      updateField(
-                        'password',
-                        event
-                          .target
-                          .value,
-                      )
+                    value={form.password}
+                    onChange={(event) =>
+                      updateField('password', event.target.value)
                     }
                   />
                 </label>
@@ -251,47 +161,25 @@ export default function GuestFormModal({
             )}
 
             <label>
-              <span>
-                First Name
-              </span>
+              <span>First Name</span>
 
               <input
                 required
-                value={
-                  form.firstName
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'firstName',
-                    event
-                      .target
-                      .value,
-                  )
+                value={form.firstName}
+                onChange={(event) =>
+                  updateField('firstName', event.target.value)
                 }
               />
             </label>
 
             <label>
-              <span>
-                Last Name
-              </span>
+              <span>Last Name</span>
 
               <input
                 required
-                value={
-                  form.lastName
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'lastName',
-                    event
-                      .target
-                      .value,
-                  )
+                value={form.lastName}
+                onChange={(event) =>
+                  updateField('lastName', event.target.value)
                 }
               />
             </label>
@@ -300,19 +188,8 @@ export default function GuestFormModal({
               <span>Phone</span>
 
               <input
-                value={
-                  form.phone
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'phone',
-                    event
-                      .target
-                      .value,
-                  )
-                }
+                value={form.phone}
+                onChange={(event) => updateField('phone', event.target.value)}
               />
             </label>
 
@@ -320,40 +197,18 @@ export default function GuestFormModal({
               <span>City</span>
 
               <input
-                value={
-                  form.city
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'city',
-                    event
-                      .target
-                      .value,
-                  )
-                }
+                value={form.city}
+                onChange={(event) => updateField('city', event.target.value)}
               />
             </label>
 
             <label>
-              <span>
-                Province
-              </span>
+              <span>Province</span>
 
               <input
-                value={
-                  form.province
-                }
-                onChange={(
-                  event,
-                ) =>
-                  updateField(
-                    'province',
-                    event
-                      .target
-                      .value,
-                  )
+                value={form.province}
+                onChange={(event) =>
+                  updateField('province', event.target.value)
                 }
               />
             </label>
@@ -363,19 +218,8 @@ export default function GuestFormModal({
             <span>Address</span>
 
             <input
-              value={
-                form.address
-              }
-              onChange={(
-                event,
-              ) =>
-                updateField(
-                  'address',
-                  event
-                    .target
-                    .value,
-                )
-              }
+              value={form.address}
+              onChange={(event) => updateField('address', event.target.value)}
             />
           </label>
 
@@ -391,13 +235,9 @@ export default function GuestFormModal({
             <button
               type="submit"
               className="primary-button"
-              disabled={
-                isSubmitting
-              }
+              disabled={isSubmitting}
             >
-              {isSubmitting
-                ? 'Saving...'
-                : 'Save Guest'}
+              {isSubmitting ? 'Saving...' : 'Save Guest'}
             </button>
           </footer>
         </form>

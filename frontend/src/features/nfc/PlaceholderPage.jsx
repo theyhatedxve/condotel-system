@@ -1,6 +1,4 @@
-export default function PlaceholderPage({
-  title,
-}) {
+export default function PlaceholderPage({ title }) {
   return (
     <section>
       <h1
@@ -11,10 +9,7 @@ export default function PlaceholderPage({
         {title}
       </h1>
 
-      <p>
-        This module will be implemented
-        in a later phase.
-      </p>
+      <p>This module will be implemented in a later phase.</p>
     </section>
   );
 }

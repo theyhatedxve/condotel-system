@@ -13,221 +13,143 @@ import {
   WalletCards,
 } from 'lucide-react';
 
-import {
-  NavLink,
-} from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
-import {
-  useAuth,
-} from '../features/auth/useAuth';
+import { useAuth } from '../features/auth/useAuth';
 
 const navigation = [
   {
-    label:
-      'Dashboard',
+    label: 'Dashboard',
 
-    path:
-      '/admin/dashboard',
+    path: '/admin/dashboard',
 
-    icon:
-      LayoutDashboard,
+    icon: LayoutDashboard,
   },
 
   {
-    label:
-      'Guests',
+    label: 'Guests',
 
-    path:
-      '/admin/guests',
+    path: '/admin/guests',
 
-    icon:
-      Users,
+    icon: Users,
   },
 
   {
-    label:
-      'User Management',
+    label: 'User Management',
 
-    path:
-      '/admin/users',
+    path: '/admin/users',
 
-    icon:
-      UserCog,
+    icon: UserCog,
 
-    adminOnly:
-      true,
+    adminOnly: true,
   },
 
   {
-    label:
-      'Rooms',
+    label: 'Rooms',
 
-    path:
-      '/admin/rooms',
+    path: '/admin/rooms',
 
-    icon:
-      BedDouble,
+    icon: BedDouble,
   },
 
   {
-    label:
-      'Reservations',
+    label: 'Reservations',
 
-    path:
-      '/admin/reservations',
+    path: '/admin/reservations',
 
-    icon:
-      CalendarDays,
+    icon: CalendarDays,
   },
 
   {
-    label:
-      'NFC Management',
+    label: 'NFC Management',
 
-    path:
-      '/admin/nfc',
+    path: '/admin/nfc',
 
-    icon:
-      RadioTower,
+    icon: RadioTower,
   },
 
   {
-    label:
-      'Payments',
+    label: 'Payments',
 
-    path:
-      '/admin/payments',
+    path: '/admin/payments',
 
-    icon:
-      CreditCard,
+    icon: CreditCard,
   },
 
   {
-    label:
-      'Transactions',
+    label: 'Transactions',
 
-    path:
-      '/admin/transactions',
+    path: '/admin/transactions',
 
-    icon:
-      WalletCards,
+    icon: WalletCards,
   },
 
   {
-    label:
-      'Reports',
+    label: 'Reports',
 
-    path:
-      '/admin/reports',
+    path: '/admin/reports',
 
-    icon:
-      BarChart3,
+    icon: BarChart3,
   },
 
   {
-    label:
-      'Settings',
+    label: 'Settings',
 
-    path:
-      '/admin/settings',
+    path: '/admin/settings',
 
-    icon:
-      Settings,
+    icon: Settings,
   },
 ];
 
 export default function Sidebar() {
-  const {
-    user,
-    logout,
-  } = useAuth();
+  const { user, logout } = useAuth();
 
-  const visibleNavigation =
-    navigation.filter(
-      (item) =>
-        !item.adminOnly ||
-        user?.role ===
-          'ADMIN',
-    );
+  const visibleNavigation = navigation.filter(
+    (item) => !item.adminOnly || user?.role === 'ADMIN',
+  );
 
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <Building2
-          size={32}
-        />
+        <Building2 size={32} />
 
         <div>
-          <strong>
-            CONDOTEL
-          </strong>
+          <strong>CONDOTEL</strong>
 
-          <span>
-            NFC SYSTEM WITH PAYMENT
-          </span>
+          <span>NFC SYSTEM WITH PAYMENT</span>
         </div>
       </div>
 
       <div className="sidebar-user">
         <div className="sidebar-avatar">
-          {user?.firstName
-            ?.charAt(0)
-            ?.toUpperCase() ||
-            'A'}
+          {user?.firstName?.charAt(0)?.toUpperCase() || 'A'}
         </div>
 
         <div>
-          <strong>
-            {user?.firstName ||
-              'Admin'}
-          </strong>
+          <strong>{user?.firstName || 'Admin'}</strong>
 
-          <span>
-            {user?.role ||
-              'Administrator'}
-          </span>
+          <span>{user?.role || 'Administrator'}</span>
         </div>
       </div>
 
       <nav className="sidebar-navigation">
-        {visibleNavigation.map(
-          ({
-            label,
-            path,
-            icon: Icon,
-          }) => (
-            <NavLink
-              key={path}
-              to={path}
-              className={({
-                isActive,
-              }) =>
-                isActive
-                  ? 'sidebar-link active'
-                  : 'sidebar-link'
-              }
-            >
-              <Icon
-                size={18}
-              />
+        {visibleNavigation.map(({ label, path, icon: Icon }) => (
+          <NavLink
+            key={path}
+            to={path}
+            className={({ isActive }) =>
+              isActive ? 'sidebar-link active' : 'sidebar-link'
+            }
+          >
+            <Icon size={18} />
 
-              <span>
-                {label}
-              </span>
-            </NavLink>
-          ),
-        )}
+            <span>{label}</span>
+          </NavLink>
+        ))}
       </nav>
 
-      <button
-        type="button"
-        className="sidebar-logout"
-        onClick={logout}
-      >
-        <LogOut
-          size={18}
-        />
-
+      <button type="button" className="sidebar-logout" onClick={logout}>
+        <LogOut size={18} />
         Sign Out
       </button>
     </aside>

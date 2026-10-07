@@ -7,29 +7,17 @@ import {
 
 import * as argon2 from 'argon2';
 
-import type {
-  AuthenticatedUser,
-} from '../auth/interfaces/authenticated-user.interface';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
-import {
-  UserRole,
-} from '../generated/prisma/enums';
+import { UserRole } from '../generated/prisma/enums';
 
-import {
-  PrismaService,
-} from '../prisma/prisma.service';
+import { PrismaService } from '../prisma/prisma.service';
 
-import {
-  ResetUserPasswordDto,
-} from './reset-user-password.dto';
+import { ResetUserPasswordDto } from './reset-user-password.dto';
 
-import {
-  UpdateManagedUserDto,
-} from './update-managed-user.dto';
+import { UpdateManagedUserDto } from './update-managed-user.dto';
 
-import {
-  UserManagementQueryDto,
-} from './user-management-query.dto';
+import { UserManagementQueryDto } from './user-management-query.dto';
 
 const managedUserSelect = {
   id: true,
@@ -54,32 +42,22 @@ const managedUserSelect = {
 
 @Injectable()
 export class UserManagementService {
-  constructor(
-    private readonly prisma:
-      PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(
-    query:
-      UserManagementQueryDto,
-  ) {
-    const search =
-      query.search
-        ?.trim();
+  async findAll(query: UserManagementQueryDto) {
+    const search = query.search?.trim();
 
     return this.prisma.user.findMany({
       where: {
         ...(query.role
           ? {
-              role:
-                query.role,
+              role: query.role,
             }
           : {}),
 
         ...(query.status
           ? {
-              status:
-                query.status,
+              status: query.status,
             }
           : {}),
 
@@ -88,36 +66,31 @@ export class UserManagementService {
               OR: [
                 {
                   firstName: {
-                    contains:
-                      search,
+                    contains: search,
                   },
                 },
 
                 {
                   lastName: {
-                    contains:
-                      search,
+                    contains: search,
                   },
                 },
 
                 {
                   email: {
-                    contains:
-                      search,
+                    contains: search,
                   },
                 },
 
                 {
                   username: {
-                    contains:
-                      search,
+                    contains: search,
                   },
                 },
 
                 {
                   phone: {
-                    contains:
-                      search,
+                    contains: search,
                   },
                 },
               ],
@@ -125,8 +98,7 @@ export class UserManagementService {
           : {}),
       },
 
-      select:
-        managedUserSelect,
+      select: managedUserSelect,
 
       orderBy: [
         {
@@ -144,24 +116,17 @@ export class UserManagementService {
     });
   }
 
-  async findOne(
-    id: string,
-  ) {
-    const user =
-      await this.prisma.user
-        .findUnique({
-          where: {
-            id,
-          },
+  async findOne(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
 
-          select:
-            managedUserSelect,
-        });
+      select: managedUserSelect,
+    });
 
     if (!user) {
-      throw new NotFoundException(
-        'User not found.',
-      );
+      throw new NotFoundException('User not found.');
     }
 
     return user;
@@ -169,56 +134,32 @@ export class UserManagementService {
 
   async update(
     id: string,
-    dto:
-      UpdateManagedUserDto,
-    admin:
-      AuthenticatedUser,
+    dto: UpdateManagedUserDto,
+    admin: AuthenticatedUser,
   ) {
-    const user =
-      await this.prisma.user
-        .findUnique({
-          where: {
-            id,
-          },
-        });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
 
     if (!user) {
-      throw new NotFoundException(
-        'User not found.',
-      );
+      throw new NotFoundException('User not found.');
     }
 
-    if (
-      dto.firstName !==
-        undefined &&
-      !dto.firstName.trim()
-    ) {
-      throw new BadRequestException(
-        'First name is required.',
-      );
+    if (dto.firstName !== undefined && !dto.firstName.trim()) {
+      throw new BadRequestException('First name is required.');
     }
 
-    if (
-      dto.lastName !==
-        undefined &&
-      !dto.lastName.trim()
-    ) {
-      throw new BadRequestException(
-        'Last name is required.',
-      );
+    if (dto.lastName !== undefined && !dto.lastName.trim()) {
+      throw new BadRequestException('Last name is required.');
     }
 
     // Admin cannot change their own
     // role or account status.
     if (
-      user.id ===
-        admin.id &&
-      (
-        dto.role !==
-          undefined ||
-        dto.status !==
-          undefined
-      )
+      user.id === admin.id &&
+      (dto.role !== undefined || dto.status !== undefined)
     ) {
       throw new BadRequestException(
         'You cannot change your own role or account status.',
@@ -228,14 +169,8 @@ export class UserManagementService {
     // Protect all Administrator roles/statuses
     // from being changed through this page.
     if (
-      user.role ===
-        UserRole.ADMIN &&
-      (
-        dto.role !==
-          undefined ||
-        dto.status !==
-          undefined
-      )
+      user.role === UserRole.ADMIN &&
+      (dto.role !== undefined || dto.status !== undefined)
     ) {
       throw new BadRequestException(
         'Administrator role and status cannot be changed from User Management.',
@@ -244,244 +179,155 @@ export class UserManagementService {
 
     // We are not allowing someone to
     // promote Staff/Customer into ADMIN.
-    if (
-      dto.role ===
-        UserRole.ADMIN &&
-      user.role !==
-        UserRole.ADMIN
-    ) {
+    if (dto.role === UserRole.ADMIN && user.role !== UserRole.ADMIN) {
       throw new BadRequestException(
         'Promotion to Administrator is not allowed from User Management.',
       );
     }
 
-    let email:
-      | string
-      | undefined;
+    let email: string | undefined;
 
-    if (
-      dto.email !==
-      undefined
-    ) {
-      email =
-        dto.email
-          .trim()
-          .toLowerCase();
+    if (dto.email !== undefined) {
+      email = dto.email.trim().toLowerCase();
 
-      const existingEmail =
-        await this.prisma.user
-          .findUnique({
-            where: {
-              email,
-            },
-          });
+      const existingEmail = await this.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
 
-      if (
-        existingEmail &&
-        existingEmail.id !==
-          id
-      ) {
-        throw new ConflictException(
-          'Email address is already registered.',
-        );
+      if (existingEmail && existingEmail.id !== id) {
+        throw new ConflictException('Email address is already registered.');
       }
     }
 
-    let username:
-      | string
-      | null
-      | undefined;
+    let username: string | null | undefined;
 
-    if (
-      dto.username !==
-      undefined
-    ) {
-      username =
-        dto.username
-          ?.trim()
-          .toLowerCase() ||
-        null;
+    if (dto.username !== undefined) {
+      username = dto.username?.trim().toLowerCase() || null;
 
       if (username) {
-        const existingUsername =
-          await this.prisma.user
-            .findUnique({
-              where: {
-                username,
-              },
-            });
+        const existingUsername = await this.prisma.user.findUnique({
+          where: {
+            username,
+          },
+        });
 
-        if (
-          existingUsername &&
-          existingUsername.id !==
-            id
-        ) {
-          throw new ConflictException(
-            'Username is already taken.',
-          );
+        if (existingUsername && existingUsername.id !== id) {
+          throw new ConflictException('Username is already taken.');
         }
       }
     }
 
     // Keep role/profile changes and their audit entry atomic to avoid a partially updated account.
-    return this.prisma
-      .$transaction(
-        async (
-          transaction,
-        ) => {
-          // If Staff becomes Customer,
-          // make sure a GuestProfile exists.
-          if (
-            dto.role ===
-            UserRole.CUSTOMER
-          ) {
-            await transaction
-              .guestProfile
-              .upsert({
-                where: {
-                  userId:
-                    id,
-                },
+    return this.prisma.$transaction(async (transaction) => {
+      // If Staff becomes Customer,
+      // make sure a GuestProfile exists.
+      if (dto.role === UserRole.CUSTOMER) {
+        await transaction.guestProfile.upsert({
+          where: {
+            userId: id,
+          },
 
-                update: {},
+          update: {},
 
-                create: {
-                  userId:
-                    id,
-                },
-              });
-          }
+          create: {
+            userId: id,
+          },
+        });
+      }
 
-          const updatedUser =
-            await transaction
-              .user
-              .update({
-                where: {
-                  id,
-                },
-
-                data: {
-                  ...(dto.firstName !==
-                  undefined
-                    ? {
-                        firstName:
-                          dto.firstName
-                            .trim(),
-                      }
-                    : {}),
-
-                  ...(dto.lastName !==
-                  undefined
-                    ? {
-                        lastName:
-                          dto.lastName
-                            .trim(),
-                      }
-                    : {}),
-
-                  ...(email !==
-                  undefined
-                    ? {
-                        email,
-                      }
-                    : {}),
-
-                  ...(dto.username !==
-                  undefined
-                    ? {
-                        username,
-                      }
-                    : {}),
-
-                  ...(dto.phone !==
-                  undefined
-                    ? {
-                        phone:
-                          dto.phone
-                            ?.trim() ||
-                          null,
-                      }
-                    : {}),
-
-                  ...(dto.role !==
-                  undefined
-                    ? {
-                        role:
-                          dto.role,
-                      }
-                    : {}),
-
-                  ...(dto.status !==
-                  undefined
-                    ? {
-                        status:
-                          dto.status,
-                      }
-                    : {}),
-                },
-
-                select:
-                  managedUserSelect,
-              });
-
-          await transaction.auditLog
-            .create({
-              data: {
-                actorId:
-                  admin.id,
-
-                action:
-                  'USER_UPDATED',
-
-                entityType:
-                  'User',
-
-                entityId:
-                  id,
-
-                details:
-                  JSON.stringify({
-                    // Record field names rather than copying account values into the audit log.
-                    updatedFields:
-                      Object.keys(
-                        dto,
-                      ),
-                  }),
-              },
-            });
-
-          return updatedUser;
+      const updatedUser = await transaction.user.update({
+        where: {
+          id,
         },
-      );
+
+        data: {
+          ...(dto.firstName !== undefined
+            ? {
+                firstName: dto.firstName.trim(),
+              }
+            : {}),
+
+          ...(dto.lastName !== undefined
+            ? {
+                lastName: dto.lastName.trim(),
+              }
+            : {}),
+
+          ...(email !== undefined
+            ? {
+                email,
+              }
+            : {}),
+
+          ...(dto.username !== undefined
+            ? {
+                username,
+              }
+            : {}),
+
+          ...(dto.phone !== undefined
+            ? {
+                phone: dto.phone?.trim() || null,
+              }
+            : {}),
+
+          ...(dto.role !== undefined
+            ? {
+                role: dto.role,
+              }
+            : {}),
+
+          ...(dto.status !== undefined
+            ? {
+                status: dto.status,
+              }
+            : {}),
+        },
+
+        select: managedUserSelect,
+      });
+
+      await transaction.auditLog.create({
+        data: {
+          actorId: admin.id,
+
+          action: 'USER_UPDATED',
+
+          entityType: 'User',
+
+          entityId: id,
+
+          details: JSON.stringify({
+            // Record field names rather than copying account values into the audit log.
+            updatedFields: Object.keys(dto),
+          }),
+        },
+      });
+
+      return updatedUser;
+    });
   }
 
   async resetPassword(
     id: string,
-    dto:
-      ResetUserPasswordDto,
-    admin:
-      AuthenticatedUser,
+    dto: ResetUserPasswordDto,
+    admin: AuthenticatedUser,
   ) {
-    const user =
-      await this.prisma.user
-        .findUnique({
-          where: {
-            id,
-          },
-        });
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
 
     if (!user) {
-      throw new NotFoundException(
-        'User not found.',
-      );
+      throw new NotFoundException('User not found.');
     }
 
     // Admin changes their own password
     // through My Profile instead.
-    if (
-      user.id ===
-      admin.id
-    ) {
+    if (user.id === admin.id) {
       throw new BadRequestException(
         'Use Change Password for your own administrator account.',
       );
@@ -489,20 +335,16 @@ export class UserManagementService {
 
     // Do not allow Admin-to-Admin
     // password resets here.
-    if (
-      user.role ===
-      UserRole.ADMIN
-    ) {
+    if (user.role === UserRole.ADMIN) {
       throw new BadRequestException(
         'Administrator passwords cannot be reset from User Management.',
       );
     }
 
-    const samePassword =
-      await argon2.verify(
-        user.passwordHash,
-        dto.newPassword,
-      );
+    const samePassword = await argon2.verify(
+      user.passwordHash,
+      dto.newPassword,
+    );
 
     if (samePassword) {
       throw new BadRequestException(
@@ -510,70 +352,47 @@ export class UserManagementService {
       );
     }
 
-    const passwordHash =
-      await argon2.hash(
-        dto.newPassword,
-        {
-          type:
-            argon2.argon2id,
+    const passwordHash = await argon2.hash(dto.newPassword, {
+      type: argon2.argon2id,
+    });
+
+    return this.prisma.$transaction(async (transaction) => {
+      const updatedUser = await transaction.user.update({
+        where: {
+          id,
         },
-      );
 
-    return this.prisma
-      .$transaction(
-        async (
-          transaction,
-        ) => {
-          const updatedUser =
-            await transaction.user
-              .update({
-                where: {
-                  id,
-                },
+        data: {
+          passwordHash,
 
-                data: {
-                  passwordHash,
-
-                  // Mark administrator-issued passwords as temporary for the password-change flow.
-                  mustChangePassword:
-                    true,
-                },
-
-                select:
-                  managedUserSelect,
-              });
-
-          await transaction.auditLog
-            .create({
-              data: {
-                actorId:
-                  admin.id,
-
-                action:
-                  'USER_PASSWORD_RESET',
-
-                entityType:
-                  'User',
-
-                entityId:
-                  id,
-
-                details:
-                  JSON.stringify({
-                    forceChangeOnNextLogin:
-                      true,
-                  }),
-              },
-            });
-
-          return {
-            message:
-              'Password reset successfully.',
-
-            user:
-              updatedUser,
-          };
+          // Mark administrator-issued passwords as temporary for the password-change flow.
+          mustChangePassword: true,
         },
-      );
+
+        select: managedUserSelect,
+      });
+
+      await transaction.auditLog.create({
+        data: {
+          actorId: admin.id,
+
+          action: 'USER_PASSWORD_RESET',
+
+          entityType: 'User',
+
+          entityId: id,
+
+          details: JSON.stringify({
+            forceChangeOnNextLogin: true,
+          }),
+        },
+      });
+
+      return {
+        message: 'Password reset successfully.',
+
+        user: updatedUser,
+      };
+    });
   }
 }

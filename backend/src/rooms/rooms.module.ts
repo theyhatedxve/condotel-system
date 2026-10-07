@@ -1,34 +1,18 @@
-import {
-  Module,
-} from '@nestjs/common';
+import { Module } from '@nestjs/common';
 
-import {
-  AuthModule,
-} from '../auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 
-import {
-  RoomsController,
-} from './rooms.controller';
+import { RoomsController } from './rooms.controller';
 
-import {
-  RoomsService,
-} from './rooms.service';
+import { RoomsService } from './rooms.service';
 
 @Module({
-  imports: [
-    AuthModule,
-  ],
+  imports: [AuthModule],
 
-  controllers: [
-    RoomsController,
-  ],
+  controllers: [RoomsController],
 
-  providers: [
-    RoomsService,
-  ],
+  providers: [RoomsService],
 
-  exports: [
-    RoomsService,
-  ],
+  exports: [RoomsService],
 })
 export class RoomsModule {}

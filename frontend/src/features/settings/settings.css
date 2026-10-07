@@ -15,15 +15,13 @@
 .settings-header h1 {
   margin: 0;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 }
 
 .settings-header p {
   margin: 6px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 }
 
 .settings-access-badge {
@@ -34,16 +32,13 @@
 
   padding: 7px 10px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
   border-radius: 999px;
 
   background: #ffffff;
 
-  color:
-    var(--color-blue-700);
+  color: var(--color-blue-700);
 
   font-size: 11px;
   font-weight: 600;
@@ -54,12 +49,9 @@
 
   padding: 12px 14px;
 
-  border:
-    1px solid
-    #f1d699;
+  border: 1px solid #f1d699;
 
-  border-radius:
-    var(--radius-sm);
+  border-radius: var(--radius-sm);
 
   background: #fff9e8;
 
@@ -71,11 +63,7 @@
 .settings-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 16px;
 }
@@ -83,17 +71,13 @@
 .settings-card {
   padding: 20px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .settings-card-header {
@@ -110,15 +94,13 @@
 
   margin-top: 2px;
 
-  color:
-    var(--color-blue-700);
+  color: var(--color-blue-700);
 }
 
 .settings-card-header h2 {
   margin: 0;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 
   font-size: 15px;
 }
@@ -126,8 +108,7 @@
 .settings-card-header p {
   margin: 4px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 11px;
 }
@@ -135,11 +116,7 @@
 .settings-form-grid {
   display: grid;
 
-  grid-template-columns:
-    repeat(
-      2,
-      minmax(0, 1fr)
-    );
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 
   gap: 14px;
 }
@@ -150,16 +127,14 @@
 
   gap: 7px;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 
   font-size: 11px;
   font-weight: 600;
 }
 
 .settings-field-full {
-  grid-column:
-    1 / -1;
+  grid-column: 1 / -1;
 }
 
 .settings-field > span {
@@ -178,34 +153,28 @@
 
   padding: 0 11px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-sm);
+  border-radius: var(--radius-sm);
 
   outline: none;
 
   background: #ffffff;
 
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 
   font: inherit;
   font-weight: 400;
 }
 
 .settings-field input:focus {
-  border-color:
-    var(--color-blue-700);
+  border-color: var(--color-blue-700);
 }
 
 .settings-field input:disabled {
   background: #f6f8fa;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   cursor: not-allowed;
 }
@@ -213,8 +182,7 @@
 .settings-helper-text {
   margin: 14px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 10px;
   line-height: 1.6;
@@ -230,9 +198,7 @@
 
   padding: 13px;
 
-  border:
-    1px solid
-    #cfe3f5;
+  border: 1px solid #cfe3f5;
 
   border-radius: 8px;
 
@@ -242,13 +208,11 @@
 .settings-security-note > svg {
   flex-shrink: 0;
 
-  color:
-    var(--color-blue-700);
+  color: var(--color-blue-700);
 }
 
 .settings-security-note strong {
-  color:
-    var(--color-navy-950);
+  color: var(--color-navy-950);
 
   font-size: 11px;
 }
@@ -256,8 +220,7 @@
 .settings-security-note p {
   margin: 5px 0 0;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 10px;
   line-height: 1.6;
@@ -274,22 +237,17 @@
 
   padding: 16px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 
-  box-shadow:
-    var(--shadow-card);
+  box-shadow: var(--shadow-card);
 }
 
 .settings-footer span {
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   font-size: 10px;
 }
@@ -307,11 +265,9 @@
 
   border: none;
 
-  border-radius:
-    var(--radius-sm);
+  border-radius: var(--radius-sm);
 
-  background:
-    var(--color-blue-700);
+  background: var(--color-blue-700);
 
   color: #ffffff;
 
@@ -330,40 +286,30 @@
 .settings-loading {
   padding: 40px;
 
-  border:
-    1px solid
-    var(--color-border);
+  border: 1px solid var(--color-border);
 
-  border-radius:
-    var(--radius-md);
+  border-radius: var(--radius-md);
 
   background: #ffffff;
 
-  color:
-    var(--color-text-muted);
+  color: var(--color-text-muted);
 
   text-align: center;
 }
 
-@media (
-  max-width: 900px
-) {
+@media (max-width: 900px) {
   .settings-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 }
 
-@media (
-  max-width: 650px
-) {
+@media (max-width: 650px) {
   .settings-header {
     flex-direction: column;
   }
 
   .settings-form-grid {
-    grid-template-columns:
-      1fr;
+    grid-template-columns: 1fr;
   }
 
   .settings-field-full {
