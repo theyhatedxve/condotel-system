@@ -35,11 +35,12 @@ import ProfilePage from '../features/auth/ProfilePage';
 import ChangePasswordPage from '../features/auth/ChangePasswordPage';
 
 import UserManagementPage from '../features/user-management/UserManagementPage';
+import LandingPage from '../features/landing/LandingPage';
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<LandingPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route path="/change-password" element={<ChangePasswordPage />} />
