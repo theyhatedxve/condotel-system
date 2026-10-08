@@ -29,6 +29,7 @@
 }
 
 .stat-card {
+  position: relative;
   min-height: 126px;
 
   display: flex;
@@ -40,12 +41,14 @@
 
   border-radius: var(--radius-md);
 
-  color: #ffffff;
+  color: #18354d;
+  border: 1px solid #e9edf3;
 
   box-shadow: var(--shadow-card);
 }
 
 .stat-card > div {
+  width: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -54,6 +57,9 @@
   margin-top: 12px;
 
   font-size: 27px;
+  letter-spacing: -0.7px;
+  padding-bottom: 10px;
+  border-bottom: 4px solid var(--stat-accent);
 }
 
 .stat-card small {
@@ -61,31 +67,43 @@
 
   font-size: 11px;
 
-  opacity: 0.82;
+  color: var(--stat-accent);
+  padding-right: 26px;
 }
 
 .stat-card svg {
-  opacity: 0.78;
+  position: absolute;
+  bottom: 17px;
+  right: 18px;
+  width: 21px;
+  height: 21px;
+  color: var(--stat-accent);
+  opacity: 0.65;
 }
 
 .stat-card.blue {
-  background: linear-gradient(135deg, #0f96ee, #0871da);
+  --stat-accent: #337bc0;
+  background: #ffffff;
 }
 
 .stat-card.green {
-  background: linear-gradient(135deg, #18b97a, #099864);
+  --stat-accent: #15905e;
+  background: #ffffff;
 }
 
 .stat-card.orange {
-  background: linear-gradient(135deg, #ffb329, #ff9514);
+  --stat-accent: #bf7b17;
+  background: #ffffff;
 }
 
 .stat-card.purple {
-  background: linear-gradient(135deg, #9164ed, #7047dc);
+  --stat-accent: #8958b4;
+  background: #ffffff;
 }
 
 .stat-title {
   font-size: 12px;
+  font-weight: 600;
 }
 
 .dashboard-grid {
@@ -212,7 +230,7 @@
   place-items: center;
 
   background: conic-gradient(
-    #0874c9 0 var(--occupancy),
+    #236daf 0 var(--occupancy),
     #e6edf4 var(--occupancy) 100%
   );
 }

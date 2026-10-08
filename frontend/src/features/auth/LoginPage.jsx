@@ -1,8 +1,16 @@
 import { useState } from 'react';
 
-import { Building2, Eye, EyeOff, KeyRound, Mail, Waves } from 'lucide-react';
+import {
+  ArrowLeft,
+  Building2,
+  Eye,
+  EyeOff,
+  KeyRound,
+  Mail,
+  Waves,
+} from 'lucide-react';
 
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import { useAuth } from './useAuth';
 
@@ -119,6 +127,11 @@ export default function LoginPage() {
 
       <section className="login-form-panel">
         <div className="login-form-container">
+          <Link to="/" className="login-back-link">
+            <ArrowLeft size={18} aria-hidden="true" />
+            Back to homepage
+          </Link>
+
           <div className="login-heading">
             <h2>Welcome Back!</h2>
 

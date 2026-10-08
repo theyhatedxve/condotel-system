@@ -1,4 +1,16 @@
 .admin-layout {
+  --sidebar-width: 238px;
+  --color-navy-950: #122d43;
+  --color-navy-900: #103c61;
+  --color-navy-800: #164e78;
+  --color-blue-700: #144b78;
+  --color-blue-600: #2476b5;
+  --color-background: #f3f5fa;
+  --color-border: #e7ecf2;
+  --color-text: #253c50;
+  --color-text-muted: #758392;
+  --shadow-card: 0 4px 14px rgba(22, 47, 74, 0.055);
+  --radius-md: 9px;
   min-height: 100vh;
 
   display: flex;
@@ -18,7 +30,9 @@
 
   padding: 22px 14px;
 
-  background: linear-gradient(180deg, #062f54, #052745);
+  background: linear-gradient(165deg, #082941, #0b2540 75%);
+  overflow-y: auto;
+  z-index: 20;
 
   color: #ffffff;
 }
@@ -31,7 +45,7 @@
 
   padding: 4px 9px 24px;
 
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .sidebar-brand > div {
@@ -133,7 +147,7 @@
 
 .sidebar-link:hover,
 .sidebar-link.active {
-  background: #0871bd;
+  background: #14466f;
 
   color: #ffffff;
 }
@@ -153,6 +167,7 @@
 }
 
 .admin-main {
+  min-width: 0;
   width: calc(100% - var(--sidebar-width));
 
   margin-left: var(--sidebar-width);
@@ -164,7 +179,7 @@
 
   z-index: 10;
 
-  height: 68px;
+  height: 70px;
 
   display: flex;
 
@@ -188,6 +203,10 @@
   gap: 9px;
 
   color: #8497a9;
+  padding: 0 12px;
+  border: 1px solid #edf0f5;
+  border-radius: 7px;
+  background: #ffffff;
 }
 
 .topbar-search input {
@@ -197,7 +216,7 @@
 
   border: none;
 
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 0;
 
   outline: none;
 
@@ -688,8 +707,176 @@
   padding: 28px;
 }
 
+.admin-layout .admin-content > section,
+.admin-layout .dashboard-panel,
+.admin-layout .table-wrapper {
+  min-width: 0;
+}
+
+/* Reference theme: presentation only; existing feature controls stay in place. */
+.admin-layout .admin-content h1 {
+  color: #142f45;
+  font-size: 25px;
+  letter-spacing: -0.65px;
+  line-height: 1.3;
+}
+
+.admin-layout .admin-content > section > header > div > p,
+.admin-layout .admin-content > section > header > p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.admin-layout
+  :is(
+    .guest-table-wrapper,
+    .reservation-table-wrapper,
+    .payments-table-wrapper,
+    .transactions-table-wrapper,
+    .user-management-table-wrapper,
+    .settings-card,
+    .report-panel,
+    .payment-summary-card,
+    .transaction-summary-card,
+    .report-summary-card,
+    .user-management-summary-card,
+    .room-card
+  ) {
+  border-color: #e9edf3;
+  border-radius: 9px;
+  box-shadow: var(--shadow-card);
+  background: #ffffff;
+}
+
+.admin-layout .admin-content table th {
+  padding: 14px 16px;
+  background: #f6f8fb;
+  color: #405469;
+  font-size: 12px;
+  font-weight: 600;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.admin-layout .admin-content table td {
+  padding: 16px;
+  color: #425368;
+  border-bottom: 1px solid #f0f3f7;
+  font-size: 12px;
+}
+
+.admin-layout .admin-content tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-layout .admin-content tbody tr:hover {
+  background: #f8fafd;
+}
+
+.admin-layout
+  :is(.primary-button, .availability-button, .settings-save-button) {
+  background: #13466f;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(13, 55, 89, 0.1);
+}
+
+.admin-layout :is(.primary-button, .secondary-button, .room-filter) {
+  font-size: 12px;
+}
+
+.admin-layout .room-filter.active {
+  background: #123f65;
+}
+
+.admin-layout
+  :is(
+    .guest-search,
+    .payments-search,
+    .transactions-search,
+    .user-management-search
+  ) {
+  border-color: #e9edf3;
+  background: #ffffff;
+  border-radius: 7px;
+}
+
+.admin-layout :is(.room-filter-bar, .reservation-filters) {
+  flex-wrap: wrap;
+}
+
+.admin-layout .room-image {
+  height: 190px;
+}
+
+.admin-layout .room-card-body {
+  padding: 17px;
+}
+
+.admin-layout .room-card-heading h3 {
+  font-size: 15px;
+}
+
+.admin-layout .room-price {
+  color: #21384c;
+  font-size: 16px;
+}
+
+.admin-layout .room-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+}
+
+.admin-layout .room-status::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.admin-layout :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid #3986c0;
+  outline-offset: 3px;
+}
+
+@media (max-width: 650px) {
+  .admin-layout .topbar {
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .admin-layout .topbar-search {
+    min-width: 0;
+    flex: 1;
+    padding: 0 8px;
+  }
+
+  .admin-layout .topbar-actions {
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .admin-layout .topbar-profile {
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .admin-layout .admin-content {
+    padding: 20px 14px;
+  }
+
+  .admin-layout .admin-content h1 {
+    font-size: 22px;
+  }
+
+  .admin-layout .admin-content > section > header {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 900px) {
-  :root {
+  .admin-layout {
     --sidebar-width: 82px;
   }
 
