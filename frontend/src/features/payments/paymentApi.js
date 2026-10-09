@@ -14,6 +14,15 @@ export async function getPayments() {
   return response.data;
 }
 
+export async function syncReservationPayment(reservationId, signal) {
+  const response = await apiClient.post(
+    `/payments/reservations/${encodeURIComponent(reservationId)}/sync`,
+    undefined,
+    { signal },
+  );
+  return response.data;
+}
+
 export async function getReservationPayments(reservationId) {
   const response = await apiClient.get(
     `/payments/reservations/${reservationId}`,
@@ -22,9 +31,11 @@ export async function getReservationPayments(reservationId) {
   return response.data;
 }
 
-export async function cancelPendingCheckout(reservationId) {
+export async function cancelPendingCheckout(reservationId, signal) {
   const response = await apiClient.post(
     `/payments/reservations/${reservationId}/cancel-pending`,
+    undefined,
+    { signal },
   );
 
   return response.data;

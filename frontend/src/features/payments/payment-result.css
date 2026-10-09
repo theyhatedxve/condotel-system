@@ -31,6 +31,57 @@
 .payment-result-icon.cancelled {
   color: #dc2626;
 }
+.payment-result-icon.pending {
+  color: #a77923;
+}
+.payment-confirmation-details {
+  margin: 24px 0 0;
+  padding: 16px;
+  border-radius: 8px;
+  background: #f5f8fc;
+  font-size: 13px;
+}
+.payment-confirmation-details > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 7px 0;
+}
+.payment-confirmation-details dt {
+  color: #667085;
+  text-align: left;
+}
+.payment-confirmation-details dd {
+  margin: 0;
+  color: #163c70;
+  font-weight: 600;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.payment-result-return {
+  display: block;
+  margin-top: 24px;
+  padding: 11px 18px;
+  border-radius: 8px;
+  color: #fff;
+  background: #163c70;
+  font-size: 14px;
+  font-weight: 600;
+}
+.payment-result-card button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+@media (max-width: 500px) {
+  .payment-result-card {
+    padding: 28px 20px;
+  }
+  .payment-result-card h1 {
+    font-size: 26px;
+  }
+}
 
 .payment-result-card h1 {
   margin: 0 0 12px;

@@ -68,13 +68,22 @@ export class PaymentsController {
   @Post('reservations/:reservationId/cancel-pending')
   @UseGuards(JwtAuthGuard)
   cancelPendingCheckout(
+    @Param('reservationId') reservationId: string,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.paymentsService.cancelPendingCheckout(reservationId, user);
+  }
+
+  @Post('reservations/:reservationId/sync')
+  @UseGuards(JwtAuthGuard)
+  syncCheckout(
     @Param('reservationId')
     reservationId: string,
 
     @CurrentUser()
     user: AuthenticatedUser,
   ) {
-    return this.paymentsService.cancelPendingCheckout(reservationId, user);
+    return this.paymentsService.syncCheckout(reservationId, user);
   }
 
   // PayMongo authenticates this callback with its signature; no browser JWT is expected.

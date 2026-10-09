@@ -11,6 +11,7 @@ import { createHmac, timingSafeEqual } from 'node:crypto';
 import type {
   PaymongoCheckoutSession,
   PaymongoErrorResponse,
+  PaymongoCheckoutSessionResource,
 } from './paymongo.interface';
 
 interface CreateCheckoutInput {
@@ -135,6 +136,31 @@ export class PaymongoService {
     }
 
     return result;
+  }
+
+  async retrieveCheckoutSession(
+    checkoutSessionId: string,
+  ): Promise<PaymongoCheckoutSessionResource> {
+    const response = await fetch(
+      `https://api.paymongo.com/v1/checkout_sessions/${encodeURIComponent(checkoutSessionId)}`,
+      {
+        headers: {
+          Authorization: this.getAuthorizationHeader(),
+          Accept: 'application/json',
+        },
+        signal: AbortSignal.timeout(15000),
+      },
+    );
+    const result = (await response.json()) as {
+      data?: PaymongoCheckoutSessionResource;
+    } & PaymongoErrorResponse;
+    if (!response.ok || !result.data || result.data.id !== checkoutSessionId) {
+      throw new BadGatewayException(
+        result.errors?.[0]?.detail ??
+          'Unable to verify PayMongo checkout status.',
+      );
+    }
+    return result.data;
   }
 
   async expireCheckoutSession(checkoutSessionId: string) {

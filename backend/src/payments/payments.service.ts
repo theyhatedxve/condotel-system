@@ -21,6 +21,7 @@ import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.in
 
 import type {
   PaymongoPaymentAttempt,
+  PaymongoCheckoutSessionResource,
   PaymongoWebhookEvent,
 } from './paymongo.interface';
 
@@ -326,6 +327,44 @@ export class PaymentsService {
     });
   }
 
+  async syncCheckout(reservationId: string, user: AuthenticatedUser) {
+    const reservation = await this.prisma.reservation.findUnique({
+      where: { id: reservationId },
+      include: { payments: { orderBy: { createdAt: 'desc' } } },
+    });
+    if (!reservation) throw new NotFoundException('Reservation not found.');
+    this.ensureReservationAccess(user, reservation.guestId);
+
+    if (
+      !reservation.payments.some(
+        (payment) => payment.status === PaymentStatus.PAID,
+      )
+    ) {
+      // The browser supplies a reservation ID, never a payment status or provider session.
+      const pendingCheckout = reservation.payments.find(
+        (payment) =>
+          payment.status === PaymentStatus.PENDING &&
+          payment.paymongoCheckoutSessionId,
+      );
+      if (pendingCheckout?.paymongoCheckoutSessionId) {
+        const session = await this.paymongoService.retrieveCheckoutSession(
+          pendingCheckout.paymongoCheckoutSessionId,
+        );
+        if (this.findPaidAttempt(session.attributes?.payments))
+          await this.recordPaidCheckout(session);
+      }
+    }
+
+    const [updatedReservation, payments] = await Promise.all([
+      this.prisma.reservation.findUnique({
+        where: { id: reservationId },
+        select: { id: true, roomId: true, referenceNo: true, status: true },
+      }),
+      this.findByReservation(reservationId, user),
+    ]);
+    return { reservation: updatedReservation, payments };
+  }
+
   private findPaidAttempt(payments: PaymongoPaymentAttempt[] | undefined) {
     if (!payments) {
       return undefined;
@@ -385,10 +424,11 @@ export class PaymentsService {
       throw new BadRequestException('PayMongo checkout session is missing.');
     }
 
-    /*
-     * 2. Match PayMongo's cs_... ID
-     *    against our local Payment row.
-     */
+    return this.recordPaidCheckout(session);
+  }
+
+  // Only call with a signature-verified webhook or the authenticated PayMongo API response.
+  private async recordPaidCheckout(session: PaymongoCheckoutSessionResource) {
     const localPayment = await this.prisma.payment.findUnique({
       where: {
         paymongoCheckoutSessionId: session.id,
@@ -434,7 +474,7 @@ export class PaymentsService {
 
     if (!paidAttempt) {
       throw new BadRequestException(
-        'PayMongo webhook does not contain a paid payment attempt.',
+        'Verified checkout does not contain a paid payment attempt.',
       );
     }
 
@@ -481,28 +521,16 @@ export class PaymentsService {
       paidAttempt.attributes.payment_intent_id ??
       null;
 
-    // This notification is created outside the financial transaction below;
-    // it can remain even if those later database updates fail.
-
-    await this.notificationsService.notifyPaymentReceived({
-      paymentId: localPayment.id,
-
-      reservationId: localPayment.reservationId,
-
-      referenceNo: localPayment.reservation.referenceNo,
-
-      amountCentavos: localPayment.amountCentavos,
-    });
-
     // Commit the payment, transaction history and reservation confirmation together
     // so a failed database write cannot leave only part of the financial update saved.
     await this.prisma.$transaction(async (transaction) => {
       /*
        * Mark local payment paid.
        */
-      await transaction.payment.update({
+      const claimed = await transaction.payment.updateMany({
         where: {
           id: localPayment.id,
+          status: { not: PaymentStatus.PAID },
         },
 
         data: {
@@ -519,6 +547,8 @@ export class PaymentsService {
           failureReason: null,
         },
       });
+      // A webhook and a return-page sync may arrive together. Only one records money.
+      if (claimed.count === 0) return;
 
       /*
        * Avoid duplicate transaction
@@ -559,9 +589,10 @@ export class PaymentsService {
        * other reservation states.
        */
       if (localPayment.reservation.status === ReservationStatus.PENDING) {
-        await transaction.reservation.update({
+        await transaction.reservation.updateMany({
           where: {
             id: localPayment.reservationId,
+            status: ReservationStatus.PENDING,
           },
 
           data: {
@@ -569,6 +600,13 @@ export class PaymentsService {
           },
         });
       }
+    });
+
+    await this.notificationsService.notifyPaymentReceived({
+      paymentId: localPayment.id,
+      reservationId: localPayment.reservationId,
+      referenceNo: localPayment.reservation.referenceNo,
+      amountCentavos: localPayment.amountCentavos,
     });
 
     return {

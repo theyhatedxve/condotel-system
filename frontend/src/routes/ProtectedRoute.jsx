@@ -15,7 +15,20 @@ export default function ProtectedRoute({ allowedRoles }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    const isPaymentReturn = ['/payment/success', '/payment/cancelled'].includes(
+      location.pathname,
+    );
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={
+          isPaymentReturn
+            ? { paymentReturn: location.pathname + location.search }
+            : undefined
+        }
+      />
+    );
   }
 
   // Keep the password-change page reachable to avoid a redirect loop for temporary passwords.

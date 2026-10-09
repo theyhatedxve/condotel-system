@@ -1,18 +1,21 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowDownUp,
   ArrowRight,
   BedDouble,
-  Building2,
   CalendarDays,
-  MapPin,
+  ChevronRight,
+  CreditCard,
+  LayoutGrid,
+  List,
   Search,
   ShieldCheck,
-  SlidersHorizontal,
   Users,
 } from 'lucide-react';
+import HomeBrand from '../home/HomeBrand';
+import { featuredRooms } from '../home/homeContent';
 import StaySearch from './StaySearch';
+import RoomFilters from './RoomFilters';
 import PublicRoomCard from './PublicRoomCard';
 import RoomDetails from './RoomDetails';
 import usePublicRooms from './usePublicRooms';
@@ -32,6 +35,7 @@ export default function LandingPage() {
   const [maxPrice, setMaxPrice] = useState('');
   const [availableOnly, setAvailableOnly] = useState(true);
   const [sort, setSort] = useState('room-number');
+  const [layout, setLayout] = useState('grid');
   const [selectedRoom, setSelectedRoom] = useState(null);
   const { rooms, loading, error, retry } = usePublicRooms(search);
   const roomTypes = [...new Set(rooms.map((room) => room.roomType))].sort();
@@ -70,223 +74,167 @@ export default function LandingPage() {
         Skip to rooms
       </a>
       <header className="stay-header">
-        <Link to="/" className="stay-brand" aria-label="Condotel home">
-          <Building2 size={46} strokeWidth={1.3} />
-          <span>
-            CONDOTEL<small>MODERN LIVING, SMARTER ACCESS.</small>
-          </span>
-        </Link>
-        <nav aria-label="Main navigation">
-          <a href="#home">Home</a>
-          <a href="#rooms">Rooms</a>
-          <a href="#experience">Experience</a>
-          <a href="#about">About</a>
-        </nav>
-        <div className="stay-header-actions">
-          <a
-            href="#rooms"
-            className="stay-search-link"
-            aria-label="Browse rooms"
-          >
-            <Search size={21} />
-          </a>
-          <Link to="/login" className="stay-sign-in">
-            Sign In
-          </Link>
-          <Link to="/login" className="stay-book">
-            Book Now
-          </Link>
+        <div className="stay-container stay-header-inner">
+          <HomeBrand />
+          <nav aria-label="Main navigation">
+            <Link to="/">Home</Link>
+            <Link to="/rooms" aria-current="page">
+              Rooms
+            </Link>
+            <Link to="/#amenities">Amenities</Link>
+            <Link to="/#location">Location</Link>
+            <a href="#about">About</a>
+          </nav>
+          <div className="stay-header-actions">
+            <button
+              type="button"
+              className="stay-search-link"
+              aria-label="Edit room search"
+              onClick={editSearch}
+            >
+              <Search size={21} />
+            </button>
+            <button type="button" className="stay-book" onClick={editSearch}>
+              Book Now <ArrowRight size={17} />
+            </button>
+          </div>
         </div>
       </header>
 
       <main>
-        <section className="stay-hero" id="home" aria-labelledby="stay-heading">
-          <div className="stay-hero-content">
-            <p className="stay-eyebrow">PREMIUM CONDOTEL STAYS</p>
-            <h1 id="stay-heading">Find Your Perfect Stay</h1>
+        <section
+          className="stay-hero"
+          id="home"
+          aria-labelledby="stay-heading"
+          style={{ '--stay-hero-room': `url("${featuredRooms[0].imageUrl}")` }}
+        >
+          <div className="stay-container stay-hero-content">
+            <nav className="stay-breadcrumb" aria-label="Breadcrumb">
+              <Link to="/">Home</Link>
+              <ChevronRight size={15} />
+              <span aria-current="page">Rooms</span>
+            </nav>
+            <h1 id="stay-heading">Discover Our Rooms</h1>
             <p className="stay-hero-subtitle">
-              Modern rooms. A little more comfort. A place to make your own.
+              Choose the perfect stay for your coastal escape. Modern comfort,
+              <br className="stay-desktop-break" /> thoughtful spaces, and a
+              place to make your own.
             </p>
-            <StaySearch
-              onSearch={(criteria) => {
-                setRoomType('');
-                setSearch(criteria);
-              }}
-            />
           </div>
-          <aside
-            className="stay-highlights"
-            aria-label="The Condotel experience"
-          >
-            <div>
-              <MapPin />
-              <span>
-                <strong>Your next destination</strong>
-                <small>A fresh setting for your stay</small>
-              </span>
-            </div>
-            <div>
-              <BedDouble />
-              <span>
-                <strong>Room to unwind</strong>
-                <small>Find a space that suits you</small>
-              </span>
-            </div>
-            <div>
-              <ShieldCheck />
-              <span>
-                <strong>A seamless start</strong>
-                <small>Explore rooms, then sign in</small>
-              </span>
-            </div>
-          </aside>
         </section>
 
+        <div className="stay-container stay-search-wrap">
+          <StaySearch
+            roomTypes={roomTypes}
+            roomType={roomType}
+            onRoomTypeChange={setRoomType}
+            onSearch={setSearch}
+          />
+        </div>
+
         <section
-          className="stay-catalog"
+          className="stay-container stay-catalog"
           id="rooms"
-          aria-labelledby="stay-rooms-title"
+          aria-label="Room listings"
         >
-          <div className="stay-catalog-heading">
-            <div>
-              <p className="stay-eyebrow">
-                {search ? 'AVAILABLE FOR YOUR DATES' : 'EXPLORE OUR ROOMS'}
-              </p>
-              <h2 id="stay-rooms-title">Choose Your Room</h2>
-              <p>Find the right space for a stay that feels like you.</p>
-            </div>
-            <label className="stay-sort">
-              <ArrowDownUp size={18} />
-              <span>
-                Sort by
-                <select
-                  value={sort}
-                  onChange={(event) => setSort(event.target.value)}
-                >
-                  <option value="room-number">Room number</option>
-                  <option value="price-low">Price: low to high</option>
-                  <option value="price-high">Price: high to low</option>
-                </select>
-              </span>
-            </label>
-          </div>
           <div className="stay-catalog-layout">
-            <aside
-              className="stay-sidebar"
-              aria-label="Search summary and availability"
+            <RoomFilters
+              rooms={rooms}
+              roomTypes={roomTypes}
+              roomType={roomType}
+              onRoomTypeChange={setRoomType}
+              maxPrice={maxPrice}
+              onMaxPriceChange={setMaxPrice}
+              availableOnly={availableOnly}
+              onAvailabilityChange={setAvailableOnly}
+              dateSearch={Boolean(search)}
+              onReset={clearFilters}
             >
-              <div className="stay-sidebar-title">
-                <MapPin size={18} />
-                <strong>Your Search</strong>
-                <button onClick={editSearch}>Edit</button>
-              </div>
-              <div className="stay-search-summary">
-                <p>
-                  <CalendarDays size={17} />
-                  <span>
-                    {search ? displayDate(search.checkIn) : 'Choose your dates'}
-                  </span>
-                </p>
-                {search && (
-                  <>
-                    <p>
-                      <CalendarDays size={17} />
-                      <span>{displayDate(search.checkOut)}</span>
-                    </p>
-                    <p>
-                      <Users size={17} />
-                      <span>{search.guests} guests · 1 room</span>
-                    </p>
-                  </>
-                )}
-              </div>
-              <label className="stay-availability">
-                <span>
-                  <strong>Available rooms</strong>
-                  <small>
-                    {search
-                      ? 'Matched to your travel dates'
-                      : 'Show currently available rooms'}
-                  </small>
-                </span>
-                <input
-                  type="checkbox"
-                  checked={availableOnly || Boolean(search)}
-                  disabled={Boolean(search)}
-                  onChange={(event) => setAvailableOnly(event.target.checked)}
-                />
-              </label>
-              <div className="stay-sidebar-note">
-                <ShieldCheck size={22} />
-                <p>Your next stay starts here.</p>
-                <span>
-                  Browse the rooms and sign in when you’re ready to continue.
-                </span>
-              </div>
               {search && (
-                <button
-                  className="stay-text-button"
-                  onClick={() => {
-                    setSearch(null);
-                    clearFilters();
-                  }}
-                >
-                  Clear dates and browse all rooms
-                </button>
+                <div className="stay-search-summary">
+                  <strong>Your stay</strong>
+                  <p>
+                    <CalendarDays size={15} />
+                    {displayDate(search.checkIn)} –{' '}
+                    {displayDate(search.checkOut)}
+                  </p>
+                  <p>
+                    <Users size={15} />
+                    {search.guests} guests · 1 room
+                  </p>
+                  <button
+                    type="button"
+                    className="stay-text-button"
+                    onClick={editSearch}
+                  >
+                    Edit dates
+                  </button>
+                  <button
+                    type="button"
+                    className="stay-text-button"
+                    onClick={() => {
+                      setSearch(null);
+                      clearFilters();
+                    }}
+                  >
+                    Clear dates and browse all rooms
+                  </button>
+                </div>
               )}
-            </aside>
+            </RoomFilters>
+
             <div className="stay-results">
-              <div className="stay-filter-bar">
-                <label>
-                  <BedDouble size={20} />
-                  <span>
-                    Room type
+              <div className="stay-results-toolbar">
+                <p className="stay-result-count" aria-live="polite">
+                  {loading
+                    ? 'Finding your next stay…'
+                    : error
+                      ? 'Rooms are temporarily unavailable'
+                      : `Showing ${visibleRooms.length} of ${rooms.length} rooms`}
+                </p>
+                <div className="stay-results-controls">
+                  <label className="stay-sort">
+                    Sort by
                     <select
-                      value={roomType}
-                      onChange={(event) => setRoomType(event.target.value)}
+                      value={sort}
+                      onChange={(event) => setSort(event.target.value)}
                     >
-                      <option value="">All types</option>
-                      {roomTypes.map((type) => (
-                        <option key={type} value={type}>
-                          {type}
-                        </option>
-                      ))}
+                      <option value="room-number">Room number</option>
+                      <option value="price-low">Price: low to high</option>
+                      <option value="price-high">Price: high to low</option>
                     </select>
-                  </span>
-                </label>
-                <label>
-                  <SlidersHorizontal size={19} />
-                  <span>
-                    Price per night
-                    <select
-                      value={maxPrice}
-                      onChange={(event) => setMaxPrice(event.target.value)}
+                  </label>
+                  <div
+                    className="stay-layout-toggle"
+                    role="group"
+                    aria-label="Room display"
+                  >
+                    <button
+                      type="button"
+                      aria-label="Grid view"
+                      aria-pressed={layout === 'grid'}
+                      onClick={() => setLayout('grid')}
                     >
-                      <option value="">Any price</option>
-                      <option value="250000">Up to ₱2,500</option>
-                      <option value="500000">Up to ₱5,000</option>
-                      <option value="1000000">Up to ₱10,000</option>
-                    </select>
-                  </span>
-                </label>
-                <button className="stay-text-button" onClick={clearFilters}>
-                  Clear filters
-                </button>
+                      <LayoutGrid size={18} />
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="List view"
+                      aria-pressed={layout === 'list'}
+                      onClick={() => setLayout('list')}
+                    >
+                      <List size={19} />
+                    </button>
+                  </div>
+                </div>
               </div>
-              <p className="stay-result-count" aria-live="polite">
-                {loading
-                  ? 'Finding your next stay…'
-                  : error
-                    ? 'Rooms are temporarily unavailable'
-                    : `Showing ${visibleRooms.length} of ${rooms.length} rooms`}
-              </p>
               {loading ? (
                 <div
                   className="stay-room-grid"
                   aria-label="Loading rooms"
                   aria-busy="true"
                 >
-                  {[1, 2, 3, 4].map((item) => (
+                  {[1, 2, 3, 4, 5, 6].map((item) => (
                     <div key={item} className="stay-skeleton">
                       <div />
                       <span />
@@ -297,7 +245,7 @@ export default function LandingPage() {
               ) : error ? (
                 <div className="stay-empty" role="alert">
                   <BedDouble size={36} />
-                  <h3>A short pause in your search</h3>
+                  <h2>A short pause in your search</h2>
                   <p>{error}</p>
                   <button className="stay-button" onClick={retry}>
                     Try again
@@ -306,7 +254,7 @@ export default function LandingPage() {
               ) : visibleRooms.length === 0 ? (
                 <div className="stay-empty">
                   <Search size={36} />
-                  <h3>No rooms found</h3>
+                  <h2>No rooms found</h2>
                   <p>
                     Try different dates or adjust your room and price filters.
                   </p>
@@ -315,7 +263,9 @@ export default function LandingPage() {
                   </button>
                 </div>
               ) : (
-                <div className="stay-room-grid">
+                <div
+                  className={`stay-room-grid ${layout === 'list' ? 'stay-room-list' : ''}`}
+                >
                   {visibleRooms.map((room) => (
                     <PublicRoomCard
                       key={room.id}
@@ -329,36 +279,56 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="stay-experience" id="experience">
+
+        <section
+          className="stay-container stay-benefits"
+          aria-label="Plan your stay"
+        >
           <div>
-            <p className="stay-eyebrow">MAKE YOURSELF AT HOME</p>
-            <h2>A stay that fits your plans.</h2>
+            <CalendarDays />
+            <span>
+              <strong>Flexible Search</strong>
+              <small>
+                Find a room for your travel dates and number of guests.
+              </small>
+            </span>
           </div>
-          <p>
-            A quick city break or a little extra time away. Explore room
-            options, compare nightly rates, and find the space that works for
-            you.
-          </p>
-          <a href="#rooms">
-            Explore rooms <ArrowRight size={18} />
-          </a>
+          <div>
+            <ShieldCheck />
+            <span>
+              <strong>Secure & Contactless</strong>
+              <small>Modern stays with NFC access for a seamless visit.</small>
+            </span>
+          </div>
+          <div>
+            <CreditCard />
+            <span>
+              <strong>Cashless Payments</strong>
+              <small>A more convenient way to pay for your stay.</small>
+            </span>
+          </div>
+          <div>
+            <BedDouble />
+            <span>
+              <strong>Your Perfect Space</strong>
+              <small>Compare room details and find the right fit.</small>
+            </span>
+          </div>
         </section>
       </main>
       <footer className="stay-footer" id="about">
-        <div className="stay-brand">
-          <Building2 size={30} strokeWidth={1.3} />
-          <span>
-            CONDOTEL<small>MODERN LIVING, SMARTER ACCESS.</small>
-          </span>
+        <div className="stay-container">
+          <HomeBrand />
+          <p>Your space. Your pace. Your next coastal stay.</p>
+          <Link to="/">
+            Back to homepage <ArrowRight size={16} />
+          </Link>
         </div>
-        <p>Your space. Your pace. Your next stay.</p>
-        <Link to="/login">
-          Sign in <ArrowRight size={16} />
-        </Link>
       </footer>
       {selectedRoom && (
         <RoomDetails
           room={selectedRoom}
+          search={search}
           onClose={() => setSelectedRoom(null)}
         />
       )}

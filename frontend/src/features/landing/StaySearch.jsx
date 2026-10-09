@@ -1,4 +1,4 @@
-import { CalendarDays, Search, Users } from 'lucide-react';
+import { BedDouble, CalendarDays, Search, Users } from 'lucide-react';
 import { useState } from 'react';
 
 function localDate(offset = 0) {
@@ -11,7 +11,12 @@ function localDate(offset = 0) {
   ].join('-');
 }
 
-export default function StaySearch({ onSearch }) {
+export default function StaySearch({
+  onSearch,
+  roomTypes,
+  roomType,
+  onRoomTypeChange,
+}) {
   const [checkIn, setCheckIn] = useState(() => localDate());
   const [checkOut, setCheckOut] = useState(() => localDate(1));
   const [guests, setGuests] = useState('2');
@@ -72,6 +77,23 @@ export default function StaySearch({ onSearch }) {
             {[1, 2, 3, 4, 5, 6, 8].map((count) => (
               <option key={count} value={count}>
                 {count} {count === 1 ? 'Guest' : 'Guests'}
+              </option>
+            ))}
+          </select>
+        </span>
+      </label>
+      <label>
+        <BedDouble size={22} />
+        <span>
+          Room Type
+          <select
+            value={roomType}
+            onChange={(event) => onRoomTypeChange(event.target.value)}
+          >
+            <option value="">All Types</option>
+            {roomTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
               </option>
             ))}
           </select>

@@ -36,14 +36,29 @@ import ChangePasswordPage from '../features/auth/ChangePasswordPage';
 
 import UserManagementPage from '../features/user-management/UserManagementPage';
 import LandingPage from '../features/landing/LandingPage';
+import HomePage from '../features/home/HomePage';
+import BookingPage from '../features/booking/BookingPage';
+import CheckoutPage from '../features/payments/CheckoutPage';
 
 export default function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<LandingPage />} />
+      <Route path="/" element={<HomePage />} />
 
       <Route element={<ProtectedRoute />}>
+        <Route path="/rooms" element={<LandingPage />} />
+        <Route path="/payment/success" element={<PaymentResultPage />} />
+        <Route path="/payment/cancelled" element={<PaymentResultPage />} />
+        <Route
+          path="/customer/home"
+          element={<Navigate to="/rooms" replace />}
+        />
         <Route path="/change-password" element={<ChangePasswordPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['CUSTOMER']} />}>
+        <Route path="/booking/:roomId" element={<BookingPage />} />
+        <Route path="/booking/:roomId/payment" element={<CheckoutPage />} />
       </Route>
 
       <Route path="/login" element={<LoginPage />} />
@@ -51,9 +66,6 @@ export default function AppRoutes() {
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
       <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'STAFF']} />}>
-        <Route path="/payment/success" element={<PaymentResultPage />} />
-
-        <Route path="/payment/cancelled" element={<PaymentResultPage />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="profile" element={<ProfilePage />} />
 
@@ -84,15 +96,6 @@ export default function AppRoutes() {
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Route>
-
-      <Route
-        path="/customer/home"
-        element={
-          <main className="loading-screen">
-            Customer Portal will be implemented later.
-          </main>
-        }
-      />
 
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

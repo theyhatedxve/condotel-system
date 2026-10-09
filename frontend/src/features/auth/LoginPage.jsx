@@ -10,7 +10,7 @@ import {
   Waves,
 } from 'lucide-react';
 
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from './useAuth';
 
@@ -25,7 +25,7 @@ function getHomeRoute(role) {
       return '/admin/dashboard';
 
     case 'CUSTOMER':
-      return '/customer/home';
+      return '/rooms';
 
     default:
       return '/login';
@@ -34,6 +34,14 @@ function getHomeRoute(role) {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const paymentReturn = location.state?.paymentReturn;
+  // Only the two internal payment-result routes may override the usual role destination.
+  const safePaymentReturn =
+    typeof paymentReturn === 'string' &&
+    /^\/payment\/(success|cancelled)(\?|$)/.test(paymentReturn)
+      ? paymentReturn
+      : null;
 
   const { login, user, isLoading, isAuthenticated } = useAuth();
 
@@ -50,7 +58,9 @@ export default function LoginPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (!isLoading && isAuthenticated && user) {
-    return <Navigate to={getHomeRoute(user.role)} replace />;
+    return (
+      <Navigate to={safePaymentReturn || getHomeRoute(user.role)} replace />
+    );
   }
 
   async function handleSubmit(event) {
@@ -66,7 +76,7 @@ export default function LoginPage() {
         rememberMe,
       });
 
-      navigate(getHomeRoute(loggedInUser.role), {
+      navigate(safePaymentReturn || getHomeRoute(loggedInUser.role), {
         replace: true,
       });
     } catch (requestError) {

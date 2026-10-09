@@ -4,7 +4,7 @@ import { X, Users } from 'lucide-react';
 import RoomPhoto from './RoomPhoto';
 import { formatCurrency } from '../../utils/formatCurrency';
 
-export default function RoomDetails({ room, onClose }) {
+export default function RoomDetails({ room, search, onClose }) {
   const dialog = useRef(null);
   useEffect(() => {
     const element = dialog.current;
@@ -46,8 +46,11 @@ export default function RoomDetails({ room, onClose }) {
         <strong className="stay-detail-price">
           {formatCurrency(room.ratePerNightCentavos)} <small>/ night</small>
         </strong>
-        <Link className="stay-button" to="/login">
-          Sign in to continue
+        <Link
+          className="stay-button"
+          to={`/booking/${encodeURIComponent(room.id)}${search ? `?${new URLSearchParams({ checkIn: search.checkIn, checkOut: search.checkOut, guests: search.guests })}` : ''}`}
+        >
+          Book This Room
         </Link>
       </div>
     </dialog>

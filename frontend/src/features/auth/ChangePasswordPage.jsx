@@ -15,7 +15,7 @@ function getHomeRoute(role) {
     return '/admin/dashboard';
   }
 
-  return '/customer/home';
+  return '/rooms';
 }
 
 export default function ChangePasswordPage() {
