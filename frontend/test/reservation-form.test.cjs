@@ -69,6 +69,7 @@ function setup(getAvailableRooms = async () => rooms) {
     window: { alert() {} },
     require(name) {
       if (name === 'react') return hooks;
+      if (name === './ReservationDatePicker') return 'input';
       if (name === 'react/jsx-runtime') return require('react/jsx-runtime');
       if (name === 'lucide-react') return { Search: () => null, X: () => null };
       if (name === './reservationApi')

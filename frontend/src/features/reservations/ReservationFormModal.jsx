@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 
 import { getAvailableRooms } from './reservationApi';
+import ReservationDatePicker from './ReservationDatePicker';
 
 import { formatCurrency } from '../../utils/formatCurrency';
 
@@ -197,32 +198,21 @@ export default function ReservationFormModal({
               </label>
 
               <div className="reservation-form-grid">
-                <label>
-                  <span>Check-in</span>
-
-                  <input
-                    required
-                    type="date"
-                    value={form.checkIn}
-                    onChange={(event) =>
-                      updateField('checkIn', event.target.value)
-                    }
-                  />
-                </label>
-
-                <label>
-                  <span>Check-out</span>
-
-                  <input
-                    required
-                    type="date"
-                    value={form.checkOut}
-                    onChange={(event) =>
-                      updateField('checkOut', event.target.value)
-                    }
-                  />
-                </label>
-
+                <ReservationDatePicker
+                  label="Check-in"
+                  value={form.checkIn}
+                  onChange={(event) =>
+                    updateField('checkIn', event.target.value)
+                  }
+                />
+                <ReservationDatePicker
+                  label="Check-out"
+                  afterDate={form.checkIn}
+                  value={form.checkOut}
+                  onChange={(event) =>
+                    updateField('checkOut', event.target.value)
+                  }
+                />
                 <label>
                   <span>Adults</span>
 

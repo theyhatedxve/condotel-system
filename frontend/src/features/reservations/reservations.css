@@ -228,6 +228,128 @@
   gap: 16px;
 }
 
+.reservation-date-picker {
+  position: relative;
+  min-width: 0;
+}
+
+.reservation-date-control {
+  display: flex;
+  align-items: center;
+  margin-top: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+}
+
+.reservation-date-control:focus-within {
+  border-color: #1374b9;
+  box-shadow: 0 0 0 3px #1374b91a;
+}
+
+.reservation-form .reservation-date-control input {
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--color-navy-950);
+}
+
+.reservation-date-control input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.reservation-date-control > button {
+  display: flex;
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  margin-right: 4px;
+  color: #13466f;
+  background: #edf6fd;
+}
+
+.reservation-calendar {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 5;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 230px;
+  padding: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 10px 30px #0d375922;
+}
+
+.reservation-calendar-header,
+.reservation-calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.reservation-calendar-header strong {
+  color: #13466f;
+  font-size: 13px;
+  text-align: center;
+}
+
+.reservation-calendar button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  padding: 4px;
+  border: 0;
+  border-radius: 6px;
+  color: #13466f;
+  background: transparent;
+  font-size: 12px;
+}
+
+.reservation-calendar button:hover:not(:disabled) {
+  background: #edf6fd;
+}
+
+.reservation-calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 3px;
+  margin: 12px 0;
+}
+
+.reservation-calendar-weekday {
+  padding: 4px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.reservation-calendar button[aria-current='date'] {
+  box-shadow: inset 0 0 0 1px #1374b9;
+}
+
+.reservation-calendar button[aria-pressed='true'],
+.reservation-calendar button[aria-pressed='true']:hover {
+  background: #13466f;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.reservation-calendar-footer {
+  padding-top: 8px;
+  border-top: 1px solid var(--color-border);
+}
+
+.reservation-calendar-footer button {
+  padding: 4px 10px;
+  font-weight: 600;
+}
+
 /* Style .reservation-form label to arrange its contents, set text appearance. */
 
 .reservation-form label {
