@@ -71,7 +71,13 @@ export default function DashboardPage() {
     return (
       /* Group the related content and actions into a distinct page section. */
       <section className="dashboard-page">
-        <div className="dashboard-loading"><LoadingScreen inline title="Loading dashboard" description="Fetching the latest details for this page." /></div>
+        <div className="dashboard-loading">
+          <LoadingScreen
+            inline
+            title="Loading dashboard"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       </section>
     );
   }

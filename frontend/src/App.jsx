@@ -5,7 +5,13 @@ import PageLoadBoundary from './components/PageLoadBoundary';
 
 // Render the application route tree.
 function App() {
-  return <PageLoadBoundary><Suspense fallback={<LoadingScreen />}><AppRoutes /></Suspense></PageLoadBoundary>;
+  return (
+    <PageLoadBoundary>
+      <Suspense fallback={<LoadingScreen />}>
+        <AppRoutes />
+      </Suspense>
+    </PageLoadBoundary>
+  );
 }
 
 export default App;

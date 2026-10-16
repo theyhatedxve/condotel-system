@@ -186,7 +186,13 @@ export default function ReportsPage() {
       </div>
 
       {loading ? (
-        <div className="reports-loading"><LoadingScreen inline title="Loading report" description="Fetching the latest details for this page." /></div>
+        <div className="reports-loading">
+          <LoadingScreen
+            inline
+            title="Loading report"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       ) : (
         <>
           <div className="report-summary-grid">

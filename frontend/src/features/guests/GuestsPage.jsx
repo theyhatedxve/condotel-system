@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useState } from 'react';
 
 import { Pencil, Plus, Search } from 'lucide-react';
@@ -178,7 +179,13 @@ export default function GuestsPage() {
       {error && <div className="rooms-error">{error}</div>}
 
       {loading ? (
-        <div className="rooms-loading">Loading guests...</div>
+        <div className="rooms-loading">
+          <LoadingScreen
+            inline
+            title="Loading guests"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       ) : (
         <div className="guest-table-wrapper">
           {/* Display guests records with their existing columns and row actions. */}

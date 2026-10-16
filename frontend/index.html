@@ -11,10 +11,59 @@
       content="NEXORA — smart reservations, secure NFC access, and seamless payments."
     />
     <title>NEXORA | Smart Access. Seamless Stays.</title>
+    <style>
+      body {
+        margin: 0;
+      }
+      .app-boot {
+        box-sizing: border-box;
+        min-height: 100svh;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 18px;
+        padding: 24px;
+        background: #f1f7fc;
+        color: #13466f;
+        font:
+          14px system-ui,
+          sans-serif;
+        text-align: center;
+      }
+      .app-boot img {
+        width: 180px;
+        height: 90px;
+        object-fit: contain;
+      }
+      .app-boot-spinner {
+        width: 30px;
+        height: 30px;
+        border: 3px solid #dce8f2;
+        border-top-color: #1374b9;
+        border-radius: 50%;
+        animation: app-boot-spin 0.8s linear infinite;
+      }
+      @keyframes app-boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app-boot-spinner {
+          animation: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- React renders the route tree inside this root element. -->
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-boot" role="status" aria-live="polite">
+        <img src="/nexora-logo.png" alt="NEXORA" />
+        <div class="app-boot-spinner" aria-hidden="true"></div>
+        <p>Loading NEXORA...</p>
+      </div>
+    </div>
     <!-- Load the entry module that configures routing and authentication. -->
     <script type="module" src="/src/main.jsx"></script>
   </body>

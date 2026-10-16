@@ -105,7 +105,11 @@ export default function MyBookingsPage() {
         </div>
         {loading ? (
           <div className="my-bookings-empty" role="status">
-            <LoadingScreen inline title="Loading your bookings" description="Fetching the latest details for this page." />
+            <LoadingScreen
+              inline
+              title="Loading your bookings"
+              description="Fetching the latest details for this page."
+            />
           </div>
         ) : result.error ? (
           <div className="my-bookings-empty" role="alert">

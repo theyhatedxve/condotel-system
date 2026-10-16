@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useState } from 'react';
 
 import { KeyRound, Search, UserCog, X } from 'lucide-react';
@@ -404,7 +405,13 @@ export default function UserManagementPage() {
       </div>
 
       {loading ? (
-        <div className="user-management-empty">Loading users...</div>
+        <div className="user-management-empty">
+          <LoadingScreen
+            inline
+            title="Loading users"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       ) : (
         <div className="user-management-table-wrapper">
           {/* Display user management records with their existing columns and row actions. */}
@@ -740,10 +747,4 @@ export default function UserManagementPage() {
               <button type="submit" disabled={resettingPassword}>
                 {resettingPassword ? 'Resetting...' : 'Reset Password'}
               </button>
-            </footer>
-          </form>
-        </div>
-      )}
-    </section>
-  );
-}
+            </footer

@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useState } from 'react';
 
 import {
@@ -327,7 +328,13 @@ export default function PaymentsPage() {
       </div>
 
       {loading ? (
-        <div className="payments-loading">Loading payments...</div>
+        <div className="payments-loading">
+          <LoadingScreen
+            inline
+            title="Loading payments"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       ) : payments.length === 0 ? (
         <div className="payments-empty">No payment records found.</div>
       ) : filteredPayments.length === 0 ? (

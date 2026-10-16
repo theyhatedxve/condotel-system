@@ -123,6 +123,7 @@ function mount(request, source = 'features/my-bookings/MyBookingsPage.jsx') {
     react: hooks,
     'react-router-dom': { Link: 'a' },
     '../booking/BookingShell': 'section',
+    '../auth/LoadingScreen': () => null,
     '../booking/bookingUtils': bookingUtils,
     '../auth/useAuth': { useAuth: () => ({ user: { id: userId } }) },
     './useAuth': { useAuth: () => ({ user: { id: userId } }) },

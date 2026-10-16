@@ -174,7 +174,13 @@ export default function SettingsPage() {
     return (
       /* Group the related content and actions into a distinct page section. */
       <section className="settings-page">
-        <div className="settings-loading"><LoadingScreen inline title="Loading settings" description="Fetching the latest details for this page." /></div>
+        <div className="settings-loading">
+          <LoadingScreen
+            inline
+            title="Loading settings"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       </section>
     );
   }

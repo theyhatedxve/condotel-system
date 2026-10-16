@@ -18,7 +18,17 @@ export default function AdminLayout() {
         <Topbar />
 
         <main className="admin-content">
-          <Suspense fallback={<LoadingScreen inline title="Loading your workspace" description="Getting this page ready." />}><Outlet /></Suspense>
+          <Suspense
+            fallback={
+              <LoadingScreen
+                inline
+                title="Loading your workspace"
+                description="Getting this page ready."
+              />
+            }
+          >
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

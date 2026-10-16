@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useState } from 'react';
 
 import { Eye, RefreshCw, Search, WalletCards, X } from 'lucide-react';
@@ -303,7 +304,13 @@ export default function TransactionsPage() {
       </div>
 
       {loading ? (
-        <div className="transactions-loading">Loading transactions...</div>
+        <div className="transactions-loading">
+          <LoadingScreen
+            inline
+            title="Loading transactions"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       ) : transactions.length === 0 ? (
         <div className="transactions-empty">No transaction records found.</div>
       ) : filteredTransactions.length === 0 ? (

@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useState } from 'react';
 
 import { Plus } from 'lucide-react';
@@ -241,7 +242,13 @@ export default function RoomsPage() {
       {error && <div className="rooms-error">{error}</div>}
 
       {loading ? (
-        <div className="rooms-loading">Loading rooms...</div>
+        <div className="rooms-loading">
+          <LoadingScreen
+            inline
+            title="Loading rooms"
+            description="Fetching the latest details for this page."
+          />
+        </div>
       ) : rooms.length === 0 ? (
         <div className="rooms-empty">No rooms found.</div>
       ) : (

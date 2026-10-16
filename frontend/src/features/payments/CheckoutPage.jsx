@@ -314,7 +314,11 @@ export default function CheckoutPage() {
         </div>
       ) : result.loading ? (
         <div className="stay-empty" role="status">
-          <LoadingScreen inline title="Loading your payment details" description="Fetching the latest details for this page." />
+          <LoadingScreen
+            inline
+            title="Loading your payment details"
+            description="Fetching the latest details for this page."
+          />
         </div>
       ) : result.error ? (
         <div className="stay-empty" role="alert">
