@@ -232,6 +232,7 @@ export default function ReservationsPage() {
                 <th>Reference No.</th>
 
                 <th>Guest</th>
+                <th>Guest Count</th>
                 <th>{'Room'}</th>
                 <th>Check-in</th>
                 <th>Check-out</th>
@@ -248,6 +249,18 @@ export default function ReservationsPage() {
 
                   <td>
                     {reservation.guest.firstName} {reservation.guest.lastName}
+                  </td>
+
+                  <td>
+                    <div className="reservation-guest-count">
+                      <strong>
+                        {reservation.adults + reservation.children} total
+                      </strong>
+                      <span>
+                        {reservation.adults} adult(s), {reservation.children}{' '}
+                        child(ren)
+                      </span>
+                    </div>
                   </td>
 
                   <td>

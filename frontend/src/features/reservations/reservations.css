@@ -88,6 +88,16 @@
   color: var(--color-text-muted);
 }
 
+.reservation-guest-count {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.reservation-guest-count span {
+  color: var(--color-text-muted);
+}
+
 /* Style .reservation-status to set text appearance. */
 
 .reservation-status {
@@ -246,7 +256,7 @@
 
 /* Style .availability-button to arrange its contents, set text appearance, style the surface and boundaries. */
 
-.availability-button {
+.reservation-modal .reservation-form .availability-button {
   min-height: 40px;
 
   display: flex;
@@ -259,11 +269,107 @@
 
   border-radius: var(--radius-sm);
 
-  background: #ffffff;
+  background: #13466f;
 
-  color: var(--color-blue-700);
+  color: #ffffff;
 
   font-weight: 600;
+}
+
+/* Keep the room picker contained and support keyboard and touch scrolling. */
+.reservation-room-picker {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.reservation-room-picker legend {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.reservation-room-picker > p,
+.reservation-availability-message {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.reservation-availability-message:empty {
+  display: none;
+}
+
+.reservation-room-picker > p {
+  margin: 6px 0 12px;
+}
+
+.reservation-room-list {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 4px 14px;
+  scroll-snap-type: x proximity;
+}
+
+.reservation-form .reservation-room-card {
+  flex: 0 0 220px;
+  box-sizing: border-box;
+  padding: 16px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  cursor: pointer;
+  scroll-snap-align: start;
+}
+
+.reservation-room-card.is-selected {
+  border-color: #13466f;
+  background: #edf6fd;
+}
+
+.reservation-room-card:focus-within,
+.reservation-modal button:focus-visible {
+  outline: 2px solid #1374b9;
+  outline-offset: 2px;
+}
+
+.reservation-room-card input {
+  align-self: flex-start;
+  accent-color: #13466f;
+}
+
+.reservation-room-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reservation-room-selection {
+  margin-top: 8px;
+  color: #13466f;
+}
+
+.reservation-stay-summary {
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: #f8fafd;
+}
+
+.reservation-stay-summary h3 {
+  margin: 0 0 10px;
+  font-size: 14px;
+}
+
+.reservation-stay-summary p {
+  margin: 6px 0;
+  font-size: 13px;
+}
+
+.reservation-modal button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
 }
 
 /* Style .reservation-modal-actions to arrange its contents. */

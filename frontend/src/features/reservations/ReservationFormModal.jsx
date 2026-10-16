@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import { Search, X } from 'lucide-react';
 
@@ -26,6 +26,11 @@ export default function ReservationFormModal({
   const [availableRooms, setAvailableRooms] = useState([]);
 
   const [checkingAvailability, setCheckingAvailability] = useState(false);
+  const [step, setStep] = useState(1);
+  const [hasCheckedAvailability, setHasCheckedAvailability] = useState(false);
+  const [availabilityMessage, setAvailabilityMessage] = useState('');
+  const availabilityRequest = useRef(0);
+  const selectedRoom = availableRooms.find((room) => room.id === form.roomId);
 
   // Update one controlled form field while retaining the remaining field values.
   function updateField(field, value) {
@@ -43,20 +48,35 @@ export default function ReservationFormModal({
     }));
 
     if (['checkIn', 'checkOut', 'adults', 'children'].includes(field)) {
+      // Discard in-flight responses for a stay that has since changed.
+      availabilityRequest.current += 1;
+      setCheckingAvailability(false);
+      setHasCheckedAvailability(false);
+      setAvailabilityMessage('');
       setAvailableRooms([]);
     }
   }
 
   // Request available rooms for the selected stay before allowing reservation
   // submission.
-  async function checkAvailability() {
+  async function checkAvailability(event) {
+    if (!event.currentTarget.form.reportValidity()) return;
     if (!form.checkIn || !form.checkOut) {
       window.alert('Select check-in and check-out dates first.');
 
       return;
     }
 
+    if (form.checkOut <= form.checkIn) {
+      setAvailabilityMessage('Check-out must be after check-in.');
+      return;
+    }
+    const requestId = ++availabilityRequest.current;
     setCheckingAvailability(true);
+    setAvailableRooms([]);
+    setForm((current) => ({ ...current, roomId: '' }));
+    setHasCheckedAvailability(false);
+    setAvailabilityMessage('');
 
     try {
       const capacity = Number(form.adults) + Number(form.children);
@@ -69,18 +89,26 @@ export default function ReservationFormModal({
         capacity,
       });
 
+      if (requestId !== availabilityRequest.current) return;
       setAvailableRooms(rooms);
+      setHasCheckedAvailability(true);
 
       if (rooms.length === 0) {
-        window.alert('No rooms are available for those dates.');
+        setAvailabilityMessage(
+          'No rooms are available for those dates and guest counts.',
+        );
       }
     } catch (error) {
+      if (requestId !== availabilityRequest.current) return;
       const message =
         error.response?.data?.message || 'Unable to check availability.';
 
-      window.alert(Array.isArray(message) ? message.join(' ') : message);
+      setAvailabilityMessage(
+        Array.isArray(message) ? message.join(' ') : message,
+      );
     } finally {
-      setCheckingAvailability(false);
+      if (requestId === availabilityRequest.current)
+        setCheckingAvailability(false);
     }
   }
 
@@ -89,12 +117,17 @@ export default function ReservationFormModal({
   function handleSubmit(event) {
     event.preventDefault();
 
-    if (!form.roomId) {
+    if (isSubmitting) return;
+    if (!selectedRoom || checkingAvailability) {
       window.alert('Check availability and select a room.');
 
       return;
     }
 
+    if (step === 1) {
+      setStep(2);
+      return;
+    }
     onSubmit({
       guestId: form.guestId,
 
@@ -121,12 +154,18 @@ export default function ReservationFormModal({
           <div>
             <h2>New Reservation</h2>
 
-            <p>Select guest, dates, and an available room.</p>
+            <p>
+              {step === 1
+                ? 'Step 1 of 2: Select guest, dates, and an available room.'
+                : 'Step 2 of 2: Add special requests and confirm.'}
+            </p>
           </div>
 
           <button
             type="button"
             className="modal-close-button"
+            aria-label="Close new reservation"
+            disabled={isSubmitting}
             onClick={onClose}
           >
             <X size={20} />
@@ -135,133 +174,194 @@ export default function ReservationFormModal({
 
         {/* Collect the reservations form fields and submit them through the handler above. */}
         <form className="reservation-form" onSubmit={handleSubmit}>
-          <label>
-            <span>Guest</span>
+          {step === 1 ? (
+            <>
+              <label>
+                <span>Guest</span>
 
-            <select
-              required
-              value={form.guestId}
-              onChange={(event) => updateField('guestId', event.target.value)}
-            >
-              <option value="">Select guest</option>
+                <select
+                  required
+                  value={form.guestId}
+                  onChange={(event) =>
+                    updateField('guestId', event.target.value)
+                  }
+                >
+                  <option value="">Select guest</option>
 
-              {guests.map((guest) => (
-                <option key={guest.id} value={guest.id}>
-                  {guest.firstName} {guest.lastName}
-                </option>
-              ))}
-            </select>
-          </label>
+                  {guests.map((guest) => (
+                    <option key={guest.id} value={guest.id}>
+                      {guest.firstName} {guest.lastName}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-          <div className="reservation-form-grid">
-            <label>
-              <span>Check-in</span>
+              <div className="reservation-form-grid">
+                <label>
+                  <span>Check-in</span>
 
-              <input
-                required
-                type="date"
-                value={form.checkIn}
-                onChange={(event) => updateField('checkIn', event.target.value)}
-              />
-            </label>
+                  <input
+                    required
+                    type="date"
+                    value={form.checkIn}
+                    onChange={(event) =>
+                      updateField('checkIn', event.target.value)
+                    }
+                  />
+                </label>
 
-            <label>
-              <span>Check-out</span>
+                <label>
+                  <span>Check-out</span>
 
-              <input
-                required
-                type="date"
-                value={form.checkOut}
-                onChange={(event) =>
-                  updateField('checkOut', event.target.value)
-                }
-              />
-            </label>
+                  <input
+                    required
+                    type="date"
+                    value={form.checkOut}
+                    onChange={(event) =>
+                      updateField('checkOut', event.target.value)
+                    }
+                  />
+                </label>
 
-            <label>
-              <span>Adults</span>
+                <label>
+                  <span>Adults</span>
 
-              <input
-                type="number"
-                min="1"
-                value={form.adults}
-                onChange={(event) => updateField('adults', event.target.value)}
-              />
-            </label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={form.adults}
+                    onChange={(event) =>
+                      updateField('adults', event.target.value)
+                    }
+                  />
+                </label>
 
-            <label>
-              <span>Children</span>
+                <label>
+                  <span>Children</span>
 
-              <input
-                type="number"
-                min="0"
-                value={form.children}
-                onChange={(event) =>
-                  updateField('children', event.target.value)
-                }
-              />
-            </label>
-          </div>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    value={form.children}
+                    onChange={(event) =>
+                      updateField('children', event.target.value)
+                    }
+                  />
+                </label>
+              </div>
 
-          <button
-            type="button"
-            className="availability-button"
-            onClick={checkAvailability}
-            disabled={checkingAvailability}
-          >
-            <Search size={16} />
+              <button
+                type="button"
+                className="availability-button"
+                onClick={checkAvailability}
+                disabled={checkingAvailability}
+              >
+                <Search size={16} />
 
-            {checkingAvailability ? 'Checking...' : 'Check Availability'}
-          </button>
+                {checkingAvailability ? 'Checking...' : 'Check Availability'}
+              </button>
 
-          <label>
-            <span>Available Room</span>
+              <p
+                className="reservation-availability-message"
+                role="status"
+                aria-live="polite"
+              >
+                {checkingAvailability
+                  ? 'Checking room availability...'
+                  : availabilityMessage}
+              </p>
+              {hasCheckedAvailability && availableRooms.length > 0 && (
+                <fieldset className="reservation-room-picker">
+                  <legend>Available rooms</legend>
+                  <p>Scroll to browse, then select a room to continue.</p>
+                  <div className="reservation-room-list">
+                    {availableRooms.map((room) => (
+                      <label
+                        className={`reservation-room-card${form.roomId === room.id ? ' is-selected' : ''}`}
+                        key={room.id}
+                      >
+                        <input
+                          type="radio"
+                          name="availableRoom"
+                          value={room.id}
+                          checked={form.roomId === room.id}
+                          onChange={() => updateField('roomId', room.id)}
+                        />
+                        <span className="reservation-room-details">
+                          <strong>Room {room.roomNumber}</strong>
+                          <span>{room.roomType}</span>
+                          <span>Up to {room.capacity} guests</span>
+                          <strong>
+                            {formatCurrency(room.ratePerNightCentavos)} / night
+                          </strong>
+                        </span>
+                        <span className="reservation-room-selection">
+                          {form.roomId === room.id ? 'Selected' : 'Select room'}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="reservation-stay-summary">
+                <h3>Stay details</h3>
+                <p>
+                  Room {selectedRoom?.roomNumber} · {selectedRoom?.roomType}
+                </p>
+                <p>
+                  {form.checkIn} to {form.checkOut}
+                </p>
+                <p>
+                  {form.adults} adult(s) · {form.children} child(ren)
+                </p>
+                <p>
+                  {formatCurrency(selectedRoom?.ratePerNightCentavos ?? 0)} /
+                  night
+                </p>
+              </div>
 
-            <select
-              required
-              value={form.roomId}
-              onChange={(event) => updateField('roomId', event.target.value)}
-            >
-              <option value="">Select available room</option>
+              <label>
+                <span>Special Requests (optional)</span>
 
-              {availableRooms.map((room) => (
-                <option key={room.id} value={room.id}>
-                  {'Room'} {room.roomNumber} {'—'} {room.roomType} {'—'}{' '}
-                  {formatCurrency(room.ratePerNightCentavos)}
-                  /night
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label>
-            <span>Special Requests</span>
-
-            <textarea
-              rows="3"
-              value={form.specialRequests}
-              onChange={(event) =>
-                updateField('specialRequests', event.target.value)
-              }
-            />
-          </label>
+                <textarea
+                  rows="3"
+                  maxLength={1000}
+                  disabled={isSubmitting}
+                  value={form.specialRequests}
+                  onChange={(event) =>
+                    updateField('specialRequests', event.target.value)
+                  }
+                />
+              </label>
+            </>
+          )}
 
           {/* Show the property footer links and contact information. */}
           <footer className="reservation-modal-actions">
             <button
               type="button"
               className="secondary-button"
-              onClick={onClose}
+              onClick={step === 1 ? onClose : () => setStep(1)}
+              disabled={isSubmitting}
             >
-              Cancel
+              {step === 1 ? 'Cancel' : 'Back'}
             </button>
 
             <button
               type="submit"
               className="primary-button"
-              disabled={isSubmitting}
+              disabled={isSubmitting || checkingAvailability || !selectedRoom}
             >
-              {isSubmitting ? 'Creating...' : 'Create Reservation'}
+              {step === 1
+                ? 'Next: Special Requests'
+                : isSubmitting
+                  ? 'Creating...'
+                  : 'Create Reservation'}
             </button>
           </footer>
         </form>
