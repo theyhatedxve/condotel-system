@@ -40,6 +40,7 @@ import LandingPage from '../features/landing/LandingPage';
 import HomePage from '../features/home/HomePage';
 import BookingPage from '../features/booking/BookingPage';
 import CheckoutPage from '../features/payments/CheckoutPage';
+import MyBookingsPage from '../features/my-bookings/MyBookingsPage';
 
 // Map public, customer-only, and staff/admin URLs to their existing pages and layouts.
 export default function AppRoutes() {
@@ -63,6 +64,7 @@ export default function AppRoutes() {
 
       {/* Customers own the booking and payment-review pages. */}
       <Route element={<ProtectedRoute allowedRoles={['CUSTOMER']} />}>
+        <Route path="/my-bookings" element={<MyBookingsPage />} />
         <Route path="/booking/:roomId" element={<BookingPage />} />
         <Route path="/booking/:roomId/payment" element={<CheckoutPage />} />
       </Route>

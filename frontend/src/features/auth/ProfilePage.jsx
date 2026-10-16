@@ -112,6 +112,9 @@ export default function ProfilePage() {
           </Link>
           <ChevronRight size={15} aria-hidden="true" />
           <span aria-current="page">My Profile</span>
+          {user?.role === 'CUSTOMER' && (
+            <Link to="/my-bookings">My Bookings</Link>
+          )}
         </nav>
       </header>
       <section className="profile-banner" aria-label="Your profile">

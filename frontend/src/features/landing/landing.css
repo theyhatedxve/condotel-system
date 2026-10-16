@@ -95,6 +95,7 @@
 /* Style .stay-header nav to arrange its contents. */
 .stay-header nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 34px;
 }

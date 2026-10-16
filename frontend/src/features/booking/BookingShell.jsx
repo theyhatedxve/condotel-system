@@ -4,6 +4,7 @@ import HomeBrand from '../home/HomeBrand';
 import { featuredRooms } from '../home/homeContent';
 import '../landing/landing.css';
 import './booking.css';
+import { useAuth } from '../auth/useAuth';
 
 // Wrap booking/payment content in the shared property header and navigation layout.
 export default function BookingShell({
@@ -11,8 +12,10 @@ export default function BookingShell({
   description,
   bookingPath,
   payment = false,
+  pageLabel,
   children,
 }) {
+  const { user } = useAuth();
   return (
     <div className={`stay-page booking-page ${payment ? 'checkout-page' : ''}`}>
       <a className="stay-skip" href="#booking-main">
@@ -26,6 +29,14 @@ export default function BookingShell({
           <nav aria-label="Main navigation">
             <Link to="/">Home</Link>
             <Link to="/rooms">Rooms</Link>
+            {user?.role === 'CUSTOMER' && (
+              <Link
+                to="/my-bookings"
+                aria-current={pageLabel === 'My Bookings' ? 'page' : undefined}
+              >
+                My Bookings
+              </Link>
+            )}
             <Link to="/#amenities">Amenities</Link>
             <Link to="/#location">Location</Link>
             <Link to="/">About</Link>
@@ -60,7 +71,7 @@ export default function BookingShell({
                 <span aria-current="page">Payment</span>
               </>
             ) : (
-              <span aria-current="page">Booking</span>
+              <span aria-current="page">{pageLabel || 'Booking'}</span>
             )}
           </nav>
           <h1 id="booking-title">{title}</h1>

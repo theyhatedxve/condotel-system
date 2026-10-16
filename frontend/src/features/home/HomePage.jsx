@@ -99,6 +99,9 @@ export default function HomePage() {
               Home
             </Link>
             <Link to="/rooms">Rooms</Link>
+            {user?.role === 'CUSTOMER' && (
+              <Link to="/my-bookings">My Bookings</Link>
+            )}
             <a href="#amenities">Amenities</a>
             <a href="#location">Location</a>
             <button type="button" onClick={() => setDialog({ type: 'about' })}>

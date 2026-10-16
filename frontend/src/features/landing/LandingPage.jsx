@@ -20,6 +20,7 @@ import PublicRoomCard from './PublicRoomCard';
 import RoomDetails from './RoomDetails';
 import usePublicRooms from './usePublicRooms';
 import './landing.css';
+import { useAuth } from '../auth/useAuth';
 
 // Format a stay date for display using the existing fallback for an empty value.
 function displayDate(value) {
@@ -33,6 +34,7 @@ function displayDate(value) {
 // Combine the stay search, filters, sorting, and room results for authenticated
 // browsing.
 export default function LandingPage() {
+  const { user } = useAuth();
   // Track local state and read any session or route values needed by this component.
   const [search, setSearch] = useState(null);
   const [roomType, setRoomType] = useState('');
@@ -90,6 +92,9 @@ export default function LandingPage() {
               Rooms
             </Link>
             <Link to="/#amenities">Amenities</Link>
+            {user?.role === 'CUSTOMER' && (
+              <Link to="/my-bookings">My Bookings</Link>
+            )}
             <Link to="/#location">Location</Link>
             <a href="#about">About</a>
           </nav>
