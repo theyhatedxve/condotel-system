@@ -1,4 +1,6 @@
 import { Outlet } from 'react-router-dom';
+import { Suspense } from 'react';
+import LoadingScreen from '../features/auth/LoadingScreen';
 
 import Sidebar from '../layouts/Sidebar';
 
@@ -16,7 +18,7 @@ export default function AdminLayout() {
         <Topbar />
 
         <main className="admin-content">
-          <Outlet />
+          <Suspense fallback={<LoadingScreen inline title="Loading your workspace" description="Getting this page ready." />}><Outlet /></Suspense>
         </main>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 import useBooking from './useBooking';
@@ -24,7 +25,7 @@ export default function BookingPage() {
     >
       {loading ? (
         <div className="stay-empty" role="status">
-          Loading your booking…
+          <LoadingScreen inline title="Loading your booking" description="Fetching the latest details for this page." />
         </div>
       ) : error ? (
         <div className="stay-empty" role="alert">

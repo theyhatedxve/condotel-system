@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useState } from 'react';
 
 import {
@@ -173,7 +174,7 @@ export default function SettingsPage() {
     return (
       /* Group the related content and actions into a distinct page section. */
       <section className="settings-page">
-        <div className="settings-loading">Loading settings...</div>
+        <div className="settings-loading"><LoadingScreen inline title="Loading settings" description="Fetching the latest details for this page." /></div>
       </section>
     );
   }

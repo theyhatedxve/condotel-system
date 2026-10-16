@@ -1,0 +1,108 @@
+.nexora-loading.loading-screen {
+  min-height: 100svh;
+  padding: 32px 20px;
+  background: radial-gradient(ellipse at 50% 25%, #ffffff, #edf5fc);
+  color: #13466f;
+}
+
+.nexora-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: min(100%, 420px);
+  padding: 36px 28px;
+  border: 1px solid #e4edf6;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 16px 50px #13466f08;
+  text-align: center;
+}
+
+.nexora-loading .nexora-logo {
+  width: 180px;
+  height: 90px;
+}
+
+.nexora-loading .loading-spinner {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+  border-color: #e2edf7;
+  border-top-color: #1374b9;
+}
+
+.nexora-loading h2 {
+  margin: 0;
+  color: #123452;
+  font-size: 20px;
+  font-weight: 650;
+}
+
+.nexora-loading p {
+  margin: 0;
+  color: #72859b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.nexora-loading-track {
+  width: min(100%, 200px);
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #e7f0f8;
+}
+
+.nexora-loading-track span {
+  display: block;
+  width: 45%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1374b9, #edc474);
+  animation: nexora-loading-progress 1.4s ease-in-out infinite;
+}
+
+.nexora-loading.loading-screen.is-inline {
+  min-height: 220px;
+  width: 100%;
+  padding: 24px 16px;
+  background: transparent;
+}
+
+.nexora-loading.is-inline .nexora-loading-content {
+  padding: 20px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.page-load-error {
+  color: #a33d46;
+}
+
+.page-load-error a,
+.page-load-error button {
+  padding: 10px 18px;
+  border: 1px solid #d8e5f0;
+  border-radius: 8px;
+  background: #13466f;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+@keyframes nexora-loading-progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(325%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nexora-loading .loading-spinner,
+  .nexora-loading-track span {
+    animation: none;
+  }
+  .nexora-loading-track span {
+    width: 100%;
+    opacity: 0.6;
+  }
+}

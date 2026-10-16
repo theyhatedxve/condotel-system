@@ -1,47 +1,48 @@
+import { lazy } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 import AdminLayout from '../layouts/AdminLayout';
 
-import DashboardPage from '../features/dashboard/DashboardPage';
+const DashboardPage = lazy(() => import('../features/dashboard/DashboardPage'));
 
-import PlaceholderPage from '../features/nfc/PlaceholderPage';
+const PlaceholderPage = lazy(() => import('../features/nfc/PlaceholderPage'));
 
-import LoginPage from '../features/auth/LoginPage';
-import RegisterPage from '../features/auth/RegisterPage';
+const LoginPage = lazy(() => import('../features/auth/LoginPage'));
+const RegisterPage = lazy(() => import('../features/auth/RegisterPage'));
 
-import NotFoundPage from '../pages/shared/NotFoundPage';
+const NotFoundPage = lazy(() => import('../pages/shared/NotFoundPage'));
 
-import UnauthorizedPage from '../pages/shared/UnauthorizedPage';
+const UnauthorizedPage = lazy(() => import('../pages/shared/UnauthorizedPage'));
 
 import ProtectedRoute from './ProtectedRoute';
 
-import RoomsPage from '../features/rooms/RoomsPage';
+const RoomsPage = lazy(() => import('../features/rooms/RoomsPage'));
 
-import PaymentsPage from '../features/payments/PaymentsPage';
+const PaymentsPage = lazy(() => import('../features/payments/PaymentsPage'));
 
-import PaymentResultPage from '../features/payments/PaymentResultPage';
+const PaymentResultPage = lazy(() => import('../features/payments/PaymentResultPage'));
 
-import GuestsPage from '../features/guests/GuestsPage';
+const GuestsPage = lazy(() => import('../features/guests/GuestsPage'));
 
-import ReservationsPage from '../features/reservations/ReservationsPage';
+const ReservationsPage = lazy(() => import('../features/reservations/ReservationsPage'));
 
-import TransactionsPage from '../features/transactions/TransactionsPage';
+const TransactionsPage = lazy(() => import('../features/transactions/TransactionsPage'));
 
-import ReportsPage from '../features/reports/ReportsPage';
+const ReportsPage = lazy(() => import('../features/reports/ReportsPage'));
 
-import SettingsPage from '../features/settings/SettingsPage';
+const SettingsPage = lazy(() => import('../features/settings/SettingsPage'));
 
-import ProfilePage from '../features/auth/ProfilePage';
-import CustomerProfilePage from '../features/auth/CustomerProfilePage';
+const ProfilePage = lazy(() => import('../features/auth/ProfilePage'));
+const CustomerProfilePage = lazy(() => import('../features/auth/CustomerProfilePage'));
 
-import ChangePasswordPage from '../features/auth/ChangePasswordPage';
+const ChangePasswordPage = lazy(() => import('../features/auth/ChangePasswordPage'));
 
-import UserManagementPage from '../features/user-management/UserManagementPage';
-import LandingPage from '../features/landing/LandingPage';
-import HomePage from '../features/home/HomePage';
-import BookingPage from '../features/booking/BookingPage';
-import CheckoutPage from '../features/payments/CheckoutPage';
-import MyBookingsPage from '../features/my-bookings/MyBookingsPage';
+const UserManagementPage = lazy(() => import('../features/user-management/UserManagementPage'));
+const LandingPage = lazy(() => import('../features/landing/LandingPage'));
+const HomePage = lazy(() => import('../features/home/HomePage'));
+const BookingPage = lazy(() => import('../features/booking/BookingPage'));
+const CheckoutPage = lazy(() => import('../features/payments/CheckoutPage'));
+const MyBookingsPage = lazy(() => import('../features/my-bookings/MyBookingsPage'));
 
 // Map public, customer-only, and staff/admin URLs to their existing pages and layouts.
 export default function AppRoutes() {

@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import {
@@ -313,7 +314,7 @@ export default function CheckoutPage() {
         </div>
       ) : result.loading ? (
         <div className="stay-empty" role="status">
-          Loading your payment details…
+          <LoadingScreen inline title="Loading your payment details" description="Fetching the latest details for this page." />
         </div>
       ) : result.error ? (
         <div className="stay-empty" role="alert">
