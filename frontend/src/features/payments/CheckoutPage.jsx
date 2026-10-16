@@ -183,7 +183,7 @@ function CheckoutContent({
                     <h3>Your payment details stay with the payment provider</h3>
                     <p>
                       Enter your card or other payment details on PayMongo.
-                      Return to Seabreeze after payment to view your booking
+                      Return to NEXORA after payment to view your booking
                       confirmation.
                     </p>
                   </div>

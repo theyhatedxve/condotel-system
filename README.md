@@ -1,4 +1,4 @@
-# Condotel system
+# NEXORA system
 
 A React administration interface and a NestJS API for managing guests, rooms,
 reservations, payments, transactions, reports, settings, and users.

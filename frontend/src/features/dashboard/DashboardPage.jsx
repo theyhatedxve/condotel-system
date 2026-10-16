@@ -147,7 +147,7 @@ export default function DashboardPage() {
           {'Welcome,'} {user?.firstName || 'Admin'}!
         </h1>
 
-        <p>Here's what's happening with your condotel today.</p>
+        <p>Here's what's happening with your NEXORA today.</p>
       </header>
 
       <div className="stat-grid">

@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { Save, UserRound } from 'lucide-react';
+import {
+  ChevronRight,
+  Mail,
+  Phone,
+  Save,
+  ShieldCheck,
+  UserRound,
+  Users,
+} from 'lucide-react';
 
 import { updateMyProfile } from './authApi';
 
 import { useAuth } from './useAuth';
 
 import './profile.css';
+import ProfileSecurityCard from './ProfileSecurityCard';
 import CustomerNotifications from '../notifications/CustomerNotifications';
 
 // Render the profile page with its loading, error, and record/form states.
@@ -43,6 +52,7 @@ export default function ProfilePage() {
   // interface.
   async function handleSubmit(event) {
     event.preventDefault();
+    if (saving) return;
 
     if (!form.firstName.trim() || !form.lastName.trim()) {
       window.alert('First name and last name are required.');
@@ -88,118 +98,167 @@ export default function ProfilePage() {
     }
   }
 
+  const customer = user?.role === 'CUSTOMER';
   return (
-    /* Display the "My Profile" section and its related actions. */
     <section className="profile-page">
-      {/* Show this section's heading, context, and available actions. */}
       <header className="profile-header">
-        <h1>My Profile</h1>
-
-        <p>Manage your personal account information.</p>
-        {user?.role === 'CUSTOMER' && (
-          <>
-            <Link to="/">Back to Homepage</Link>
-            {' · '}
-            <Link to="/change-password">Change Password</Link>
-          </>
-        )}
+        <div>
+          <h1>My Profile</h1>
+          <p>Manage your personal account information and security.</p>
+        </div>
+        <nav className="profile-breadcrumb" aria-label="Breadcrumb">
+          <Link to={customer ? '/' : '/admin/dashboard'}>
+            {customer ? 'Home' : 'Dashboard'}
+          </Link>
+          <ChevronRight size={15} aria-hidden="true" />
+          <span aria-current="page">My Profile</span>
+        </nav>
       </header>
-
-      {/* Collect the auth form fields and submit them through the handler above. */}
-      <form className="profile-card" onSubmit={handleSubmit}>
-        <div className="profile-card-heading">
-          <div className="profile-large-avatar">
-            <UserRound size={28} />
-          </div>
-
-          <div>
-            <strong>
-              {user?.firstName} {user?.lastName}
-            </strong>
-
-            <span>{user?.role}</span>
-          </div>
+      <section className="profile-banner" aria-label="Your profile">
+        <div className="profile-large-avatar" aria-hidden="true">
+          {user?.firstName?.charAt(0)?.toUpperCase() || 'U'}
         </div>
-
-        <div className="profile-form-grid">
-          <label>
-            First Name
-            <input
-              type="text"
-              name="firstName"
-              value={form.firstName}
-              onChange={handleChange}
-              maxLength={80}
-              required
-            />
-          </label>
-
-          <label>
-            Last Name
-            <input
-              type="text"
-              name="lastName"
-              value={form.lastName}
-              onChange={handleChange}
-              maxLength={80}
-              required
-            />
-          </label>
-
-          <label>
-            Username
-            <input
-              type="text"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              maxLength={80}
-            />
-          </label>
-
-          <label>
-            Phone
-            <input
-              type="text"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              maxLength={30}
-            />
-          </label>
-
-          <label className="profile-full-field">
-            Email
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              maxLength={255}
-              required
-            />
-          </label>
-
-          <label>
-            Role
-            <input type="text" value={user?.role ?? ''} disabled readOnly />
-          </label>
-
-          <label>
-            Status
-            <input type="text" value={user?.status ?? ''} disabled readOnly />
-          </label>
+        <div className="profile-banner-copy">
+          <h2>
+            {user?.firstName} {user?.lastName}
+          </h2>
+          <span className="profile-role-badge">{user?.role}</span>
+          <p>Manage your personal account information and security.</p>
         </div>
-
-        <div className="profile-actions">
-          <button type="submit" disabled={saving}>
-            <Save size={16} />
-
-            {saving ? 'Saving...' : 'Save Profile'}
-          </button>
+      </section>
+      <div className="profile-columns">
+        <div className="profile-main-column">
+          <section
+            className="profile-card"
+            aria-labelledby="profile-personal-title"
+          >
+            <div className="profile-section-heading">
+              <span className="profile-section-icon">
+                <UserRound size={24} />
+              </span>
+              <div>
+                <h2 id="profile-personal-title">Personal Information</h2>
+                <p>
+                  Update your personal details for account and contact purposes.
+                </p>
+              </div>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="profile-form-grid">
+                {[
+                  ['firstName', 'First Name', 'text', 'given-name', 80, true],
+                  ['lastName', 'Last Name', 'text', 'family-name', 80, true],
+                  ['username', 'Username', 'text', 'username', 80, false],
+                  ['phone', 'Phone Number', 'tel', 'tel', 30, false],
+                  ['email', 'Email Address', 'email', 'email', 255, true],
+                ].map(
+                  ([name, label, type, autoComplete, maxLength, required]) => (
+                    <label
+                      className={`profile-field${name === 'email' ? ' profile-full-field' : ''}`}
+                      key={name}
+                    >
+                      <span>
+                        {label}
+                        {required && (
+                          <span className="profile-required"> *</span>
+                        )}
+                      </span>
+                      <span className="profile-input-shell">
+                        {name === 'email' && (
+                          <Mail size={17} aria-hidden="true" />
+                        )}
+                        {name === 'phone' && (
+                          <Phone size={17} aria-hidden="true" />
+                        )}
+                        <input
+                          type={type}
+                          name={name}
+                          value={form[name]}
+                          onChange={handleChange}
+                          autoComplete={autoComplete}
+                          maxLength={maxLength}
+                          required={required}
+                          disabled={saving}
+                        />
+                      </span>
+                    </label>
+                  ),
+                )}
+              </div>
+              <footer className="profile-actions">
+                <button
+                  type="button"
+                  className="profile-cancel-button"
+                  disabled={saving}
+                  onClick={() =>
+                    setForm({
+                      email: user?.email ?? '',
+                      firstName: user?.firstName ?? '',
+                      lastName: user?.lastName ?? '',
+                      username: user?.username ?? '',
+                      phone: user?.phone ?? '',
+                    })
+                  }
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="profile-save-button"
+                  disabled={saving}
+                >
+                  <Save size={17} />
+                  {saving ? 'Saving...' : 'Save Changes'}
+                </button>
+              </footer>
+            </form>
+          </section>
+          {customer && <CustomerNotifications />}
         </div>
-      </form>
-      {user?.role === 'CUSTOMER' && <CustomerNotifications />}
+        <div className="profile-side-column">
+          <section
+            className="profile-card"
+            aria-labelledby="profile-account-title"
+          >
+            <div className="profile-section-heading">
+              <span className="profile-section-icon">
+                <ShieldCheck size={24} />
+              </span>
+              <div>
+                <h2 id="profile-account-title">Account Information</h2>
+                <p>Your account role and status.</p>
+              </div>
+            </div>
+            <dl className="profile-account-details">
+              <div>
+                <dt>
+                  <span className="profile-account-icon">
+                    <Users size={17} />
+                  </span>
+                  Role
+                </dt>
+                <dd className="profile-role-value">{user?.role ?? '—'}</dd>
+              </div>
+              <div>
+                <dt>
+                  <span className="profile-account-icon">
+                    <span
+                      className={`profile-status-dot${user?.status === 'ACTIVE' ? ' is-active' : ''}`}
+                    />
+                  </span>
+                  Status
+                </dt>
+                <dd
+                  className={`profile-status-value${user?.status === 'ACTIVE' ? ' is-active' : ''}`}
+                >
+                  {user?.status ?? '—'}
+                </dd>
+              </div>
+            </dl>
+          </section>
+          <ProfileSecurityCard />
+        </div>
+      </div>
     </section>
   );
 }

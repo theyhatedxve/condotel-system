@@ -10,7 +10,7 @@ the customer booking feature with the selected room, dates, and guest count.
 
 ## Components
 
-- `LandingPage.jsx`: Seabreeze page layout, search summary, filters, sorting,
+- `LandingPage.jsx`: NEXORA page layout, search summary, filters, sorting,
   grid/list display, and selected room.
 - `StaySearch.jsx`: local date and guest inputs, validation, room-type selector,
   and search submission. The room-type selector shares state with the sidebar.

@@ -5,7 +5,7 @@ export default function LoadingScreen() {
     <div className="loading-screen">
       <div className="loading-spinner" />
 
-      <p>Loading Condotel System...</p>
+      <p>Loading NEXORA System...</p>
     </div>
   );
 }

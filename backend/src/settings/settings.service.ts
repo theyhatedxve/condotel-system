@@ -16,7 +16,7 @@ export class SettingsService {
 
   // Create the singleton lazily so a fresh database needs no separate settings seed.
   async getSettings() {
-    return this.prisma.systemSetting.upsert({
+    const settings = await this.prisma.systemSetting.upsert({
       where: {
         id: SYSTEM_SETTINGS_ID,
       },
@@ -25,8 +25,15 @@ export class SettingsService {
 
       create: {
         id: SYSTEM_SETTINGS_ID,
+        propertyName: 'NEXORA',
       },
     });
+    // Display the new brand for the historical default without rewriting stored settings.
+    return {
+      ...settings,
+      propertyName:
+        settings.propertyName === 'CONDOTEL' ? 'NEXORA' : settings.propertyName,
+    };
   }
 
   // Apply validated editable property/contact/check-in settings to the singleton record.

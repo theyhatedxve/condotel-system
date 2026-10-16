@@ -4,13 +4,13 @@ import buildingImage from '../../assets/login-background.jpg';
 // Homepage presentation data only. Replace these examples with property details.
 // These room previews never create reservations or alter the live room catalog.
 export const property = {
-  name: 'Seabreeze Condotel',
-  brand: 'SEABREEZE',
+  name: 'NEXORA',
+  brand: 'NEXORA',
   address: 'Coastal Road, Bayview City',
-  email: 'hello@seabreeze.example',
+  email: 'hello@nexora.example',
   phone: '+63 000 000 0000',
   description:
-    'Seabreeze Condotel is conveniently situated in the heart of Bayview City, just minutes from the beach, top attractions, transport hubs, and a variety of dining and lifestyle options.',
+    'NEXORA is conveniently situated in the heart of Bayview City, just minutes from the beach, top attractions, transport hubs, and a variety of dining and lifestyle options.',
 };
 
 export const gallery = [
@@ -22,7 +22,7 @@ export const gallery = [
   },
   {
     src: buildingImage,
-    alt: 'Warmly lit condotel rooms overlooking a tropical pool',
+    alt: 'Warmly lit NEXORA rooms overlooking a tropical pool',
     label: 'Modern living, coastal calm',
     position: 'center 54%',
   },

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Building2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import BrandLogo from '../../components/BrandLogo';
 import apiClient from '../../services/apiClient';
 import './auth.css';
 
@@ -48,7 +49,7 @@ export default function RegisterPage() {
             <ArrowLeft size={16} /> Back to homepage
           </Link>
           <div className="login-heading">
-            <Building2 size={30} />
+            <BrandLogo />
             <h2>Create Your Account</h2>
             <p>Book your next coastal stay.</p>
           </div>

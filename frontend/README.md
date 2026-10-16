@@ -1,4 +1,4 @@
-# Condotel interface
+# NEXORA interface
 
 React and Vite provide the public homepage, authenticated room browsing, customer
 booking and checkout, profiles, and staff/admin management pages.

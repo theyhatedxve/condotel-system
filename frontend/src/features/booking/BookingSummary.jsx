@@ -130,11 +130,11 @@ export default function BookingSummary({
             : 'Your final amount is calculated when you confirm your reservation.'}
         </p>
       </section>
-      {/* Display the "Why Book With Seabreeze" section and its related actions. */}
+      {/* Display the "Why Book With NEXORA" section and its related actions. */}
       <section className="booking-panel booking-reassurance">
         <h2>
           <ShieldCheck size={21} />
-          Why Book With Seabreeze?
+          Why Book With NEXORA?
         </h2>
         <div>
           <CreditCard />

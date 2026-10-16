@@ -2,7 +2,6 @@ import { useState } from 'react';
 
 import {
   ArrowLeft,
-  Building2,
   Eye,
   EyeOff,
   KeyRound,
@@ -15,6 +14,7 @@ import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from './useAuth';
 
 import './auth.css';
+import BrandLogo from '../../components/BrandLogo';
 
 // Choose the existing customer or administration destination after authentication.
 function getHomeRoute(role) {
@@ -115,16 +115,12 @@ export default function LoginPage() {
 
   return (
     <main className="login-page">
-      {/* Display the "CONDOTEL" section and its related actions. */}
+      {/* Display the "NEXORA" section and its related actions. */}
       <section className="login-visual">
         <div className="login-overlay" />
 
         <div className="login-brand">
-          <div className="brand-icon-large">
-            <Building2 size={58} />
-          </div>
-
-          <h1>CONDOTEL</h1>
+          <BrandLogo light />
 
           <p>NFC SYSTEM WITH PAYMENT</p>
         </div>
@@ -133,7 +129,7 @@ export default function LoginPage() {
           <h2>Smart Access. Seamless Stays.</h2>
 
           <p>
-            Modern condotel management with NFC access and cashless payment.
+            Modern NEXORA management with NFC access and cashless payment.
           </p>
 
           <div className="login-feature">

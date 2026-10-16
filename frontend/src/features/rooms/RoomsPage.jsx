@@ -206,7 +206,7 @@ export default function RoomsPage() {
         <div>
           <h1>Room Management</h1>
 
-          <p>Manage condotel rooms, rates, and availability.</p>
+          <p>Manage NEXORA rooms, rates, and availability.</p>
         </div>
 
         {canManage && (

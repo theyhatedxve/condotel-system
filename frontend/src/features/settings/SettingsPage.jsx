@@ -186,7 +186,7 @@ export default function SettingsPage() {
         <div>
           <h1>Settings</h1>
 
-          <p>Manage condotel information and operational preferences.</p>
+          <p>Manage NEXORA information and operational preferences.</p>
         </div>
 
         <div className="settings-access-badge">
@@ -212,7 +212,7 @@ export default function SettingsPage() {
               <div>
                 <h2>Property Information</h2>
 
-                <p>Basic information about the condotel.</p>
+                <p>Basic information about the NEXORA.</p>
               </div>
             </div>
 

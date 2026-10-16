@@ -1,7 +1,6 @@
 import {
   BarChart3,
   BedDouble,
-  Building2,
   CalendarDays,
   CreditCard,
   LayoutDashboard,
@@ -14,6 +13,7 @@ import {
 } from 'lucide-react';
 
 import { NavLink } from 'react-router-dom';
+import BrandLogo from '../components/BrandLogo';
 
 import { useAuth } from '../features/auth/useAuth';
 
@@ -113,13 +113,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-brand">
-        <Building2 size={32} />
-
-        <div>
-          <strong>CONDOTEL</strong>
-
-          <span>NFC SYSTEM WITH PAYMENT</span>
-        </div>
+        <BrandLogo light />
       </div>
 
       <div className="sidebar-user">

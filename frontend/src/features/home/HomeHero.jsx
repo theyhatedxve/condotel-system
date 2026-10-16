@@ -26,7 +26,7 @@ export default function HomeHero({ onGallery }) {
       />
       <div className="coast-container coast-hero-inner">
         <div className="coast-hero-copy">
-          <p className="coast-eyebrow">PREMIUM CONDOTEL EXPERIENCE</p>
+          <p className="coast-eyebrow">PREMIUM NEXORA EXPERIENCE</p>
           <h1 id="coast-title">
             Your Modern
             <br />
@@ -35,7 +35,7 @@ export default function HomeHero({ onGallery }) {
           <p className="coast-intro">
             Experience a perfect blend of comfort, convenience, and coastal
             living.
-            <br className="coast-desktop-break" /> Our condotel offers
+            <br className="coast-desktop-break" /> NEXORA offers
             beautifully designed rooms, easy booking,
             <br className="coast-desktop-break" /> secure access, and a relaxing
             premium stay.

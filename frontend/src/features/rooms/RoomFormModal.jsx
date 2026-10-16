@@ -100,7 +100,7 @@ export default function RoomFormModal({
             <p>
               {room
                 ? 'Update room information.'
-                : 'Create a new condotel room.'}
+                : 'Create a new NEXORA room.'}
             </p>
           </div>
 

@@ -12,7 +12,7 @@ export class HealthController {
   getHealth() {
     return {
       status: 'ok',
-      application: 'Condotel System API',
+      application: 'NEXORA System API',
     };
   }
 
