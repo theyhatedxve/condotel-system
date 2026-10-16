@@ -20,7 +20,7 @@ import PublicRoomCard from './PublicRoomCard';
 import RoomDetails from './RoomDetails';
 import usePublicRooms from './usePublicRooms';
 import './landing.css';
-import { useAuth } from '../auth/useAuth';
+import CustomerHeader from '../home/CustomerHeader';
 
 // Format a stay date for display using the existing fallback for an empty value.
 function displayDate(value) {
@@ -34,7 +34,6 @@ function displayDate(value) {
 // Combine the stay search, filters, sorting, and room results for authenticated
 // browsing.
 export default function LandingPage() {
-  const { user } = useAuth();
   // Track local state and read any session or route values needed by this component.
   const [search, setSearch] = useState(null);
   const [roomType, setRoomType] = useState('');
@@ -82,37 +81,7 @@ export default function LandingPage() {
         Skip to rooms
       </a>
       {/* Show this section's heading, context, and available actions. */}
-      <header className="stay-header">
-        <div className="stay-container stay-header-inner">
-          <HomeBrand />
-          {/* Provide the navigation links or page controls for this part of the interface. */}
-          <nav aria-label="Main navigation">
-            <Link to="/">Home</Link>
-            <Link to="/rooms" aria-current="page">
-              Rooms
-            </Link>
-            <Link to="/#amenities">Amenities</Link>
-            {user?.role === 'CUSTOMER' && (
-              <Link to="/my-bookings">My Bookings</Link>
-            )}
-            <Link to="/#location">Location</Link>
-            <a href="#about">About</a>
-          </nav>
-          <div className="stay-header-actions">
-            <button
-              type="button"
-              className="stay-search-link"
-              aria-label="Edit room search"
-              onClick={editSearch}
-            >
-              <Search size={21} />
-            </button>
-            <button type="button" className="stay-book" onClick={editSearch}>
-              Book Now <ArrowRight size={17} />
-            </button>
-          </div>
-        </div>
-      </header>
+      <CustomerHeader onSearch={editSearch} />
 
       <main>
         {/* Display the "Discover Our Rooms" section and its related actions. */}

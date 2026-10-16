@@ -1,0 +1,146 @@
+/* Reserve scrollbar space so the header does not shift on shorter pages. */
+html:has(.customer-header) {
+  scrollbar-gutter: stable;
+}
+
+.customer-header {
+  background: linear-gradient(100deg, #0c3457, #06233d);
+  color: #ffffff;
+  font-family: Inter, system-ui, sans-serif;
+  line-height: 1.5;
+}
+.customer-header .customer-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  width: min(1440px, 88%);
+  min-height: 76px;
+  margin-inline: auto;
+}
+.customer-header .coast-brand {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.customer-header .nexora-logo {
+  width: 140px;
+  height: 70px;
+}
+.customer-header .customer-header-nav,
+.customer-header .customer-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+.customer-header a,
+.customer-header button {
+  color: inherit;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.customer-header button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.customer-header-nav > a,
+.customer-header-nav > button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+}
+.customer-header-nav [aria-current='page'],
+.customer-header a:hover,
+.customer-header button:hover {
+  color: #efc576;
+}
+.customer-header-nav [aria-current='page']::after {
+  position: absolute;
+  content: '';
+  bottom: 3px;
+  inset-inline: 0;
+  height: 2px;
+  background: #efc576;
+}
+.customer-header .customer-header-actions {
+  gap: 20px;
+}
+.customer-header .customer-header-search {
+  display: inline-flex;
+  padding: 7px;
+}
+.customer-header .customer-header-book {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 42px;
+  padding: 10px 24px;
+  border: 1px solid #dca653;
+  border-radius: 5px;
+  background: linear-gradient(110deg, #f1ca80, #eabd6a);
+  color: #122640;
+  font-weight: 600;
+}
+.customer-header .customer-header-book:hover {
+  background: #f6d594;
+}
+.customer-header :focus-visible {
+  outline: 2px solid #efc576;
+  outline-offset: 4px;
+}
+@media (max-width: 1200px) {
+  .customer-header .customer-header-inner {
+    flex-wrap: wrap;
+    gap: 4px 18px;
+    padding-top: 4px;
+  }
+  .customer-header .customer-header-nav {
+    order: 3;
+    justify-content: center;
+    width: 100%;
+    gap: 4px 24px;
+  }
+  .customer-header .customer-header-actions {
+    margin-left: auto;
+  }
+}
+@media (max-width: 620px) {
+  .customer-header .customer-header-inner {
+    width: 92%;
+  }
+  .customer-header .nexora-logo {
+    width: 100px;
+    height: 60px;
+  }
+  .customer-header .customer-header-actions {
+    gap: 12px;
+  }
+  .customer-header .customer-header-search {
+    display: none;
+  }
+  .customer-header .customer-header-book {
+    padding: 8px 12px;
+    min-height: 36px;
+  }
+  .customer-header-book svg {
+    display: none;
+  }
+  .customer-header a,
+  .customer-header button {
+    font-size: 11px;
+  }
+  .customer-header .customer-header-nav {
+    gap: 0 20px;
+  }
+  .customer-header-nav > a,
+  .customer-header-nav > button {
+    min-height: 40px;
+  }
+}

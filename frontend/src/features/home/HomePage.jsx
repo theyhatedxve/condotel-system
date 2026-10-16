@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowRight,
   BedDouble,
   CreditCard,
   Dumbbell,
   KeyRound,
   Mail,
   Phone,
-  Search,
   ShieldCheck,
   Waves,
   Wifi,
@@ -19,7 +17,7 @@ import HomeDialog from './HomeDialog';
 import FeaturedRooms from './FeaturedRooms';
 import LocationSection from './LocationSection';
 import { property } from './homeContent';
-import { useAuth } from '../auth/useAuth';
+import CustomerHeader from './CustomerHeader';
 import './home.css';
 
 const benefits = [
@@ -73,7 +71,6 @@ const amenities = [
 export default function HomePage() {
   // Track local state and read any session or route values needed by this component.
   const [dialog, setDialog] = useState(null);
-  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   // Set the homepage document title and restore the previous title on unmount.
   useEffect(() => {
@@ -90,60 +87,7 @@ export default function HomePage() {
         Skip to main content
       </a>
       {/* Show this section's heading, context, and available actions. */}
-      <header className="coast-header">
-        <div className="coast-container coast-header-inner">
-          <HomeBrand />
-          {/* Provide the navigation links or page controls for this part of the interface. */}
-          <nav aria-label="Main navigation">
-            <Link to="/" aria-current="page">
-              Home
-            </Link>
-            <Link to="/rooms">Rooms</Link>
-            {user?.role === 'CUSTOMER' && (
-              <Link to="/my-bookings">My Bookings</Link>
-            )}
-            <a href="#amenities">Amenities</a>
-            <a href="#location">Location</a>
-            <button type="button" onClick={() => setDialog({ type: 'about' })}>
-              About
-            </button>
-          </nav>
-          <div className="coast-header-actions">
-            <Link
-              to="/rooms"
-              className="coast-search-link"
-              aria-label="Search rooms"
-            >
-              <Search size={21} />
-            </Link>
-            {!isLoading && isAuthenticated && (
-              <Link
-                to={user?.role === 'CUSTOMER' ? '/profile' : '/admin/profile'}
-                className="coast-sign-in"
-              >
-                My Account
-              </Link>
-            )}
-            {!isLoading &&
-              (isAuthenticated ? (
-                <button
-                  type="button"
-                  className="coast-sign-in coast-sign-out"
-                  onClick={logout}
-                >
-                  Sign Out
-                </button>
-              ) : (
-                <Link to="/rooms" className="coast-sign-in">
-                  Sign In
-                </Link>
-              ))}
-            <Link to="/rooms" className="coast-button coast-button-gold">
-              Book Now <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </header>
+      <CustomerHeader />
 
       <main id="coast-main">
         <HomeHero onGallery={() => setDialog({ type: 'gallery' })} />
