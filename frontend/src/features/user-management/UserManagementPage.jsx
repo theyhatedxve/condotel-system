@@ -747,4 +747,10 @@ export default function UserManagementPage() {
               <button type="submit" disabled={resettingPassword}>
                 {resettingPassword ? 'Resetting...' : 'Reset Password'}
               </button>
-            </footer
+            </footer>
+          </form>
+        </div>
+      )}
+    </section>
+  );
+}
