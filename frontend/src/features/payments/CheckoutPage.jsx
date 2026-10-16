@@ -18,7 +18,7 @@ import BookingSteps from '../booking/BookingSteps';
 import BookingSummary from '../booking/BookingSummary';
 import useBooking from '../booking/useBooking';
 import { initialStay, requestMessage } from '../booking/bookingUtils';
-import { createCheckout } from './paymentApi';
+import useHostedCheckout from './useHostedCheckout';
 import './checkout.css';
 
 function SectionHeading({ icon: Icon, title, children }) {
@@ -47,6 +47,7 @@ function CheckoutContent({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const busy = useRef(false);
+  const { start, waiting, returnToSite } = useHostedCheckout();
   const paid = reservation.payments?.some(
     (payment) => payment.status === 'PAID',
   );
@@ -63,10 +64,7 @@ function CheckoutContent({
     setError('');
     try {
       // The server reuses the reservation's checkout and determines the amount.
-      const checkout = await createCheckout(reservation.id);
-      if (!checkout.checkoutUrl)
-        throw new Error('Checkout is unavailable. Please try again.');
-      window.location.assign(checkout.checkoutUrl);
+      await start(reservation.id);
     } catch (failure) {
       setError(
         requestMessage(
@@ -75,6 +73,7 @@ function CheckoutContent({
             'Unable to open secure checkout. Please try again.',
         ),
       );
+    } finally {
       busy.current = false;
       setSubmitting(false);
     }
@@ -214,6 +213,21 @@ function CheckoutContent({
                   </p>
                 )}
                 <div className="checkout-actions">
+                  {waiting && (
+                    <div role="status">
+                      <p>
+                        Complete payment in the PayMongo window. If it fails or
+                        expires, return here to continue.
+                      </p>
+                      <button
+                        type="button"
+                        className="checkout-back"
+                        onClick={returnToSite}
+                      >
+                        Return to Checkout
+                      </button>
+                    </div>
+                  )}
                   <Link className="checkout-back" to={bookingPath}>
                     <ArrowLeft size={16} /> Back to Guest Details
                   </Link>
@@ -231,8 +245,8 @@ function CheckoutContent({
                   </button>
                 </div>
                 <p className="checkout-redirect">
-                  You will be redirected to a secure payment gateway to complete
-                  your booking.
+                  Secure payment opens in a separate window. Keep this page open
+                  to receive your payment result.
                 </p>
                 <div className="checkout-status">
                   <span>Already paid?</span>

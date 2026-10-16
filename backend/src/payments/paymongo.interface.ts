@@ -76,6 +76,10 @@ export interface PaymongoCheckoutSessionResource {
 
     payment_intent?: {
       id?: string;
+      attributes?: {
+        status?: string;
+        last_payment_error?: unknown;
+      };
     };
 
     payments?: PaymongoPaymentAttempt[];

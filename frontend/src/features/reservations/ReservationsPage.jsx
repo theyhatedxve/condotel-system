@@ -18,7 +18,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 
 import { formatDate } from '../../utils/formatDate';
 
-import { createCheckout } from '../payments/paymentApi';
+import useHostedCheckout from '../payments/useHostedCheckout';
 
 import './reservations.css';
 
@@ -47,7 +47,7 @@ const filters = [
 
 export default function ReservationsPage() {
   const [reservations, setReservations] = useState([]);
-  const [page,setPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   const [guests, setGuests] = useState([]);
 
@@ -60,6 +60,7 @@ export default function ReservationsPage() {
   const [submitting, setSubmitting] = useState(false);
   const paymentInFlight = useRef(false);
   const [payingId, setPayingId] = useState(null);
+  const { start, waiting, returnToSite } = useHostedCheckout();
 
   useEffect(() => {
     let cancelled = false;
@@ -125,28 +126,18 @@ export default function ReservationsPage() {
     if (paymentInFlight.current) return;
     paymentInFlight.current = true;
     setPayingId(reservation.id);
-    let redirecting = false;
     try {
-      const result = await createCheckout(reservation.id);
-
-      if (!result.checkoutUrl) {
-        window.alert('Checkout URL was not returned.');
-
-        return;
-      }
-
-      window.location.assign(result.checkoutUrl);
-      redirecting = true;
+      await start(reservation.id);
     } catch (error) {
       const message =
-        error.response?.data?.message || 'Unable to start payment.';
+        error.response?.data?.message ||
+        error.message ||
+        'Unable to start payment.';
 
       window.alert(Array.isArray(message) ? message.join(' ') : message);
     } finally {
-      if (!redirecting) {
-        paymentInFlight.current = false;
-        setPayingId(null);
-      }
+      paymentInFlight.current = false;
+      setPayingId(null);
     }
   }
 
@@ -181,6 +172,22 @@ export default function ReservationsPage() {
           New Reservation
         </button>
       </header>
+
+      {waiting && (
+        <div role="status">
+          <p>
+            Payment is open in the PayMongo window. If payment fails or expires,
+            return here to continue.
+          </p>
+          <button
+            type="button"
+            className="primary-button"
+            onClick={returnToSite}
+          >
+            Return to Reservations
+          </button>
+        </div>
+      )}
 
       <div className="reservation-filters">
         {filters.map((filter) => (
@@ -282,7 +289,9 @@ export default function ReservationsPage() {
                           onClick={() => handlePayment(reservation)}
                           disabled={payingId !== null}
                         >
-                          {payingId === reservation.id ? 'Opening checkout...' : 'Pay'}
+                          {payingId === reservation.id
+                            ? 'Opening checkout...'
+                            : 'Pay'}
                         </button>
                       )}
 
@@ -305,7 +314,16 @@ export default function ReservationsPage() {
         </div>
       )}
 
-      <ListPagination label="Reservations" page={page} count={reservations.length} loading={loading} onChange={next=>{setLoading(true);setPage(next);}}/>
+      <ListPagination
+        label="Reservations"
+        page={page}
+        count={reservations.length}
+        loading={loading}
+        onChange={(next) => {
+          setLoading(true);
+          setPage(next);
+        }}
+      />
       {modalOpen && (
         <ReservationFormModal
           key="new-reservation"

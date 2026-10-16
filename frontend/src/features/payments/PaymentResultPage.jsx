@@ -1,5 +1,11 @@
+import { useEffect } from 'react';
 import { CheckCircle2, Clock3, RefreshCw, XCircle } from 'lucide-react';
-import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 import { formatCurrency } from '../../utils/formatCurrency';
 import usePaymentConfirmation from './usePaymentConfirmation';
@@ -8,6 +14,7 @@ import './payment-result.css';
 export default function PaymentResultPage() {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [params] = useSearchParams();
   const reservationId = params.get('reservationId');
   const { phase, reservation, payment, error, retry } = usePaymentConfirmation(
@@ -67,6 +74,19 @@ export default function PaymentResultPage() {
   const bookingPath = reservation
     ? `/booking/${encodeURIComponent(reservation.roomId)}?${new URLSearchParams({ reservationId: reservation.id })}`
     : '/rooms';
+  const checkoutPath = reservation
+    ? `/booking/${encodeURIComponent(reservation.roomId)}/payment?${new URLSearchParams({ reservationId: reservation.id })}`
+    : '/rooms';
+  const unsuccessful = ['cancelled', 'failed', 'expired'].includes(phase);
+  const returnPath =
+    user.role === 'CUSTOMER'
+      ? unsuccessful
+        ? checkoutPath
+        : bookingPath
+      : '/admin/reservations';
+  useEffect(() => {
+    if (unsuccessful && reservation) navigate(returnPath, { replace: true });
+  }, [unsuccessful, reservation, returnPath, navigate]);
   return (
     <main className="payment-result-page">
       <section
@@ -111,13 +131,12 @@ export default function PaymentResultPage() {
             Check Payment Status
           </button>
         )}
-        <Link
-          className="payment-result-return"
-          to={user.role === 'CUSTOMER' ? bookingPath : '/admin/reservations'}
-        >
+        <Link className="payment-result-return" to={returnPath}>
           {user.role === 'CUSTOMER'
             ? reservation
-              ? 'View Booking'
+              ? unsuccessful
+                ? 'Back to Checkout'
+                : 'View Booking'
               : 'Back to Rooms'
             : 'Back to Reservations'}
         </Link>

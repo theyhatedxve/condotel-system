@@ -287,9 +287,11 @@ export class PaymentsService {
             'Payment was received. This booking cannot be cancelled as unpaid.',
           );
         }
-        await this.paymongoService.expireCheckoutSession(
-          payment.paymongoCheckoutSessionId,
-        );
+        if (session.attributes?.status !== 'expired') {
+          await this.paymongoService.expireCheckoutSession(
+            payment.paymongoCheckoutSessionId,
+          );
+        }
         const afterExpiry = await this.paymongoService.retrieveCheckoutSession(
           payment.paymongoCheckoutSessionId,
         );
@@ -423,6 +425,7 @@ export class PaymentsService {
     if (!reservation) throw new NotFoundException('Reservation not found.');
     this.ensureReservationAccess(user, reservation.guestId);
 
+    let checkoutOutcome: 'pending' | 'failed' | 'expired' = 'pending';
     if (
       !reservation.payments.some(
         (payment) => payment.status === PaymentStatus.PAID,
@@ -440,6 +443,19 @@ export class PaymentsService {
         );
         if (this.findPaidAttempt(session.attributes?.payments))
           await this.recordPaidCheckout(session);
+        else {
+          if (session.attributes?.reference_number !== reservation.referenceNo)
+            throw new BadRequestException('Checkout reference mismatch.');
+          const intent = session.attributes?.payment_intent?.attributes;
+          if (session.attributes?.status === 'expired')
+            checkoutOutcome = 'expired';
+          else if (
+            (intent?.status === 'awaiting_payment_method' &&
+              intent.last_payment_error) ||
+            session.attributes?.payments?.at(-1)?.attributes.status === 'failed'
+          )
+            checkoutOutcome = 'failed';
+        }
       }
     }
 
@@ -450,7 +466,7 @@ export class PaymentsService {
       }),
       this.findByReservation(reservationId, user),
     ]);
-    return { reservation: updatedReservation, payments };
+    return { reservation: updatedReservation, payments, checkoutOutcome };
   }
 
   private findPaidAttempt(payments: PaymongoPaymentAttempt[] | undefined) {

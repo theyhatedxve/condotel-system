@@ -150,6 +150,7 @@ describe('Verified checkout synchronization', () => {
     };
     const provider = {
       retrieveCheckoutSession: jest.fn().mockResolvedValue(session),
+      expireCheckoutSession: jest.fn(),
       verifyWebhookSignature: jest.fn(),
     };
     const notifications = {
@@ -183,6 +184,30 @@ describe('Verified checkout synchronization', () => {
     expect(result.payments[0].status).toBe('PENDING');
     expect(transaction.payment.updateMany).not.toHaveBeenCalled();
     expect(notifications.notifyPaymentReceived).not.toHaveBeenCalled();
+  });
+
+  it('reports a failed provider attempt without confirming the reservation', async () => {
+    const { service, session, transaction } = setup({ paid: false });
+    session.attributes.payments[0].attributes.status = 'failed';
+    const result = await service.syncCheckout('reservation-1', customer);
+    expect(result.checkoutOutcome).toBe('failed');
+    expect(result.reservation?.status).toBe('PENDING');
+    expect(transaction.payment.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('returns an already-expired checkout without sending a duplicate expire request', async () => {
+    const { service, session, prisma, provider } = setup({ paid: false });
+    Object.assign(session.attributes, { status: 'expired' });
+    Object.assign(prisma.payment, {
+      updateMany: jest.fn().mockResolvedValue({ count: 1 }),
+    });
+    expect(
+      (await service.syncCheckout('reservation-1', customer)).checkoutOutcome,
+    ).toBe('expired');
+    expect(
+      await service.cancelPendingPaymentsForReservation('reservation-1'),
+    ).toEqual({ cancelledPayments: 1 });
+    expect(provider.expireCheckoutSession).not.toHaveBeenCalled();
   });
 
   it('denies another customer before contacting PayMongo', async () => {

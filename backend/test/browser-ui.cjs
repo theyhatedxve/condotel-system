@@ -13,6 +13,8 @@ const assert = require('node:assert/strict'),
   );
   let sequence = 0;
   let paging = false;
+  let paymentReturnTest = false;
+  let checkoutCancelled = false;
   const pending = new Map(),
     errors = [],
     writes = [];
@@ -102,10 +104,35 @@ const assert = require('node:assert/strict'),
           body =
             request.method === 'POST'
               ? { ...actor, id: 'created-ui' }
-              : paging ? Array.from({length:url.searchParams.get('page')==='2'?1:50},(_,index)=>({...actor,id:`ui-user-${index}`,role:'CUSTOMER',firstName:'Existing'})) : [{ ...actor, id: 'existing-ui', firstName: 'Existing' }];
-        else if (url.pathname.endsWith('/admin/users/summary')) body={totalUsers:paging?51:1,totalStaff:0,totalCustomers:paging?51:0,totalSuspended:0};
+              : paging
+                ? Array.from(
+                    { length: url.searchParams.get('page') === '2' ? 1 : 50 },
+                    (_, index) => ({
+                      ...actor,
+                      id: `ui-user-${index}`,
+                      role: 'CUSTOMER',
+                      firstName: 'Existing',
+                    }),
+                  )
+                : [{ ...actor, id: 'existing-ui', firstName: 'Existing' }];
+        else if (url.pathname.endsWith('/admin/users/summary'))
+          body = {
+            totalUsers: paging ? 51 : 1,
+            totalStaff: 0,
+            totalCustomers: paging ? 51 : 0,
+            totalSuspended: 0,
+          };
         else if (url.pathname.endsWith('/rooms/ui-room')) body = room;
-        else if (url.pathname.endsWith('/reservations/my')) body = [booking];
+        else if (url.pathname.endsWith('/reservations'))
+          body = [
+            { ...booking, guest: { firstName: 'Juan', lastName: 'Cruz' } },
+          ];
+        else if (url.pathname.endsWith('/checkout'))
+          body = { checkoutUrl: 'https://checkout.paymongo.com/ui-test' };
+        else if (url.pathname.endsWith('/cancel-pending')) {
+          checkoutCancelled = true;
+          body = { cancelledPayments: 1 };
+        } else if (url.pathname.endsWith('/reservations/my')) body = [booking];
         else if (url.pathname.endsWith('/reservations/ui-reservation')) {
           booking = { ...booking, ...JSON.parse(request.postData) };
           body = booking;
@@ -117,7 +144,15 @@ const assert = require('node:assert/strict'),
               referenceNo: booking.referenceNo,
               status: booking.status,
             },
-            payments: [],
+            payments: paymentReturnTest
+              ? [
+                  {
+                    id: 'ui-payment',
+                    status: checkoutCancelled ? 'CANCELLED' : 'PENDING',
+                  },
+                ]
+              : [],
+            checkoutOutcome: paymentReturnTest ? 'failed' : 'pending',
           };
         else if (url.pathname.endsWith('/payments')) body = [payment];
         else if (url.pathname.endsWith('/reconcile'))
@@ -204,6 +239,7 @@ const assert = require('node:assert/strict'),
   await send('Page.enable');
   await send('Runtime.enable');
   await send('Fetch.enable', { patterns: [{ urlPattern: '*/api/*' }] });
+  await evaluate('localStorage.clear();sessionStorage.clear()');
   await navigate('/login');
   await wait("!!document.querySelector('.login-form')");
   await click('Create an account');
@@ -318,9 +354,19 @@ const assert = require('node:assert/strict'),
   await wait("!document.querySelector('[role=dialog]')");
   assert(writes.some((item) => item.path.endsWith('/admin/users/import')));
   paging = true;
-  await navigate('/admin/users');await wait("document.querySelectorAll('.user-management-table tbody tr').length===50");
-  await click('Next');await wait("document.querySelector('.list-pagination').textContent.includes('Page 2')&&document.querySelectorAll('.user-management-table tbody tr').length===1");
-  assert(await evaluate("document.querySelector('.user-management-summary strong').textContent==='51'"));
+  await navigate('/admin/users');
+  await wait(
+    "document.querySelectorAll('.user-management-table tbody tr').length===50",
+  );
+  await click('Next');
+  await wait(
+    "document.querySelector('.list-pagination').textContent.includes('Page 2')&&document.querySelectorAll('.user-management-table tbody tr').length===1",
+  );
+  assert(
+    await evaluate(
+      "document.querySelector('.user-management-summary strong').textContent==='51'",
+    ),
+  );
   await navigate('/admin/payments');
   await wait("!!document.querySelector('.payments-table')");
   await click('View');
@@ -329,6 +375,41 @@ const assert = require('node:assert/strict'),
   await click('Reconcile Payment');
   await wait("!document.querySelector('.payment-id-block input')");
   assert(writes.some((item) => item.path.endsWith('/ui-payment/reconcile')));
+  paymentReturnTest = true;
+  for (const role of ['CUSTOMER', 'ADMIN', 'STAFF']) {
+    actor = {
+      ...actor,
+      role,
+      id: role === 'CUSTOMER' ? booking.guestId : `ui-${role.toLowerCase()}`,
+    };
+    checkoutCancelled = false;
+    const target =
+      role === 'CUSTOMER'
+        ? '/booking/ui-room/payment?reservationId=ui-reservation'
+        : '/admin/reservations';
+    await navigate(target);
+    await wait(
+      role === 'CUSTOMER'
+        ? "!!document.querySelector('.checkout-pay')"
+        : "!!document.querySelector('.reservation-table')",
+    );
+    await evaluate(
+      'window.open=()=>({closed:false,opener:null,location:{replace(){}},close(){this.closed=true}})',
+    );
+    if (role === 'CUSTOMER') await click('Pay Now');
+    else
+      await evaluate(
+        "Array.from(document.querySelectorAll('button')).find(button=>button.textContent.trim()==='Pay').click()",
+      );
+    for (let attempt = 0; attempt < 120 && !checkoutCancelled; attempt++)
+      await new Promise((resolve) => setTimeout(resolve, 80));
+    await wait(
+      role === 'CUSTOMER'
+        ? "location.pathname==='/booking/ui-room/payment'&&!!document.querySelector('.checkout-pay')"
+        : "location.pathname==='/admin/reservations'&&!!document.querySelector('.reservation-table')",
+    );
+    assert(checkoutCancelled, `Checkout cancellation verified for ${role}`);
+  }
   assert.equal(errors.length, 0, errors.join(';'));
   await evaluate('localStorage.clear();sessionStorage.clear()');
   await send('Fetch.disable');
@@ -346,6 +427,8 @@ const assert = require('node:assert/strict'),
         'admin creation',
         'atomic import UI',
         'payment reconciliation UI',
+        'customer failed-payment return to checkout',
+        'admin/staff failed-payment return to reservations',
       ],
       apiWrites: writes.length,
       provider: 'fully intercepted',

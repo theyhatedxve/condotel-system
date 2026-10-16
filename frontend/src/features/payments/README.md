@@ -34,3 +34,20 @@ an old cancellation URL does not cancel a payment already recorded as paid.
 If the return requires a new login, ProtectedRoute retains only the internal
 payment-return destination; LoginPage resumes it after authentication. Normal
 role-based login destinations remain unchanged.
+
+Payment opens in a separate window, keeping the merchant page available when
+PayMongo's failed test-source screen has no return link. The merchant page checks
+verified status every three seconds for up to 15 minutes. Verified payments open
+confirmation. Failed attempts, expired checkouts and a closed payment window open
+the authenticated cancellation return, which verifies payment before expiring the
+unpaid checkout. Customers then return automatically to their saved checkout;
+ADMIN/STAFF return to `/admin/reservations`. The reservation remains pending.
+
+Allow the payment window when prompted by the browser; no checkout is created if
+the window is blocked. If provider status is delayed, use Return to Checkout or
+Return to Reservations on the merchant page. Network/provider errors never prove
+that money was paid or that a payment failed. Already-expired sessions skip a
+duplicate expiration request.
+
+Run payment-window tests from frontend:
+`node --experimental-vm-modules --test test/hosted-checkout.test.cjs`.
