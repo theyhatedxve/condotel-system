@@ -22,7 +22,7 @@ const source = ts.transpileModule(
   },
 ).outputText;
 
-function setup(initialValue, afterDate) {
+function setup(initialValue, afterDate, options = {}) {
   const state = [];
   let cursor = 0;
   let value = initialValue;
@@ -52,6 +52,7 @@ function setup(initialValue, afterDate) {
       if (name === 'react') return hooks;
       if (name === 'react/jsx-runtime') return require('react/jsx-runtime');
       if (name === 'lucide-react') return {};
+      if (name.endsWith('.css')) return {};
       throw new Error(`Unexpected import: ${name}`);
     },
   });
@@ -66,6 +67,7 @@ function setup(initialValue, afterDate) {
     }
     walk(
       exports.default({
+        ...options,
         label: 'Check-out',
         value,
         afterDate,
@@ -99,6 +101,20 @@ test('calendar opens on the selected month and handles leap-year/month boundarie
   ui.button('Previous month').props.onClick();
   ui.button('Previous month').props.onClick();
   assert.equal(ui.find('strong')[0].props.children, 'December 2027');
+});
+
+test('customer minimum dates disable earlier days and preserve the room-search input ID', () => {
+  const ui = setup('2028-02-15', undefined, {
+    minDate: '2028-02-15',
+    id: 'stay-check-in',
+  });
+  assert.equal(ui.find('input')[0].props.id, 'stay-check-in');
+  assert.equal(ui.find('input')[0].props.min, '2028-02-15');
+  ui.open();
+  assert.equal(ui.button('Monday, February 14, 2028').props.disabled, true);
+  assert.equal(ui.button('Tuesday, February 15, 2028').props.disabled, false);
+  const checkout = setup('', '2028-02-28', { minDate: '2028-02-01' });
+  assert.equal(checkout.find('input')[0].props.min, '2028-02-29');
 });
 
 test('choosing a date preserves date-only values and closes the calendar', () => {

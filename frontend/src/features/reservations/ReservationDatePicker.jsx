@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react';
 import { CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
+import './reservation-date-picker.css';
 
 const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -16,8 +17,11 @@ export default function ReservationDatePicker({
   value,
   onChange,
   afterDate,
+  minDate,
+  id: inputId,
 }) {
-  const id = useId();
+  const generatedId = useId();
+  const id = inputId || generatedId;
   const [open, setOpen] = useState(false);
   const [month, setMonth] = useState(() => parseDate(value || afterDate));
   const toggle = useRef(null);
@@ -29,7 +33,11 @@ export default function ReservationDatePicker({
   const days = new Date(year, monthIndex + 1, 0).getDate();
   const earliest = afterDate ? parseDate(afterDate) : null;
   if (earliest) earliest.setDate(earliest.getDate() + 1);
-  const min = earliest ? dateValue(earliest) : undefined;
+  const afterMinimum = earliest ? dateValue(earliest) : undefined;
+  const min =
+    afterMinimum && (!minDate || afterMinimum > minDate)
+      ? afterMinimum
+      : minDate;
 
   function showCalendar() {
     setMonth(parseDate(value || min));

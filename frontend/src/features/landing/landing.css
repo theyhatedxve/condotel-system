@@ -251,6 +251,67 @@
   color: #a42424;
   padding: 3px;
 }
+
+/* Keep the shared calendars inside the room-search field design. */
+.stay-search > .reservation-date-picker {
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #edf2f7;
+  border-radius: 7px;
+  box-shadow: 0 2px 8px #173f6108;
+}
+
+.stay-search .reservation-date-picker > label {
+  display: block;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  color: var(--stay-muted);
+  font-size: 11px;
+}
+
+.stay-search .reservation-date-control {
+  margin-top: 3px;
+  border: 0;
+  box-shadow: none;
+}
+
+.stay-search .reservation-date-control input {
+  padding: 0;
+  outline: 0;
+}
+
+.stay-search .reservation-date-control > button {
+  flex-shrink: 0;
+  padding: 5px;
+  margin: 0;
+}
+
+.stay-search .reservation-calendar {
+  width: 280px;
+  max-width: calc(100vw - 40px);
+}
+
+.stay-search .reservation-calendar button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stay-search .reservation-date-picker:focus-within {
+  border-color: #1374b9;
+}
+
+.stay-search .reservation-date-picker button:focus-visible {
+  outline: 2px solid #1374b9;
+  outline-offset: 2px;
+}
+
+@media (max-width: 850px) {
+  .stay-search > .reservation-date-picker:nth-child(2) .reservation-calendar {
+    left: auto;
+    right: 0;
+  }
+}
 /* Style .stay-button to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-button {
   display: inline-flex;

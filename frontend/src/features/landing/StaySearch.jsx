@@ -1,5 +1,6 @@
-import { BedDouble, CalendarDays, Search, Users } from 'lucide-react';
+import { BedDouble, Search, Users } from 'lucide-react';
 import { useState } from 'react';
+import ReservationDatePicker from '../reservations/ReservationDatePicker';
 
 // Format the local calendar date as a date-input value without converting it through
 // UTC.
@@ -47,33 +48,20 @@ export default function StaySearch({
       onSubmit={submit}
       aria-label="Find available rooms"
     >
-      <label>
-        <CalendarDays size={22} />
-        <span>
-          Check-in
-          <input
-            id="stay-check-in"
-            type="date"
-            min={localDate()}
-            value={checkIn}
-            onChange={(event) => setCheckIn(event.target.value)}
-            required
-          />
-        </span>
-      </label>
-      <label>
-        <CalendarDays size={22} />
-        <span>
-          Check-out
-          <input
-            type="date"
-            min={checkIn || localDate()}
-            value={checkOut}
-            onChange={(event) => setCheckOut(event.target.value)}
-            required
-          />
-        </span>
-      </label>
+      <ReservationDatePicker
+        label="Check-in"
+        id="stay-check-in"
+        minDate={localDate()}
+        value={checkIn}
+        onChange={(event) => setCheckIn(event.target.value)}
+      />
+      <ReservationDatePicker
+        label="Check-out"
+        minDate={localDate(1)}
+        afterDate={checkIn}
+        value={checkOut}
+        onChange={(event) => setCheckOut(event.target.value)}
+      />
       <label>
         <Users size={22} />
         <span>
