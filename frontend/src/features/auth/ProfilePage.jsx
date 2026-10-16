@@ -20,7 +20,11 @@ import ProfileSecurityCard from './ProfileSecurityCard';
 import CustomerNotifications from '../notifications/CustomerNotifications';
 
 // Render the profile page with its loading, error, and record/form states.
-export default function ProfilePage() {
+export default function ProfilePage({
+  bannerActions,
+  overview,
+  notificationsInSidebar = false,
+} = {}) {
   // Track local state and read any session or route values needed by this component.
   const { user, refreshUser } = useAuth();
 
@@ -128,6 +132,7 @@ export default function ProfilePage() {
           <span className="profile-role-badge">{user?.role}</span>
           <p>Manage your personal account information and security.</p>
         </div>
+        {bannerActions}
       </section>
       <div className="profile-columns">
         <div className="profile-main-column">
@@ -216,7 +221,8 @@ export default function ProfilePage() {
               </footer>
             </form>
           </section>
-          {customer && <CustomerNotifications />}
+          {overview}
+          {customer && !notificationsInSidebar && <CustomerNotifications />}
         </div>
         <div className="profile-side-column">
           <section
@@ -260,6 +266,7 @@ export default function ProfilePage() {
             </dl>
           </section>
           <ProfileSecurityCard />
+          {customer && notificationsInSidebar && <CustomerNotifications />}
         </div>
       </div>
     </section>

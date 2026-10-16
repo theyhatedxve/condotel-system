@@ -52,7 +52,44 @@ const flush = async () => {
   await Promise.resolve();
 };
 
-function mount(request) {
+test('customer profile overview counts real reservations and links each summary to My Bookings', async () => {
+  const ui = mount(
+    async () =>
+      ['PENDING', 'CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT', 'CANCELLED'].map(
+        (status) => ({ status }),
+      ),
+    'features/auth/CustomerBookingOverview.jsx',
+  );
+  assert.equal(ui.find('p', (props) => props.role === 'status').length, 1);
+  await flush();
+  assert.deepEqual(
+    ui.find('strong').map((node) => node.props.children),
+    [3, 1, 5],
+  );
+  assert.equal(ui.find('a', (props) => props.to === '/my-bookings').length, 3);
+});
+
+test('customer overview reports load failure instead of showing fabricated zero counts and can retry', async () => {
+  let fail = true;
+  const ui = mount(async () => {
+    if (fail) throw new Error('offline');
+    return [];
+  }, 'features/auth/CustomerBookingOverview.jsx');
+  ui.find('strong');
+  await flush();
+  assert.equal(ui.find('div', (props) => props.role === 'alert').length, 1);
+  assert.equal(ui.find('strong').length, 0);
+  fail = false;
+  ui.find('button')[0].props.onClick();
+  ui.find('strong');
+  await flush();
+  assert.deepEqual(
+    ui.find('strong').map((node) => node.props.children),
+    [0, 0, 0],
+  );
+});
+
+function mount(request, source = 'features/my-bookings/MyBookingsPage.jsx') {
   const state = [];
   let cursor = 0;
   let userId = 'customer-1';
@@ -82,12 +119,15 @@ function mount(request) {
       }
     },
   };
-  const component = load('features/my-bookings/MyBookingsPage.jsx', {
+  const component = load(source, {
     react: hooks,
     'react-router-dom': { Link: 'a' },
     '../booking/BookingShell': 'section',
     '../booking/bookingUtils': bookingUtils,
     '../auth/useAuth': { useAuth: () => ({ user: { id: userId } }) },
+    './useAuth': { useAuth: () => ({ user: { id: userId } }) },
+    '../my-bookings/myBookingsApi': { getMyBookings: request },
+    '../my-bookings/myBookingsUtils': helpers,
     '../../utils/formatCurrency': {
       formatCurrency: (value) => `PHP ${value / 100}`,
     },

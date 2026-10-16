@@ -58,6 +58,11 @@ export default function CustomerHeader({ onSearch }) {
               (isAuthenticated ? (
                 <>
                   <Link
+                    aria-current={
+                      pathname === '/profile' || pathname === '/admin/profile'
+                        ? 'page'
+                        : undefined
+                    }
                     to={
                       user?.role === 'CUSTOMER' ? '/profile' : '/admin/profile'
                     }

@@ -32,6 +32,7 @@ import ReportsPage from '../features/reports/ReportsPage';
 import SettingsPage from '../features/settings/SettingsPage';
 
 import ProfilePage from '../features/auth/ProfilePage';
+import CustomerProfilePage from '../features/auth/CustomerProfilePage';
 
 import ChangePasswordPage from '../features/auth/ChangePasswordPage';
 
@@ -52,7 +53,6 @@ export default function AppRoutes() {
       {/* Require a restored session for room browsing, profiles, and payment returns. */}
       <Route element={<ProtectedRoute />}>
         <Route path="/rooms" element={<LandingPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/payment/success" element={<PaymentResultPage />} />
         <Route path="/payment/cancelled" element={<PaymentResultPage />} />
         <Route
@@ -64,6 +64,7 @@ export default function AppRoutes() {
 
       {/* Customers own the booking and payment-review pages. */}
       <Route element={<ProtectedRoute allowedRoles={['CUSTOMER']} />}>
+        <Route path="/profile" element={<CustomerProfilePage />} />
         <Route path="/my-bookings" element={<MyBookingsPage />} />
         <Route path="/booking/:roomId" element={<BookingPage />} />
         <Route path="/booking/:roomId/payment" element={<CheckoutPage />} />
