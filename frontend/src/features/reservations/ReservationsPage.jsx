@@ -1,3 +1,4 @@
+import LoadingScreen from '../auth/LoadingScreen';
 import { useEffect, useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
@@ -222,7 +223,7 @@ export default function ReservationsPage() {
       </div>
 
       {loading ? (
-        <div className="rooms-loading">Loading reservations...</div>
+        <div className="rooms-loading"><LoadingScreen inline title="Loading reservations" description="Fetching the latest details for this page." /></div>
       ) : (
         <div className="reservation-table-wrapper">
           {/* Display reservations records with their existing columns and row actions. */}
