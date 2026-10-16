@@ -13,6 +13,8 @@ import { PrismaService } from '../prisma/prisma.service';
 
 import { ReportRangeQueryDto } from './report-range-query.dto';
 
+// Implement reports operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class ReportsService {
   constructor(
@@ -20,6 +22,8 @@ export class ReportsService {
     private readonly privacy: PrivateDataService,
   ) {}
 
+  // Calculate customer-owned booking/payment totals alongside public room occupancy
+  // counts.
   async getCustomerDashboard(userId: string) {
     const today = this.getManilaDateString();
     const { start, endExclusive } = this.createRange(today, today);
@@ -77,6 +81,7 @@ export class ReportsService {
         }),
       ]);
     const totalRooms = rooms.reduce((sum, group) => sum + group._count._all, 0);
+    // Read the count for a room status, defaulting a missing group to zero.
     const count = (status: RoomStatus) =>
       rooms.find((group) => group.status === status)?._count._all ?? 0;
     const occupiedRooms = count(RoomStatus.OCCUPIED),
@@ -106,6 +111,7 @@ export class ReportsService {
     };
   }
 
+  // Return today's calendar date in the property's Manila timezone.
   private getManilaDateString(date = new Date()) {
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'Asia/Manila',
@@ -130,6 +136,7 @@ export class ReportsService {
     return `${year}-${month}-${day}`;
   }
 
+  // Create the next-day boundary used by inclusive report date selections.
   private getNextDate(value: string) {
     const date = new Date(`${value}T00:00:00+08:00`);
 
@@ -161,6 +168,7 @@ export class ReportsService {
     };
   }
 
+  // Use the selected report dates or default to the current month through today.
   private resolveRange(query: ReportRangeQueryDto) {
     const today = this.getManilaDateString();
 
@@ -182,6 +190,7 @@ export class ReportsService {
     };
   }
 
+  // Gather management occupancy, guest, payment, and recent-reservation summaries.
   async getDashboard() {
     const today = this.getManilaDateString();
 

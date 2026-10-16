@@ -12,6 +12,7 @@ export default function ReservationFormModal({
   onClose,
   onSubmit,
 }) {
+  // Track local state and read any session or route values needed by this component.
   const [form, setForm] = useState({
     guestId: '',
     roomId: '',
@@ -26,6 +27,7 @@ export default function ReservationFormModal({
 
   const [checkingAvailability, setCheckingAvailability] = useState(false);
 
+  // Update one controlled form field while retaining the remaining field values.
   function updateField(field, value) {
     // Date or guest-count changes invalidate both the selected room and its availability results.
     setForm((current) => ({
@@ -45,6 +47,8 @@ export default function ReservationFormModal({
     }
   }
 
+  // Request available rooms for the selected stay before allowing reservation
+  // submission.
   async function checkAvailability() {
     if (!form.checkIn || !form.checkOut) {
       window.alert('Select check-in and check-out dates first.');
@@ -80,6 +84,8 @@ export default function ReservationFormModal({
     }
   }
 
+  // Submit the selected guest, room, dates, and guest counts to the parent reservation
+  // handler.
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -108,7 +114,9 @@ export default function ReservationFormModal({
 
   return (
     <div className="modal-backdrop">
+      {/* Display the "New Reservation" section and its related actions. */}
       <section className="reservation-modal">
+        {/* Show this section's heading, context, and available actions. */}
         <header className="reservation-modal-header">
           <div>
             <h2>New Reservation</h2>
@@ -125,6 +133,7 @@ export default function ReservationFormModal({
           </button>
         </header>
 
+        {/* Collect the reservations form fields and submit them through the handler above. */}
         <form className="reservation-form" onSubmit={handleSubmit}>
           <label>
             <span>Guest</span>
@@ -237,6 +246,7 @@ export default function ReservationFormModal({
             />
           </label>
 
+          {/* Show the property footer links and contact information. */}
           <footer className="reservation-modal-actions">
             <button
               type="button"

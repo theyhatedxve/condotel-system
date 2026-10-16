@@ -14,6 +14,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 
 import './reports.css';
 
+// Return today's local calendar date for the report filter.
 function getToday() {
   const now = new Date();
 
@@ -26,6 +27,7 @@ function getToday() {
   return `${year}-${month}-${day}`;
 }
 
+// Return the first day of the current month for the initial report filter.
 function getMonthStart() {
   const now = new Date();
 
@@ -36,7 +38,9 @@ function getMonthStart() {
   return `${year}-${month}-01`;
 }
 
+// Render the reports page with its loading, error, and record/form states.
 export default function ReportsPage() {
+  // Track local state and read any session or route values needed by this component.
   const [from, setFrom] = useState(getMonthStart);
 
   const [to, setTo] = useState(getToday);
@@ -76,6 +80,7 @@ export default function ReportsPage() {
     };
   }, []);
 
+  // Request report aggregates for the explicitly applied date range.
   async function loadReport() {
     if (!from || !to) {
       window.alert('Select both report dates.');
@@ -143,7 +148,9 @@ export default function ReportsPage() {
   };
 
   return (
+    /* Display the "Reports" section and its related actions. */
     <section className="reports-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="reports-header">
         <div>
           <h1>Reports</h1>

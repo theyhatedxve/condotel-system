@@ -2,16 +2,21 @@ import { useState } from 'react';
 import { X } from 'lucide-react';
 import apiClient from '../../services/apiClient';
 
+// Render administrator account creation/import dialogs and submit validated form input.
 export default function ManagedAccountActions({ onSaved }) {
-  const [mode, setMode] = useState(null),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
+  // Track local state and read any session or route values needed by this component.
+  const [mode, setMode] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  // Close the account creation/import dialog only when no submission is active.
   function close() {
     if (!busy) {
       setMode(null);
       setError('');
     }
   }
+  // Build a single-account payload or bounded JSON import batch, submit it, and refresh
+  // the management list.
   async function submit(event) {
     event.preventDefault();
     if (busy) return;
@@ -72,6 +77,7 @@ export default function ManagedAccountActions({ onSaved }) {
       </div>
       {mode && (
         <div className="managed-user-modal-backdrop">
+          {/* Collect the user management form fields and submit them through the handler above. */}
           <form
             className="managed-user-modal"
             onSubmit={submit}
@@ -79,6 +85,7 @@ export default function ManagedAccountActions({ onSaved }) {
             aria-modal="true"
             aria-label={mode === 'import' ? 'Import Accounts' : 'Add Account'}
           >
+            {/* Show this section's heading, context, and available actions. */}
             <header>
               <h2>{mode === 'import' ? 'Import Accounts' : 'Add Account'}</h2>
               <button
@@ -150,6 +157,7 @@ export default function ManagedAccountActions({ onSaved }) {
                 {error}
               </p>
             )}
+            {/* Show the property footer links and contact information. */}
             <footer>
               <button type="button" onClick={close} disabled={busy}>
                 Cancel

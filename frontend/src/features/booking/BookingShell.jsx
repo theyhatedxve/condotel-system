@@ -5,6 +5,7 @@ import { featuredRooms } from '../home/homeContent';
 import '../landing/landing.css';
 import './booking.css';
 
+// Wrap booking/payment content in the shared property header and navigation layout.
 export default function BookingShell({
   title,
   description,
@@ -17,9 +18,11 @@ export default function BookingShell({
       <a className="stay-skip" href="#booking-main">
         Skip to {payment ? 'payment' : 'booking'}
       </a>
+      {/* Show this section's heading, context, and available actions. */}
       <header className="stay-header">
         <div className="stay-container stay-header-inner">
           <HomeBrand />
+          {/* Provide the navigation links or page controls for this part of the interface. */}
           <nav aria-label="Main navigation">
             <Link to="/">Home</Link>
             <Link to="/rooms">Rooms</Link>
@@ -37,12 +40,14 @@ export default function BookingShell({
           </div>
         </div>
       </header>
+      {/* Group the related content and actions into a distinct page section. */}
       <section
         className="stay-hero booking-hero"
         style={{ '--stay-hero-room': `url("${featuredRooms[0].imageUrl}")` }}
         aria-labelledby="booking-title"
       >
         <div className="stay-container">
+          {/* Provide the navigation links or page controls for this part of the interface. */}
           <nav className="stay-breadcrumb" aria-label="Breadcrumb">
             <Link to="/">Home</Link>
             <ChevronRight size={14} />
@@ -65,6 +70,7 @@ export default function BookingShell({
       <main id="booking-main" className="stay-container booking-main">
         {children}
       </main>
+      {/* Show the property footer links and contact information. */}
       <footer className="stay-footer">
         <div className="stay-container">
           <HomeBrand />

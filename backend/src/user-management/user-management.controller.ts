@@ -35,12 +35,15 @@ import {
   ImportManagedUsersDto,
 } from './create-managed-user.dto';
 
+// Expose user management HTTP routes with the declared request validation and access
+// guards.
 @Controller('admin/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class UserManagementController {
   constructor(private readonly userManagementService: UserManagementService) {}
 
+  // Create an account and its audit entry in one database transaction.
   @Post()
   create(
     @Body() dto: CreateManagedUserDto,
@@ -49,6 +52,8 @@ export class UserManagementController {
     return this.userManagementService.create(dto, admin);
   }
 
+  // Hash temporary passwords sequentially, then save the entire account batch and audit
+  // entry atomically.
   @Post('import')
   importUsers(
     @Body() dto: ImportManagedUsersDto,
@@ -57,6 +62,7 @@ export class UserManagementController {
     return this.userManagementService.importUsers(dto.users, admin);
   }
 
+  // List public account fields with role/status/search filters and optional pagination.
   @Get()
   findAll(
     @Query()
@@ -65,9 +71,14 @@ export class UserManagementController {
     return this.userManagementService.findAll(query);
   }
 
+  // Count all users by role and suspended status independently of list filters or
+  // pagination.
   @Get('summary')
-  summary() {return this.userManagementService.summary();}
+  summary() {
+    return this.userManagementService.summary();
+  }
 
+  // Load one managed account using the public field selection.
   @Get(':id')
   findOne(
     @Param('id')
@@ -76,6 +87,8 @@ export class UserManagementController {
     return this.userManagementService.findOne(id);
   }
 
+  // Enforce administrator/self-management safeguards, update validated account fields,
+  // and record an audit entry.
   @Patch(':id')
   update(
     @Param('id')
@@ -90,6 +103,8 @@ export class UserManagementController {
     return this.userManagementService.update(id, dto, admin);
   }
 
+  // Apply password-reset restrictions and save a temporary password hash with its audit
+  // entry.
   @Post(':id/reset-password')
   @HttpCode(HttpStatus.OK)
   resetPassword(

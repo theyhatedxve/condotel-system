@@ -32,10 +32,13 @@ type RequestWithRawBody = Request & {
   rawBody?: Buffer;
 };
 
+// Expose payments HTTP routes with the declared request validation and access guards.
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+  // Verify a provider session against the stored reservation and amount before recording
+  // its payment.
   @Post(':id/reconcile')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -43,6 +46,8 @@ export class PaymentsController {
     return this.paymentsService.reconcile(id, dto.checkoutSessionId);
   }
 
+  // Reuse a ready checkout or claim a new pending attempt while blocking
+  // duplicate/uncertain charges.
   @Post('reservations/:reservationId/checkout')
   @UseGuards(JwtAuthGuard)
   createCheckout(
@@ -55,6 +60,8 @@ export class PaymentsController {
     return this.paymentsService.createCheckout(reservationId, user);
   }
 
+  // List management payment records with authorized guest contacts and transaction
+  // details.
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STAFF, UserRole.ADMIN)
@@ -62,6 +69,7 @@ export class PaymentsController {
     return this.paymentsService.findAll();
   }
 
+  // Check reservation access before listing its payment attempts and transactions.
   @Get('reservations/:reservationId')
   @UseGuards(JwtAuthGuard)
   findByReservation(
@@ -74,6 +82,8 @@ export class PaymentsController {
     return this.paymentsService.findByReservation(reservationId, user);
   }
 
+  // Authorize the reservation and allow checkout cancellation only in cancellable
+  // states.
   @Post('reservations/:reservationId/cancel-pending')
   @UseGuards(JwtAuthGuard)
   cancelPendingCheckout(
@@ -83,6 +93,8 @@ export class PaymentsController {
     return this.paymentsService.cancelPendingCheckout(reservationId, user);
   }
 
+  // Read the stored provider session and return verified payment/booking state and a
+  // safe checkout outcome.
   @Post('reservations/:reservationId/sync')
   @UseGuards(JwtAuthGuard)
   syncCheckout(

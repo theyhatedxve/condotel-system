@@ -1,3 +1,4 @@
+// Format a database date using the shared date display and empty-value fallback.
 export function formatDate(value) {
   if (!value) {
     return '-';

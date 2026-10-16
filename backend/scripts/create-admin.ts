@@ -12,7 +12,10 @@ import { EncryptionService } from '../src/security/encryption.service';
 import { PrivateDataService } from '../src/security/private-data.service';
 import { migratePrivacy } from '../src/security/privacy-maintenance';
 
+// Validate offline provisioning input, back up the finalized database, and create its
+// initial encrypted administrator.
 async function main() {
+  // Read the explicit command-line value for a provisioning flag.
   const args = process.argv.slice(2),
     argument = (flag: string) => args[args.indexOf(flag) + 1];
   if (

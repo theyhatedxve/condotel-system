@@ -60,6 +60,12 @@ for the action being investigated, then follow its API helper to the backend.
 
 ## Formatting
 
+Source comments explain function responsibilities, request validation, React
+state/effects, important UI sections, and stylesheet blocks. Payment, authentication,
+and encryption comments also document the checks that protect each operation.
+Keep these explanations synchronized with the code when changing a feature.
+Generated Prisma code and dependency packages remain managed by their generators.
+
 The root `.prettierrc.json` uses the backend's existing Prettier conventions:
 single quotes, trailing commas, two-space indentation, and the default 80-column
 wrapping preference. `.editorconfig` also defines UTF-8 and LF line endings. The
@@ -82,15 +88,18 @@ available from `backend/`.
 ## Validation scope
 
 Run the lint, unit-test, and build commands in the root README after code changes.
-The existing unit tests do not exercise complete reservation or payment flows, so
-a passing test run alone cannot establish that those flows are unchanged.
+The backend integration suite exercises authentication, authorization, bookings,
+payments, and privacy maintenance using disposable databases and a mocked payment
+provider. The frontend payment-window tests cover failure, verified success,
+window closure, blocked popups, and leaving the merchant page.
 
 The readability cleanup retained these existing lint findings:
 
 - Frontend: the initial report effect omits `from` and `to` from its dependency
   array, producing a hook-dependency warning.
-- Backend: the `bootstrap()` call in `src/main.ts` produces a floating-promise
-  error; a redundant object spread in `rooms.service.ts` produces a warning.
+- Backend: the redundant room-filter object spread has been simplified without
+  changing the resulting query. The bootstrap floating-promise finding was
+  resolved by explicitly marking its promise as intentional.
 
 These findings are separate from formatting. Changing request timing or error
 handling belongs in a separately reviewed behavior change.
@@ -98,3 +107,28 @@ handling belongs in a separately reviewed behavior change.
 Generated Prisma files and compiled output are not handwritten source. Make
 future model changes in the schema and use the project's Prisma configuration to
 regenerate the client; keep historical migrations intact.
+
+## Workspace cleanup on October 16, 2026
+
+Unused Vite/React assets, starter App/index styles, the unreferenced duplicate
+profile stylesheet, unused social icon symbols, and the unreferenced JWT guard
+under `auth/strategies/` were removed after checking imports. The active guard
+remains under `auth/guards/`. Temporary integration-reference downloads, diagnostic
+screenshots/logs, and the one-time database cleanup script were removed as well.
+
+Handwritten source was formatted using the existing project conventions. Account
+management now reuses the existing public user selection; room filtering,
+declarations, and encryption guard blocks were simplified without changing their
+results. Tests, migration history, encryption maintenance, environment files,
+dependencies, and recovery backups remain part of the working system.
+
+The approved local database cleanup retained the existing `dev@gmail.com` ADMIN
+account and its credentials. It removed 9 other accounts and their 26 reservations,
+25 payments, 13 transactions, and related notifications/audit entries. All 7 rooms
+and system settings were retained; the room occupied by deleted test data was made
+available. Foreign-key checks, integrity checks, and encryption verification passed.
+
+Recovery backup: `backend/backups/account-cleanup-1792155828355.db`. It contains
+the pre-cleanup records and requires the matching existing encryption keys. Stop
+all database writers before using a backup for recovery; do not overwrite a newer
+database that has accepted subsequent bookings or payments.

@@ -1,3 +1,24 @@
-.list-pagination {display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-top:16px;font-size:12px;color:var(--color-navy-950);}
-.list-pagination button {padding:8px 12px;border:1px solid var(--color-border);border-radius:5px;background:white;color:inherit;cursor:pointer;}
-.list-pagination button:disabled {opacity:.5;cursor:default;}
+/* Style .list-pagination to arrange its contents, set text appearance. */
+.list-pagination {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--color-navy-950);
+}
+/* Style .list-pagination button to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
+.list-pagination button {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: white;
+  color: inherit;
+  cursor: pointer;
+}
+/* Style .list-pagination button:disabled to indicate the available pointer interaction. */
+.list-pagination button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

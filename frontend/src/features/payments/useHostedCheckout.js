@@ -2,12 +2,18 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { openHostedCheckout } from './hostedCheckout';
 
+// Manage one payment-window operation, its cleanup, and navigation to the verified
+// return flow.
 export default function useHostedCheckout() {
+  // Track local state and read any session or route values needed by this component.
   const navigate = useNavigate();
   const operation = useRef(null);
   const [waiting, setWaiting] = useState(null);
+  // Abort the active payment-window operation when its merchant page unmounts.
   useEffect(() => () => operation.current?.abort(), []);
 
+  // Start one hosted checkout operation and navigate only after its return outcome is
+  // known.
   async function start(reservationId) {
     if (operation.current) return;
     const controller = new AbortController();
@@ -29,6 +35,8 @@ export default function useHostedCheckout() {
       }
     }
   }
+  // Close the active payment operation and return through the cancellation-verification
+  // page.
   function returnToSite() {
     if (!waiting) return;
     const reservationId = waiting;

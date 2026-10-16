@@ -18,6 +18,7 @@ import { RolesGuard } from './guards/roles.guard';
 
 import { JwtStrategy } from './strategies/jwt.strategy';
 
+// Wire the auth controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [
     ConfigModule,

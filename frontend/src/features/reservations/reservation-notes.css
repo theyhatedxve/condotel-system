@@ -1,12 +1,15 @@
+/* Style .reservation-notes-editor to set text appearance. */
 .reservation-notes-editor {
   color: #234469;
   font-size: 12px;
   min-width: 0;
 }
+/* Style .reservation-notes-editor summary to indicate the available pointer interaction. */
 .reservation-notes-editor summary {
   cursor: pointer;
   padding: 8px 0;
 }
+/* Style .reservation-notes-fields to arrange its contents, style the surface and boundaries. */
 .reservation-notes-fields {
   display: grid;
   gap: 10px;
@@ -15,6 +18,7 @@
   border: 1px solid #dce7f1;
   border-radius: 6px;
 }
+/* Style .reservation-notes-fields textarea to arrange its contents, style the surface and boundaries. */
 .reservation-notes-fields textarea {
   display: block;
   width: 100%;
@@ -26,6 +30,7 @@
   margin-top: 6px;
   resize: vertical;
 }
+/* Style .reservation-notes-fields button to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 .reservation-notes-fields button {
   border: 1px solid #123f6b;
   background: #123f6b;
@@ -34,6 +39,7 @@
   padding: 9px;
   cursor: pointer;
 }
+/* Style .reservation-notes-fields p to set text appearance. */
 .reservation-notes-fields p {
   color: #a63333;
 }

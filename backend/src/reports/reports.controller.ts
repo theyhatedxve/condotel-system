@@ -14,12 +14,14 @@ import { ReportsService } from './reports.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
+// Expose reports HTTP routes with the declared request validation and access guards.
 @Controller('reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.STAFF, UserRole.ADMIN)
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
+  // Gather management occupancy, guest, payment, and recent-reservation summaries.
   @Get('dashboard')
   @Roles(UserRole.STAFF, UserRole.ADMIN, UserRole.CUSTOMER)
   getDashboard(@CurrentUser() user: AuthenticatedUser) {
@@ -28,6 +30,8 @@ export class ReportsController {
       : this.reportsService.getDashboard();
   }
 
+  // Aggregate reservations, payments, transactions, and room performance for the
+  // selected report range.
   @Get('summary')
   getSummary(
     @Query()

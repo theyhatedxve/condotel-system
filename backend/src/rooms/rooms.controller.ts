@@ -25,6 +25,7 @@ import { UpdateRoomStatusDto } from './update-room-status.dto';
 
 import { RoomsService } from './rooms.service';
 
+// Expose rooms HTTP routes with the declared request validation and access guards.
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
@@ -49,11 +50,13 @@ export class RoomsController {
     return this.roomsService.findAllForManagement(status);
   }
 
+  // Load one room or report that it does not exist.
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(id);
   }
 
+  // Reject duplicate room numbers and create a room from validated input.
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -64,6 +67,7 @@ export class RoomsController {
     return this.roomsService.create(dto);
   }
 
+  // Update a room after checking its existence and room-number uniqueness.
   @Patch(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -76,6 +80,7 @@ export class RoomsController {
     return this.roomsService.update(id, dto);
   }
 
+  // Pass the requested room status to the room service.
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -88,6 +93,7 @@ export class RoomsController {
     return this.roomsService.changeStatus(id, dto.status);
   }
 
+  // Mark a room inactive so it no longer appears in the active room list.
   @Patch(':id/deactivate')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
@@ -95,6 +101,7 @@ export class RoomsController {
     return this.roomsService.deactivate(id);
   }
 
+  // Restore an inactive room to the active room list.
   @Patch(':id/reactivate')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)

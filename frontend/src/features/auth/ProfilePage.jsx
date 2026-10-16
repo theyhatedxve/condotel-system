@@ -10,7 +10,9 @@ import { useAuth } from './useAuth';
 import './profile.css';
 import CustomerNotifications from '../notifications/CustomerNotifications';
 
+// Render the profile page with its loading, error, and record/form states.
 export default function ProfilePage() {
+  // Track local state and read any session or route values needed by this component.
   const { user, refreshUser } = useAuth();
 
   const [form, setForm] = useState(() => ({
@@ -26,6 +28,7 @@ export default function ProfilePage() {
 
   const [saving, setSaving] = useState(false);
 
+  // Update the edited form field while retaining the other controlled form values.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -36,6 +39,8 @@ export default function ProfilePage() {
     }));
   }
 
+  // Save profile edits and refresh the shared account state used elsewhere in the
+  // interface.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -84,7 +89,9 @@ export default function ProfilePage() {
   }
 
   return (
+    /* Display the "My Profile" section and its related actions. */
     <section className="profile-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="profile-header">
         <h1>My Profile</h1>
 
@@ -98,6 +105,7 @@ export default function ProfilePage() {
         )}
       </header>
 
+      {/* Collect the auth form fields and submit them through the handler above. */}
       <form className="profile-card" onSubmit={handleSubmit}>
         <div className="profile-card-heading">
           <div className="profile-large-avatar">

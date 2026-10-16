@@ -6,6 +6,7 @@ import { SettingsController } from './settings.controller';
 
 import { SettingsService } from './settings.service';
 
+// Wire the settings controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

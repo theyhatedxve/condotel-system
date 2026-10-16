@@ -7,6 +7,7 @@ const steps = [
   { label: 'Confirmation', description: 'Review and complete' },
 ];
 
+// Show the current step in the room-to-confirmation booking flow.
 export default function BookingSteps({ activeStep }) {
   return (
     <ol className="booking-steps" aria-label="Booking progress">

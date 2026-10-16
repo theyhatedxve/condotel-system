@@ -14,6 +14,8 @@ import {
 
 import { PrismaService } from '../prisma/prisma.service';
 
+// Implement search operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class SearchService {
   constructor(
@@ -21,6 +23,8 @@ export class SearchService {
     private readonly privacy: PrivateDataService,
   ) {}
 
+  // Search authorized management records using exact contact indexes and partial
+  // names/reference fields.
   async search(query: string) {
     const normalizedQuery = query.trim();
 

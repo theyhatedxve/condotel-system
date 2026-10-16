@@ -21,12 +21,15 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 
 import { NotificationsService } from './notifications.service';
 
+// Expose notifications HTTP routes with the declared request validation and access
+// guards.
 @Controller('notifications')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.STAFF, UserRole.ADMIN, UserRole.CUSTOMER)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 
+  // Return the signed-in account's notification list.
   @Get()
   findAll(
     @CurrentUser()
@@ -44,6 +47,7 @@ export class NotificationsController {
     );
   }
 
+  // Count unread notifications for this account.
   @Get('unread-count')
   getUnreadCount(
     @CurrentUser()
@@ -52,6 +56,7 @@ export class NotificationsController {
     return this.notificationsService.getUnreadCount(user.id);
   }
 
+  // Mark all unread notifications belonging to the current account as read.
   @Patch('read-all')
   markAllAsRead(
     @CurrentUser()
@@ -60,6 +65,7 @@ export class NotificationsController {
     return this.notificationsService.markAllAsRead(user.id);
   }
 
+  // Mark one notification read only when it belongs to the current account.
   @Patch(':id/read')
   markAsRead(
     @Param('id')

@@ -101,7 +101,9 @@ const navigation = [
   },
 ];
 
+// Render role-appropriate management links and the sign-out action.
 export default function Sidebar() {
+  // Track local state and read any session or route values needed by this component.
   const { user, logout } = useAuth();
 
   const visibleNavigation = navigation.filter(
@@ -132,6 +134,7 @@ export default function Sidebar() {
         </div>
       </div>
 
+      {/* Provide the navigation links or page controls for this part of the interface. */}
       <nav className="sidebar-navigation">
         {visibleNavigation.map(({ label, path, icon: Icon }) => (
           <NavLink

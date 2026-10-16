@@ -1,16 +1,36 @@
-# React + Vite
+# Condotel interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React and Vite provide the public homepage, authenticated room browsing, customer
+booking and checkout, profiles, and staff/admin management pages.
 
-Currently, two official plugins are available:
+## Development
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```powershell
+npm.cmd ci
+npm.cmd run dev
+```
 
-## React Compiler
+The interface normally runs at `http://localhost:5173`. API requests default to
+`http://localhost:3000/api`; `VITE_API_BASE_URL` overrides that address.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Code organization
 
-## Expanding the ESLint configuration
+Feature pages, API helpers, and styles live together in `src/features/`.
+`src/routes/` defines navigation and role checks; `src/layouts/` contains the
+administration layout. Reusable components live under `src/components/`, with
+shared formatting in `src/utils/`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Room, booking, homepage, and payment directories include short feature notes.
+Payment details are entered on PayMongo. The merchant page verifies provider
+status before showing confirmation or returning from an unpaid attempt.
+
+## Checks
+
+```powershell
+npm.cmd run lint
+npm.cmd run build
+node --experimental-vm-modules --test test/hosted-checkout.test.cjs
+```
+
+See [maintenance notes](../docs/MAINTENANCE.md) for formatting and rules for
+preserving behavior during refactors.

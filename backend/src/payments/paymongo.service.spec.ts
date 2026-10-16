@@ -20,18 +20,14 @@ describe('Checkout creation failure classification', () => {
   it.each([400, 401, 403, 422])(
     'allows recovery after an explicit HTTP %s rejection',
     async (status) => {
-      jest
-        .spyOn(globalThis, 'fetch')
-        .mockResolvedValue(
-          new Response(
-            JSON.stringify({
-              errors: [
-                { code: 'rejected', detail: 'private provider details' },
-              ],
-            }),
-            { status },
-          ),
-        );
+      jest.spyOn(globalThis, 'fetch').mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            errors: [{ code: 'rejected', detail: 'private provider details' }],
+          }),
+          { status },
+        ),
+      );
       await expect(
         service().createCheckoutSession(input),
       ).rejects.toBeInstanceOf(CheckoutRejectedException);
@@ -41,13 +37,11 @@ describe('Checkout creation failure classification', () => {
   it.each([408, 429, 500, 502])(
     'keeps HTTP %s failures uncertain',
     async (status) => {
-      jest
-        .spyOn(globalThis, 'fetch')
-        .mockResolvedValue(
-          new Response(JSON.stringify({ errors: [{ code: 'unknown' }] }), {
-            status,
-          }),
-        );
+      jest.spyOn(globalThis, 'fetch').mockResolvedValue(
+        new Response(JSON.stringify({ errors: [{ code: 'unknown' }] }), {
+          status,
+        }),
+      );
       await expect(
         service().createCheckoutSession(input),
       ).rejects.not.toBeInstanceOf(CheckoutRejectedException);

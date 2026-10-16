@@ -8,8 +8,10 @@ const nearby = [
   { icon: Plane, time: '15 mins', label: 'to the Airport' },
 ];
 
+// Render the illustrative property map and sample nearby-location details.
 export default function LocationSection() {
   return (
+    /* Display the "Where We’re Located" section and its related actions. */
     <section
       id="location"
       className="coast-location coast-container"
@@ -52,7 +54,12 @@ export default function LocationSection() {
               patternTransform="rotate(-28)"
             >
               <rect width="64" height="52" fill="#e8ebed" />
-              <path d="M0 0H64V52H0Z" fill="none" stroke="white" strokeWidth="5" />
+              <path
+                d="M0 0H64V52H0Z"
+                fill="none"
+                stroke="white"
+                strokeWidth="5"
+              />
               <path d="M32 0V52" stroke="#f8fafb" strokeWidth="2" />
             </pattern>
           </defs>

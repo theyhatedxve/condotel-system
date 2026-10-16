@@ -12,10 +12,13 @@ import { CreateRoomDto } from './create-room.dto';
 
 import { UpdateRoomDto } from './update-room.dto';
 
+// Implement rooms operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class RoomsService {
   constructor(private readonly prisma: PrismaService) {}
 
+  // List active rooms, optionally limited to a room status, in room-number order.
   async findAll(status?: RoomStatus) {
     return this.prisma.room.findMany({
       where: {
@@ -34,15 +37,10 @@ export class RoomsService {
     });
   }
 
+  // List active and inactive rooms for management, with optional status filtering.
   async findAllForManagement(status?: RoomStatus) {
     return this.prisma.room.findMany({
-      where: {
-        ...(status
-          ? {
-              status,
-            }
-          : {}),
-      },
+      where: status ? { status } : {},
 
       orderBy: [
         {
@@ -55,6 +53,7 @@ export class RoomsService {
     });
   }
 
+  // Load one room or report that it does not exist.
   async findOne(id: string) {
     const room = await this.prisma.room.findUnique({
       where: {
@@ -69,6 +68,7 @@ export class RoomsService {
     return room;
   }
 
+  // Reject duplicate room numbers and create a room from validated input.
   async create(dto: CreateRoomDto) {
     const existingRoom = await this.prisma.room.findUnique({
       where: {
@@ -105,6 +105,7 @@ export class RoomsService {
     });
   }
 
+  // Update a room after checking its existence and room-number uniqueness.
   async update(id: string, dto: UpdateRoomDto) {
     const room = await this.findOne(id);
 
@@ -189,6 +190,7 @@ export class RoomsService {
     });
   }
 
+  // Update the operational status of an existing room.
   async changeStatus(id: string, status: RoomStatus) {
     await this.findOne(id);
 
@@ -222,6 +224,7 @@ export class RoomsService {
     });
   }
 
+  // Restore an inactive room to the active room list.
   async reactivate(id: string) {
     await this.findOne(id);
 

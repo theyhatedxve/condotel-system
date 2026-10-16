@@ -11,8 +11,11 @@ import {
   PrivacyPhase,
 } from '../src/security/privacy-maintenance';
 
+// Validate explicit database/offline/backup arguments and run the requested backed-up
+// privacy operation.
 async function main() {
   const [operation, ...args] = process.argv.slice(2);
+  // Read the argument immediately following the requested command-line flag.
   const value = (flag: string) => {
     const index = args.indexOf(flag);
     return index >= 0 ? args[index + 1] : undefined;

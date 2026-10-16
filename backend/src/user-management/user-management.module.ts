@@ -6,6 +6,7 @@ import { UserManagementController } from './user-management.controller';
 
 import { UserManagementService } from './user-management.service';
 
+// Wire the user management controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

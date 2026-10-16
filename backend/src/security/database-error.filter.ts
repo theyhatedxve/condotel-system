@@ -12,6 +12,8 @@ import { Prisma } from '../generated/prisma/client';
 // Avoid framework logging of ORM parameters, protected fields or provider payloads.
 @Catch()
 export class DatabaseErrorFilter implements ExceptionFilter {
+  // Convert known database conflicts and unexpected internal errors into safe HTTP
+  // responses.
   catch(error: unknown, host: ArgumentsHost) {
     const exception =
       error instanceof HttpException

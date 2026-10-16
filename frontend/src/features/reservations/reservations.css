@@ -1,3 +1,5 @@
+/* Style .reservations-header to arrange its contents. */
+
 .reservations-header {
   display: flex;
   justify-content: space-between;
@@ -8,11 +10,15 @@
   margin-bottom: 20px;
 }
 
+/* Style .reservations-header h1 to set text appearance. */
+
 .reservations-header h1 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
+
+/* Style .reservations-header p to set text appearance. */
 
 .reservations-header p {
   margin: 6px 0 0;
@@ -20,11 +26,15 @@
   color: var(--color-text-muted);
 }
 
+/* Style .reservations-header .primary-button to arrange its contents. */
+
 .reservations-header .primary-button {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
+/* Style .reservation-filters to arrange its contents. */
 
 .reservation-filters {
   display: flex;
@@ -34,6 +44,8 @@
 
   overflow-x: auto;
 }
+
+/* Style .reservation-table-wrapper to style the surface and boundaries. */
 
 .reservation-table-wrapper {
   overflow-x: auto;
@@ -47,11 +59,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .reservation-table to control spacing and dimensions. */
+
 .reservation-table {
   width: 100%;
 
   border-collapse: collapse;
 }
+
+/* Style .reservation-table th, .reservation-table td to set text appearance. */
 
 .reservation-table th,
 .reservation-table td {
@@ -66,9 +82,13 @@
   font-size: 11px;
 }
 
+/* Style .reservation-table th to set text appearance. */
+
 .reservation-table th {
   color: var(--color-text-muted);
 }
+
+/* Style .reservation-status to set text appearance. */
 
 .reservation-status {
   padding: 4px 8px;
@@ -80,35 +100,49 @@
   font-weight: 600;
 }
 
+/* Style .reservation-status.pending to set text appearance, style the surface and boundaries. */
+
 .reservation-status.pending {
   background: #fff0d4;
   color: #c97804;
 }
+
+/* Style .reservation-status.confirmed to set text appearance, style the surface and boundaries. */
 
 .reservation-status.confirmed {
   background: #dceeff;
   color: #1374b9;
 }
 
+/* Style .reservation-status.checked_in to set text appearance, style the surface and boundaries. */
+
 .reservation-status.checked_in {
   background: #dcf6eb;
   color: #11845b;
 }
+
+/* Style .reservation-status.checked_out to set text appearance, style the surface and boundaries. */
 
 .reservation-status.checked_out {
   background: #edf1f4;
   color: #63798e;
 }
 
+/* Style .reservation-status.cancelled to set text appearance, style the surface and boundaries. */
+
 .reservation-status.cancelled {
   background: #fde3e3;
   color: #c03f3f;
 }
 
+/* Style .reservation-actions to arrange its contents. */
+
 .reservation-actions {
   display: flex;
   gap: 6px;
 }
+
+/* Style .reservation-actions button to set text appearance, style the surface and boundaries. */
 
 .reservation-actions button {
   padding: 5px 8px;
@@ -122,6 +156,8 @@
   font-size: 10px;
 }
 
+/* Style .reservation-modal to style the surface and boundaries. */
+
 .reservation-modal {
   width: min(100%, 700px);
 
@@ -134,6 +170,8 @@
   background: #ffffff;
 }
 
+/* Style .reservation-modal-header to arrange its contents. */
+
 .reservation-modal-header {
   display: flex;
   justify-content: space-between;
@@ -143,9 +181,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Style .reservation-modal-header h2 to control spacing and dimensions. */
+
 .reservation-modal-header h2 {
   margin: 0;
 }
+
+/* Style .reservation-modal-header p to set text appearance. */
 
 .reservation-modal-header p {
   margin: 5px 0 0;
@@ -154,6 +196,8 @@
 
   font-size: 12px;
 }
+
+/* Style .reservation-form to arrange its contents. */
 
 .reservation-form {
   display: flex;
@@ -164,6 +208,8 @@
   padding: 24px;
 }
 
+/* Style .reservation-form-grid to arrange its contents. */
+
 .reservation-form-grid {
   display: grid;
 
@@ -171,6 +217,8 @@
 
   gap: 16px;
 }
+
+/* Style .reservation-form label to arrange its contents, set text appearance. */
 
 .reservation-form label {
   display: flex;
@@ -181,6 +229,8 @@
   font-size: 12px;
   font-weight: 600;
 }
+
+/* Style .reservation-form input, .reservation-form select, .reservation-form textarea to make keyboard focus visible, style the surface and boundaries. */
 
 .reservation-form input,
 .reservation-form select,
@@ -193,6 +243,8 @@
 
   outline: none;
 }
+
+/* Style .availability-button to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .availability-button {
   min-height: 40px;
@@ -214,6 +266,8 @@
   font-weight: 600;
 }
 
+/* Style .reservation-modal-actions to arrange its contents. */
+
 .reservation-modal-actions {
   display: flex;
   justify-content: flex-end;
@@ -225,10 +279,15 @@
   border-top: 1px solid var(--color-border);
 }
 
+/* Apply the following layout adjustments when (max-width: 700px). */
+
 @media (max-width: 700px) {
+  /* Style .reservation-form-grid to arrange its contents. */
   .reservation-form-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Style .reservations-header to arrange its contents. */
 
   .reservations-header {
     flex-direction: column;

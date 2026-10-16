@@ -1,3 +1,5 @@
+/* Style .admin-layout to define reusable design values, arrange its contents, style the surface and boundaries. */
+
 .admin-layout {
   --sidebar-width: 238px;
   --color-navy-950: #122d43;
@@ -18,6 +20,8 @@
   background: var(--color-background);
 }
 
+/* Style .sidebar to arrange its contents, position it within the page, set text appearance. */
+
 .sidebar {
   position: fixed;
 
@@ -37,6 +41,8 @@
   color: #ffffff;
 }
 
+/* Style .sidebar-brand to arrange its contents. */
+
 .sidebar-brand {
   display: flex;
   align-items: center;
@@ -48,16 +54,22 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
+/* Style .sidebar-brand > div to arrange its contents. */
+
 .sidebar-brand > div {
   display: flex;
   flex-direction: column;
 }
+
+/* Style .sidebar-brand strong to set text appearance. */
 
 .sidebar-brand strong {
   font-size: 15px;
 
   letter-spacing: 0.08em;
 }
+
+/* Style .sidebar-brand span to set text appearance. */
 
 .sidebar-brand span {
   margin-top: 3px;
@@ -69,6 +81,8 @@
   color: rgba(255, 255, 255, 0.65);
 }
 
+/* Style .sidebar-user to arrange its contents. */
+
 .sidebar-user {
   display: flex;
   align-items: center;
@@ -77,6 +91,8 @@
 
   padding: 22px 9px;
 }
+
+/* Style .sidebar-avatar, .topbar-avatar to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .sidebar-avatar,
 .topbar-avatar {
@@ -92,19 +108,27 @@
   font-weight: 700;
 }
 
+/* Style .sidebar-avatar to control spacing and dimensions. */
+
 .sidebar-avatar {
   width: 36px;
   height: 36px;
 }
+
+/* Style .sidebar-user > div:last-child to arrange its contents. */
 
 .sidebar-user > div:last-child {
   display: flex;
   flex-direction: column;
 }
 
+/* Style .sidebar-user strong to set text appearance. */
+
 .sidebar-user strong {
   font-size: 13px;
 }
+
+/* Style .sidebar-user span to set text appearance. */
 
 .sidebar-user span {
   margin-top: 2px;
@@ -114,6 +138,8 @@
   color: rgba(255, 255, 255, 0.6);
 }
 
+/* Style .sidebar-navigation to arrange its contents. */
+
 .sidebar-navigation {
   display: flex;
   flex-direction: column;
@@ -122,6 +148,8 @@
 
   flex: 1;
 }
+
+/* Style .sidebar-link, .sidebar-logout to arrange its contents, set text appearance. */
 
 .sidebar-link,
 .sidebar-logout {
@@ -145,12 +173,16 @@
     color var(--transition-fast);
 }
 
+/* Style .sidebar-link:hover, .sidebar-link.active to set text appearance, style the surface and boundaries. */
+
 .sidebar-link:hover,
 .sidebar-link.active {
   background: #14466f;
 
   color: #ffffff;
 }
+
+/* Style .sidebar-logout to set text appearance, style the surface and boundaries. */
 
 .sidebar-logout {
   width: 100%;
@@ -162,9 +194,13 @@
   color: rgba(255, 255, 255, 0.72);
 }
 
+/* Style .sidebar-logout:hover to style the surface and boundaries. */
+
 .sidebar-logout:hover {
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* Style .admin-main to control spacing and dimensions. */
 
 .admin-main {
   min-width: 0;
@@ -172,6 +208,8 @@
 
   margin-left: var(--sidebar-width);
 }
+
+/* Style .topbar to arrange its contents, position it within the page, style the surface and boundaries. */
 
 .topbar {
   position: sticky;
@@ -193,6 +231,8 @@
   background: rgba(255, 255, 255, 0.96);
 }
 
+/* Style .topbar-search to arrange its contents, position it within the page, set text appearance. */
+
 .topbar-search {
   position: relative;
   width: min(100%, 360px);
@@ -209,6 +249,8 @@
   background: #ffffff;
 }
 
+/* Style .topbar-search input to make keyboard focus visible, style the surface and boundaries. */
+
 .topbar-search input {
   width: 100%;
 
@@ -223,23 +265,33 @@
   background: transparent;
 }
 
+/* Style .topbar-search-spinner to control spacing and dimensions. */
+
 .topbar-search-spinner {
   flex-shrink: 0;
 
   animation: topbar-search-spin 0.8s linear infinite;
 }
 
+/* Style .topbar-search-dropdown to control spacing and dimensions. */
+
 .topbar-search-dropdown {
   width: calc(100vw - var(--sidebar-width) - 48px);
 }
+
+/* Style .topbar-notifications to position it within the page. */
 
 .topbar-notifications {
   position: relative;
 }
 
+/* Style .topbar-icon-button to position it within the page. */
+
 .topbar-icon-button {
   position: relative;
 }
+
+/* Style .topbar-notification-badge to keep padding and borders inside the declared dimensions, arrange its contents, position it within the page. */
 
 .topbar-notification-badge {
   position: absolute;
@@ -270,6 +322,8 @@
   font-weight: 700;
 }
 
+/* Style .notification-dropdown to control overflowing content, position it within the page, style the surface and boundaries. */
+
 .notification-dropdown {
   position: absolute;
 
@@ -294,6 +348,8 @@
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
 }
 
+/* Style .notification-dropdown-header to arrange its contents, style the surface and boundaries. */
+
 .notification-dropdown-header {
   display: flex;
   align-items: center;
@@ -308,16 +364,22 @@
   background: #f8fafc;
 }
 
+/* Style .notification-dropdown-header > div to arrange its contents. */
+
 .notification-dropdown-header > div {
   display: flex;
   flex-direction: column;
 }
+
+/* Style .notification-dropdown-header strong to set text appearance. */
 
 .notification-dropdown-header strong {
   color: var(--color-navy-950);
 
   font-size: 12px;
 }
+
+/* Style .notification-dropdown-header span to set text appearance. */
 
 .notification-dropdown-header span {
   margin-top: 2px;
@@ -326,6 +388,8 @@
 
   font-size: 9px;
 }
+
+/* Style .notification-dropdown-header button to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 
 .notification-dropdown-header button {
   border: none;
@@ -340,11 +404,15 @@
   cursor: pointer;
 }
 
+/* Style .notification-list to control spacing and dimensions. */
+
 .notification-list {
   max-height: 390px;
 
   overflow-y: auto;
 }
+
+/* Style .notification-item to indicate the available pointer interaction, arrange its contents, style the surface and boundaries. */
 
 .notification-item {
   width: 100%;
@@ -367,21 +435,31 @@
   cursor: pointer;
 }
 
+/* Style .notification-item:last-child to control spacing and dimensions. */
+
 .notification-item:last-child {
   border-bottom: none;
 }
+
+/* Style .notification-item:hover to style the surface and boundaries. */
 
 .notification-item:hover {
   background: #f7fafc;
 }
 
+/* Style .notification-item.unread to style the surface and boundaries. */
+
 .notification-item.unread {
   background: #f3f8fd;
 }
 
+/* Style .notification-item.unread:hover to style the surface and boundaries. */
+
 .notification-item.unread:hover {
   background: #edf5fc;
 }
+
+/* Style .notification-item-icon to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .notification-item-icon {
   width: 34px;
@@ -399,11 +477,15 @@
   color: var(--color-blue-700);
 }
 
+/* Style .notification-item-content to control spacing and dimensions. */
+
 .notification-item-content {
   min-width: 0;
 
   flex: 1;
 }
+
+/* Style .notification-item-title to arrange its contents. */
 
 .notification-item-title {
   display: flex;
@@ -413,11 +495,15 @@
   gap: 8px;
 }
 
+/* Style .notification-item-title strong to set text appearance. */
+
 .notification-item-title strong {
   color: var(--color-navy-950);
 
   font-size: 11px;
 }
+
+/* Style .notification-item-title i to style the surface and boundaries. */
 
 .notification-item-title i {
   width: 7px;
@@ -430,6 +516,8 @@
   background: var(--color-blue-700);
 }
 
+/* Style .notification-item p to set text appearance. */
+
 .notification-item p {
   margin: 4px 0 0;
 
@@ -438,6 +526,8 @@
   font-size: 9px;
   line-height: 1.45;
 }
+
+/* Style .notification-item small to arrange its contents, set text appearance. */
 
 .notification-item small {
   display: block;
@@ -449,6 +539,8 @@
   font-size: 8px;
 }
 
+/* Style .notification-empty to set text appearance. */
+
 .notification-empty {
   padding: 32px 18px;
 
@@ -459,7 +551,10 @@
   text-align: center;
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .notification-dropdown to control spacing and dimensions. */
   .notification-dropdown {
     width: min(360px, calc(100vw - 110px));
   }
@@ -470,6 +565,8 @@
     transform: rotate(360deg);
   }
 }
+
+/* Style .topbar-search-dropdown to control overflowing content, position it within the page, set text appearance. */
 
 .topbar-search-dropdown {
   position: absolute;
@@ -497,6 +594,8 @@
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.14);
 }
 
+/* Style .topbar-search-dropdown-header to arrange its contents, style the surface and boundaries. */
+
 .topbar-search-dropdown-header {
   display: flex;
   align-items: center;
@@ -511,11 +610,15 @@
   background: #f8fafc;
 }
 
+/* Style .topbar-search-dropdown-header span to set text appearance. */
+
 .topbar-search-dropdown-header span {
   font-size: 11px;
 
   font-weight: 700;
 }
+
+/* Style .topbar-search-dropdown-header small to set text appearance. */
 
 .topbar-search-dropdown-header small {
   color: var(--color-text-muted);
@@ -523,11 +626,15 @@
   font-size: 9px;
 }
 
+/* Style .topbar-search-results to control spacing and dimensions. */
+
 .topbar-search-results {
   max-height: 380px;
 
   overflow-y: auto;
 }
+
+/* Style .topbar-search-result to indicate the available pointer interaction, arrange its contents, style the surface and boundaries. */
 
 .topbar-search-result {
   width: 100%;
@@ -550,9 +657,13 @@
   cursor: pointer;
 }
 
+/* Style .topbar-search-result:last-child to control spacing and dimensions. */
+
 .topbar-search-result:last-child {
   border-bottom: none;
 }
+
+/* Style .topbar-search-result:hover, .topbar-search-result:focus to make keyboard focus visible, style the surface and boundaries. */
 
 .topbar-search-result:hover,
 .topbar-search-result:focus {
@@ -560,6 +671,8 @@
 
   outline: none;
 }
+
+/* Style .topbar-search-result-icon to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .topbar-search-result-icon {
   width: 34px;
@@ -577,11 +690,15 @@
   color: var(--color-blue-700);
 }
 
+/* Style .topbar-search-result-content to control spacing and dimensions. */
+
 .topbar-search-result-content {
   min-width: 0;
 
   flex: 1;
 }
+
+/* Style .topbar-search-result-title to arrange its contents. */
 
 .topbar-search-result-title {
   display: flex;
@@ -590,6 +707,8 @@
 
   gap: 12px;
 }
+
+/* Style .topbar-search-result-title strong to control overflowing content, set text appearance. */
 
 .topbar-search-result-title strong {
   overflow: hidden;
@@ -602,6 +721,8 @@
 
   white-space: nowrap;
 }
+
+/* Style .topbar-search-result-title > span to set text appearance, style the surface and boundaries. */
 
 .topbar-search-result-title > span {
   flex-shrink: 0;
@@ -617,6 +738,8 @@
   font-size: 8px;
   font-weight: 600;
 }
+
+/* Style .topbar-search-result-content > small to control overflowing content, arrange its contents, set text appearance. */
 
 .topbar-search-result-content > small {
   display: block;
@@ -634,6 +757,8 @@
   white-space: nowrap;
 }
 
+/* Style .topbar-search-result-meta to arrange its contents. */
+
 .topbar-search-result-meta {
   display: flex;
   align-items: center;
@@ -642,6 +767,8 @@
 
   margin-top: 6px;
 }
+
+/* Style .topbar-search-result-meta span to set text appearance, style the surface and boundaries. */
 
 .topbar-search-result-meta span {
   padding: 2px 5px;
@@ -656,6 +783,8 @@
   font-weight: 600;
 }
 
+/* Style .topbar-search-empty to set text appearance. */
+
 .topbar-search-empty {
   padding: 28px 16px;
 
@@ -666,12 +795,16 @@
   text-align: center;
 }
 
+/* Style .topbar-actions to arrange its contents. */
+
 .topbar-actions {
   display: flex;
   align-items: center;
 
   gap: 14px;
 }
+
+/* Style .topbar-icon-button, .topbar-profile to set text appearance, style the surface and boundaries. */
 
 .topbar-icon-button,
 .topbar-profile {
@@ -681,6 +814,8 @@
   color: var(--color-navy-950);
 }
 
+/* Style .topbar-icon-button to arrange its contents. */
+
 .topbar-icon-button {
   width: 36px;
   height: 36px;
@@ -689,12 +824,16 @@
   place-items: center;
 }
 
+/* Style .topbar-profile to arrange its contents. */
+
 .topbar-profile {
   display: flex;
   align-items: center;
 
   gap: 8px;
 }
+
+/* Style .topbar-avatar to set text appearance. */
 
 .topbar-avatar {
   width: 31px;
@@ -703,9 +842,13 @@
   font-size: 12px;
 }
 
+/* Style .admin-content to control spacing and dimensions. */
+
 .admin-content {
   padding: 28px;
 }
+
+/* Style .admin-layout .admin-content > section, .admin-layout .dashboard-panel, .admin-layout .table-wrapper to control spacing and dimensions. */
 
 .admin-layout .admin-content > section,
 .admin-layout .dashboard-panel,
@@ -720,6 +863,8 @@
   letter-spacing: -0.65px;
   line-height: 1.3;
 }
+
+/* Style .admin-layout .admin-content > section > header > div > p, .admin-layout .admin-content > section > header > p to set text appearance. */
 
 .admin-layout .admin-content > section > header > div > p,
 .admin-layout .admin-content > section > header > p {
@@ -748,6 +893,8 @@
   background: #ffffff;
 }
 
+/* Style .admin-layout .admin-content table th to set text appearance, style the surface and boundaries. */
+
 .admin-layout .admin-content table th {
   padding: 14px 16px;
   background: #f6f8fb;
@@ -757,6 +904,8 @@
   border-bottom: 1px solid #edf0f5;
 }
 
+/* Style .admin-layout .admin-content table td to set text appearance. */
+
 .admin-layout .admin-content table td {
   padding: 16px;
   color: #425368;
@@ -764,13 +913,19 @@
   font-size: 12px;
 }
 
+/* Style .admin-layout .admin-content tbody tr:last-child td to control spacing and dimensions. */
+
 .admin-layout .admin-content tbody tr:last-child td {
   border-bottom: 0;
 }
 
+/* Style .admin-layout .admin-content tbody tr:hover to style the surface and boundaries. */
+
 .admin-layout .admin-content tbody tr:hover {
   background: #f8fafd;
 }
+
+/* Style .admin-layout :is(.primary-button, .availability-button, .settings-save-button) to style the surface and boundaries. */
 
 .admin-layout
   :is(.primary-button, .availability-button, .settings-save-button) {
@@ -779,13 +934,19 @@
   box-shadow: 0 2px 5px rgba(13, 55, 89, 0.1);
 }
 
+/* Style .admin-layout :is(.primary-button, .secondary-button, .room-filter) to set text appearance. */
+
 .admin-layout :is(.primary-button, .secondary-button, .room-filter) {
   font-size: 12px;
 }
 
+/* Style .admin-layout .room-filter.active to style the surface and boundaries. */
+
 .admin-layout .room-filter.active {
   background: #123f65;
 }
+
+/* Style .admin-layout :is( .guest-search, .payments-search, .transactions-search, .user-management-search ) to style the surface and boundaries. */
 
 .admin-layout
   :is(
@@ -799,26 +960,38 @@
   border-radius: 7px;
 }
 
+/* Style .admin-layout :is(.room-filter-bar, .reservation-filters) to control spacing and dimensions. */
+
 .admin-layout :is(.room-filter-bar, .reservation-filters) {
   flex-wrap: wrap;
 }
+
+/* Style .admin-layout .room-image to control spacing and dimensions. */
 
 .admin-layout .room-image {
   height: 190px;
 }
 
+/* Style .admin-layout .room-card-body to control spacing and dimensions. */
+
 .admin-layout .room-card-body {
   padding: 17px;
 }
+
+/* Style .admin-layout .room-card-heading h3 to set text appearance. */
 
 .admin-layout .room-card-heading h3 {
   font-size: 15px;
 }
 
+/* Style .admin-layout .room-price to set text appearance. */
+
 .admin-layout .room-price {
   color: #21384c;
   font-size: 16px;
 }
+
+/* Style .admin-layout .room-status to arrange its contents, set text appearance. */
 
 .admin-layout .room-status {
   display: inline-flex;
@@ -826,6 +999,8 @@
   gap: 5px;
   font-size: 10px;
 }
+
+/* Style .admin-layout .room-status::before to style the surface and boundaries. */
 
 .admin-layout .room-status::before {
   content: '';
@@ -835,16 +1010,23 @@
   background: currentColor;
 }
 
+/* Style .admin-layout :is(button, a, input, select, textarea):focus-visible to make keyboard focus visible. */
+
 .admin-layout :is(button, a, input, select, textarea):focus-visible {
   outline: 2px solid #3986c0;
   outline-offset: 3px;
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .admin-layout .topbar to control spacing and dimensions. */
   .admin-layout .topbar {
     padding: 0 12px;
     gap: 10px;
   }
+
+  /* Style .admin-layout .topbar-search to control spacing and dimensions. */
 
   .admin-layout .topbar-search {
     min-width: 0;
@@ -852,33 +1034,48 @@
     padding: 0 8px;
   }
 
+  /* Style .admin-layout .topbar-actions to control spacing and dimensions. */
+
   .admin-layout .topbar-actions {
     gap: 4px;
     flex-shrink: 0;
   }
+
+  /* Style .admin-layout .topbar-profile to set text appearance. */
 
   .admin-layout .topbar-profile {
     gap: 4px;
     font-size: 11px;
   }
 
+  /* Style .admin-layout .admin-content to control spacing and dimensions. */
+
   .admin-layout .admin-content {
     padding: 20px 14px;
   }
 
+  /* Style .admin-layout .admin-content h1 to set text appearance. */
+
   .admin-layout .admin-content h1 {
     font-size: 22px;
   }
+
+  /* Style .admin-layout .admin-content > section > header to control spacing and dimensions. */
 
   .admin-layout .admin-content > section > header {
     flex-wrap: wrap;
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 900px). */
+
 @media (max-width: 900px) {
+  /* Style .admin-layout to define reusable design values. */
   .admin-layout {
     --sidebar-width: 82px;
   }
+
+  /* Style .sidebar-brand div, .sidebar-user > div:last-child, .sidebar-link span, .sidebar-logout to arrange its contents. */
 
   .sidebar-brand div,
   .sidebar-user > div:last-child,
@@ -886,6 +1083,8 @@
   .sidebar-logout {
     display: none;
   }
+
+  /* Style .sidebar-brand, .sidebar-user, .sidebar-link to control spacing and dimensions. */
 
   .sidebar-brand,
   .sidebar-user,
@@ -902,9 +1101,13 @@
   position: relative;
 }
 
+/* Style .topbar-profile to indicate the available pointer interaction. */
+
 .topbar-profile {
   cursor: pointer;
 }
+
+/* Style .profile-dropdown to control overflowing content, position it within the page, style the surface and boundaries. */
 
 .profile-dropdown {
   position: absolute;
@@ -928,6 +1131,8 @@
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
 }
 
+/* Style .profile-dropdown-user to arrange its contents. */
+
 .profile-dropdown-user {
   display: flex;
   flex-direction: column;
@@ -937,11 +1142,15 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Style .profile-dropdown-user strong to set text appearance. */
+
 .profile-dropdown-user strong {
   color: var(--color-navy-950);
 
   font-size: 12px;
 }
+
+/* Style .profile-dropdown-user span to control overflowing content, set text appearance. */
 
 .profile-dropdown-user span {
   overflow: hidden;
@@ -957,6 +1166,8 @@
   white-space: nowrap;
 }
 
+/* Style .profile-dropdown-user small to set text appearance. */
+
 .profile-dropdown-user small {
   margin-top: 7px;
 
@@ -966,12 +1177,16 @@
   font-weight: 700;
 }
 
+/* Style .profile-dropdown-actions to arrange its contents. */
+
 .profile-dropdown-actions {
   display: flex;
   flex-direction: column;
 
   padding: 6px;
 }
+
+/* Style .profile-dropdown-actions button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .profile-dropdown-actions button {
   width: 100%;
@@ -999,15 +1214,22 @@
   cursor: pointer;
 }
 
+/* Style .profile-dropdown-actions button:hover to style the surface and boundaries. */
+
 .profile-dropdown-actions button:hover {
   background: #f4f8fb;
 }
+
+/* Style .profile-dropdown-actions .profile-dropdown-signout to set text appearance. */
 
 .profile-dropdown-actions .profile-dropdown-signout {
   color: #c03f3f;
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .profile-dropdown to control spacing and dimensions. */
   .profile-dropdown {
     width: min(240px, calc(100vw - var(--sidebar-width) - 28px));
   }

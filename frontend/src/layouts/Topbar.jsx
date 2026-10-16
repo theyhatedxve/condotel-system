@@ -42,6 +42,7 @@ const resultIcons = {
   TRANSACTION: WalletCards,
 };
 
+// Convert a search-result entity type into its display label.
 function formatType(type) {
   switch (type) {
     case 'GUEST':
@@ -64,6 +65,7 @@ function formatType(type) {
   }
 }
 
+// Format a notification timestamp for the administration menu.
 function formatNotificationTime(value) {
   if (!value) {
     return '—';
@@ -83,7 +85,10 @@ function formatNotificationTime(value) {
   }).format(date);
 }
 
+// Provide global search, account actions, and notification menus for the administration
+// layout.
 export default function Topbar() {
+  // Track local state and read any session or route values needed by this component.
   const { user, logout } = useAuth();
 
   const navigate = useNavigate();
@@ -112,6 +117,7 @@ export default function Topbar() {
   // from replacing newer results or repopulating a cleared search.
   const requestIdRef = useRef(0);
 
+  // Clear any queued search debounce when the top bar unmounts.
   useEffect(() => {
     return () => {
       if (debounceRef.current) {
@@ -120,9 +126,11 @@ export default function Topbar() {
     };
   }, []);
 
+  // Load the unread notification badge and ignore a result after the top bar unmounts.
   useEffect(() => {
     let cancelled = false;
 
+    // Fetch the unread-notification badge count while ignoring a result after unmount.
     async function loadUnreadCount() {
       try {
         const result = await getUnreadNotificationCount();
@@ -147,6 +155,7 @@ export default function Topbar() {
     };
   }, []);
 
+  // Load notifications for the administration dropdown and update its loading state.
   async function loadNotifications() {
     setNotificationsLoading(true);
 
@@ -165,6 +174,7 @@ export default function Topbar() {
     }
   }
 
+  // Toggle the notification menu and load its records when opening.
   async function handleNotificationBell() {
     const nextOpen = !notificationsOpen;
 
@@ -178,6 +188,7 @@ export default function Topbar() {
     }
   }
 
+  // Mark the notification read and navigate to its associated system page.
   async function handleNotificationClick(notification) {
     try {
       if (!notification.isRead) {
@@ -207,6 +218,7 @@ export default function Topbar() {
     }
   }
 
+  // Mark all notifications read and refresh the menu/badge state.
   async function handleMarkAllRead() {
     try {
       await markAllNotificationsRead();
@@ -225,6 +237,7 @@ export default function Topbar() {
     }
   }
 
+  // Update global search text and debounce the authorized search request.
   function handleSearchChange(event) {
     const value = event.target.value;
 
@@ -281,6 +294,7 @@ export default function Topbar() {
     }, 300);
   }
 
+  // Navigate to the selected search result and close the results menu.
   function handleResultClick(result) {
     setQuery('');
     setResults([]);
@@ -289,12 +303,14 @@ export default function Topbar() {
     navigate(result.path);
   }
 
+  // Close global search results when the user presses Escape.
   function handleSearchKeyDown(event) {
     if (event.key === 'Escape') {
       setSearchOpen(false);
     }
   }
 
+  // Toggle the account menu while closing conflicting top-bar menus.
   function handleProfileToggle() {
     setProfileOpen((current) => !current);
 
@@ -303,6 +319,7 @@ export default function Topbar() {
     setNotificationsOpen(false);
   }
 
+  // Clear the session and return the user to the existing sign-out destination.
   function handleSignOut() {
     setProfileOpen(false);
 
@@ -314,6 +331,7 @@ export default function Topbar() {
   }
 
   return (
+    /* Show this section's heading, context, and available actions. */
     <header className="topbar">
       <div
         className="topbar-search"

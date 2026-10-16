@@ -31,10 +31,12 @@ import { RolesGuard } from './guards/roles.guard';
 
 import type { AuthenticatedUser } from './interfaces/authenticated-user.interface';
 
+// Expose auth HTTP routes with the declared request validation and access guards.
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  // Reject duplicate identifiers, hash the password, and create a customer account.
   @Post('register')
   register(
     @Body()
@@ -43,6 +45,8 @@ export class AuthController {
     return this.authService.register(dto);
   }
 
+  // Verify an active account and password, record login time, and return its JWT and
+  // public profile.
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(
@@ -52,6 +56,7 @@ export class AuthController {
     return this.authService.login(dto);
   }
 
+  // Return the account attached to the verified request.
   @Get('me')
   @UseGuards(JwtAuthGuard)
   getCurrentUser(
@@ -63,6 +68,7 @@ export class AuthController {
     };
   }
 
+  // Update the signed-in account through the validated user service.
   @Patch('profile')
   @UseGuards(JwtAuthGuard)
   updateProfile(
@@ -75,6 +81,8 @@ export class AuthController {
     return this.authService.updateProfile(user.id, dto);
   }
 
+  // Verify the current password before storing a new hash and clearing the
+  // temporary-password requirement.
   @Post('change-password')
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
@@ -88,6 +96,7 @@ export class AuthController {
     return this.authService.changePassword(user.id, dto);
   }
 
+  // Expose a small endpoint for checking staff/admin authorization.
   @Get('staff-test')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.STAFF, UserRole.ADMIN)
@@ -102,6 +111,7 @@ export class AuthController {
     };
   }
 
+  // Expose a small endpoint for checking administrator authorization.
   @Get('admin-test')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)

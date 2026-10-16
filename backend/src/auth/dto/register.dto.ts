@@ -9,13 +9,16 @@ import {
   MinLength,
 } from 'class-validator';
 
+// Define the validated register input accepted by the API.
 export class RegisterDto {
+  // Validate and normalize email using the rules declared below.
   @IsEmail()
   @Transform(({ value }) =>
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   email: string;
 
+  // Validate and normalize username using the rules declared below.
   @IsOptional()
   @IsString()
   @MinLength(3)
@@ -35,23 +38,27 @@ export class RegisterDto {
   })
   username?: string;
 
+  // Validate password using the rules declared below.
   @IsString()
   @MinLength(8)
   @MaxLength(128)
   password: string;
 
+  // Validate and normalize first name using the rules declared below.
   @IsString()
   @MinLength(1)
   @MaxLength(100)
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   firstName: string;
 
+  // Validate and normalize last name using the rules declared below.
   @IsString()
   @MinLength(1)
   @MaxLength(100)
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   lastName: string;
 
+  // Validate and normalize phone using the rules declared below.
   @IsOptional()
   @IsString()
   @MaxLength(30)

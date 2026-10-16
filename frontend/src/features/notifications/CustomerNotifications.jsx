@@ -6,10 +6,14 @@ import {
   markAllNotificationsRead,
 } from './notificationApi';
 
+// Load the customer's own notifications and offer read-state and booking-navigation
+// actions.
 export default function CustomerNotifications() {
-  const [items, setItems] = useState(null),
-    [error, setError] = useState(''),
-    [busy, setBusy] = useState(false);
+  // Track local state and read any session or route values needed by this component.
+  const [items, setItems] = useState(null);
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  // Load owned notifications and ignore the request result after leaving the page.
   useEffect(() => {
     let cancelled = false;
     getNotifications()
@@ -23,6 +27,7 @@ export default function CustomerNotifications() {
       cancelled = true;
     };
   }, []);
+  // Mark one or all customer notifications read and update their local read state.
   async function markRead(item) {
     if (busy) return;
     setBusy(true);
@@ -42,6 +47,7 @@ export default function CustomerNotifications() {
     }
   }
   return (
+    /* Display the "Notifications" section and its related actions. */
     <section
       className="profile-card customer-notifications"
       aria-label="Your notifications"

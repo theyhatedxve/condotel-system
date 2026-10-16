@@ -25,8 +25,10 @@ import BookingSummary from './BookingSummary';
 import BookingSteps from './BookingSteps';
 import ReservationNotesEditor from '../reservations/ReservationNotesEditor';
 
+// Render the shared icon, title, and explanatory text for a booking section.
 function SectionHeading({ icon: Icon, title, description }) {
   return (
+    /* Show this section's heading, context, and available actions. */
     <header className="booking-section-heading">
       <span>
         <Icon size={22} />
@@ -39,6 +41,8 @@ function SectionHeading({ icon: Icon, title, description }) {
   );
 }
 
+// Collect guest/stay information, review availability, and create or resume the
+// reservation before payment.
 export default function BookingForm({
   room,
   reservation: restoredReservation,
@@ -47,6 +51,7 @@ export default function BookingForm({
   paymentError,
   onRefreshPayment,
 }) {
+  // Track local state and read any session or route values needed by this component.
   const navigate = useNavigate();
   const [stay, setStay] = useState(() =>
     initialStay(params, restoredReservation, room.capacity),
@@ -62,11 +67,13 @@ export default function BookingForm({
   const payable = reservation?.status === 'PENDING';
   const totalGuests = Number(stay.adults) + Number(stay.children);
 
+  // Update one stay field and clear the previous booking error.
   function update(field, value) {
     setStay((current) => ({ ...current, [field]: value }));
     setError('');
   }
 
+  // Return from booking review to editing and focus the check-in input.
   function editStay() {
     setReviewing(false);
     requestAnimationFrame(() =>
@@ -74,6 +81,8 @@ export default function BookingForm({
     );
   }
 
+  // Validate the stay, review room availability, then create or resume the saved
+  // reservation and continue to payment.
   async function submit(event) {
     event.preventDefault();
     if (busyRef.current || (locked && !payable)) return;
@@ -181,9 +190,11 @@ export default function BookingForm({
   return (
     <>
       <BookingSteps activeStep={activeStep} />
+      {/* Collect the booking form fields and submit them through the handler above. */}
       <form className="booking-layout" onSubmit={submit}>
         <div className="booking-fields">
           {reservation && (
+            /* Group the related content and actions into a distinct page section. */
             <section className="booking-panel">
               <ReservationNotesEditor
                 reservation={reservation}
@@ -192,6 +203,7 @@ export default function BookingForm({
             </section>
           )}
           {activeStep === 4 && (
+            /* Display the "Booking Confirmed" section and its related actions. */
             <section className="booking-panel booking-confirmed" role="status">
               <CheckCircle2 size={36} />
               <h2>Booking Confirmed</h2>
@@ -205,6 +217,7 @@ export default function BookingForm({
               <strong>{reservation.referenceNo}</strong>
             </section>
           )}
+          {/* Display the "Guest Information" section and its related actions. */}
           <section className="booking-panel">
             <SectionHeading
               icon={UserRound}
@@ -250,6 +263,7 @@ export default function BookingForm({
             </div>
           </section>
 
+          {/* Display the "Stay Details" section and its related actions. */}
           <section className="booking-panel">
             <SectionHeading
               icon={CalendarDays}
@@ -319,6 +333,7 @@ export default function BookingForm({
           </section>
 
           {!locked && (
+            /* Display the "Additional Information" section and its related actions. */
             <section className="booking-panel">
               <SectionHeading
                 icon={Info}
@@ -348,6 +363,7 @@ export default function BookingForm({
             </section>
           )}
 
+          {/* Display the "Payment Method" section and its related actions. */}
           <section className="booking-panel">
             <SectionHeading
               icon={CreditCard}
@@ -369,6 +385,7 @@ export default function BookingForm({
             </p>
           </section>
 
+          {/* Display the "Reservation" section and its related actions. */}
           <section
             className="booking-panel booking-action-panel"
             aria-label="Review and confirm"

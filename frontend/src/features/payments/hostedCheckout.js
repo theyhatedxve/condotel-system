@@ -2,6 +2,7 @@ import { createCheckout, syncReservationPayment } from './paymentApi';
 
 // Keep the merchant page available when the provider's test page has no return link.
 export async function openHostedCheckout(reservationId, { signal, onWaiting }) {
+  // Open during the click event so browser popup blocking is detected up front.
   const paymentWindow = window.open(
     'about:blank',
     '_blank',
@@ -11,6 +12,7 @@ export async function openHostedCheckout(reservationId, { signal, onWaiting }) {
     throw new Error(
       'Allow the payment window in your browser, then try again.',
     );
+  // Prevent the external page from navigating the merchant's opener window.
   paymentWindow.opener = null;
   try {
     const checkout = await createCheckout(reservationId);
@@ -19,10 +21,12 @@ export async function openHostedCheckout(reservationId, { signal, onWaiting }) {
     if (signal.aborted) return null;
     paymentWindow.location.replace(checkout.checkoutUrl);
     onWaiting();
+    // Bound polling while keeping the merchant page available for a safe return.
     const deadline = Date.now() + 15 * 60 * 1000;
     while (!signal.aborted && Date.now() < deadline) {
       let outcome;
       try {
+        // Trust provider verification from the backend, never text on the popup.
         const verified = await syncReservationPayment(reservationId, signal);
         if (verified.payments.some((payment) => payment.status === 'PAID'))
           outcome = 'success';
@@ -37,11 +41,14 @@ export async function openHostedCheckout(reservationId, { signal, onWaiting }) {
         // Network/provider errors do not prove failure or payment.
       }
       if (signal.aborted) return null;
+      // Closing the window returns through verification; it does not prove failure.
       if (outcome || paymentWindow.closed) {
         paymentWindow.close();
         return outcome || 'cancelled';
       }
       await new Promise((resolve) => {
+        // Clear the polling delay and its abort listener before resuming or stopping the
+        // checkout loop.
         const finish = () => {
           clearTimeout(timer);
           signal.removeEventListener('abort', finish);

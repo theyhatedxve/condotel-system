@@ -15,6 +15,7 @@ import type {
   PaymongoWebhookEvent,
 } from './paymongo.interface';
 
+// Describe the create checkout input data shared by the surrounding code.
 interface CreateCheckoutInput {
   reservationId: string;
 
@@ -35,6 +36,8 @@ export class CheckoutRejectedException extends BadGatewayException {
   }
 }
 
+// Implement payments operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class PaymongoService {
   private readonly secretKey: string;
@@ -76,12 +79,16 @@ export class PaymongoService {
       .filter(Boolean);
   }
 
+  // Encode the server secret for PayMongo Basic authentication; never send this header
+  // to the frontend.
   private getAuthorizationHeader() {
     const credentials = Buffer.from(`${this.secretKey}:`).toString('base64');
 
     return `Basic ${credentials}`;
   }
 
+  // Request a hosted checkout using server pricing and reject unsupported responses or
+  // unsafe checkout URLs.
   async createCheckoutSession(
     input: CreateCheckoutInput,
   ): Promise<PaymongoCheckoutSession> {
@@ -173,6 +180,8 @@ export class PaymongoService {
     return result;
   }
 
+  // Retrieve the exact stored checkout session using server authentication and a bounded
+  // request timeout.
   async retrieveCheckoutSession(
     checkoutSessionId: string,
   ): Promise<PaymongoCheckoutSessionResource> {
@@ -197,6 +206,7 @@ export class PaymongoService {
     return result.data;
   }
 
+  // Ask PayMongo to expire a checkout and reject an unsuccessful provider response.
   async expireCheckoutSession(checkoutSessionId: string) {
     const response = await fetch(
       `https://api.paymongo.com/v1/checkout_sessions/${checkoutSessionId}/expire`,
@@ -220,6 +230,7 @@ export class PaymongoService {
     }
   }
 
+  // Verify webhook mode, timestamp, and HMAC against the original request bytes.
   verifyWebhookSignature(rawBody: Buffer, signatureHeader?: string) {
     if (!this.webhookSecret) {
       throw new UnauthorizedException(

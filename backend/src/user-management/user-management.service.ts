@@ -1,7 +1,5 @@
-import {
-  PrivateDataService,
-  contactSelect,
-} from '../security/private-data.service';
+import { PrivateDataService } from '../security/private-data.service';
+import { publicUserSelect } from '../users/users.service';
 import {
   BadRequestException,
   ConflictException,
@@ -25,26 +23,10 @@ import { UpdateManagedUserDto } from './update-managed-user.dto';
 
 import { UserManagementQueryDto } from './user-management-query.dto';
 
-const managedUserSelect = {
-  id: true,
+const managedUserSelect = publicUserSelect;
 
-  ...contactSelect,
-  username: true,
-
-  firstName: true,
-  lastName: true,
-
-  role: true,
-  status: true,
-
-  mustChangePassword: true,
-
-  lastLoginAt: true,
-
-  createdAt: true,
-  updatedAt: true,
-} as const;
-
+// Implement user management operations using the injected dependencies and existing
+// business rules.
 @Injectable()
 export class UserManagementService {
   constructor(
@@ -52,6 +34,8 @@ export class UserManagementService {
     private readonly privacy: PrivateDataService,
   ) {}
 
+  // Prepare encrypted account fields and a hashed temporary password for account
+  // creation/import.
   private async creationData(dto: CreateManagedUserDto) {
     if (!dto.firstName.trim() || !dto.lastName.trim())
       throw new BadRequestException('Account name is required.');
@@ -70,14 +54,20 @@ export class UserManagementService {
     };
   }
 
+  // Count all users by role and suspended status independently of list filters or
+  // pagination.
   async summary() {
-    const [totalUsers,totalStaff,totalCustomers,totalSuspended] = await Promise.all([
-      this.prisma.user.count(),this.prisma.user.count({where:{role:'STAFF'}}),
-      this.prisma.user.count({where:{role:'CUSTOMER'}}),this.prisma.user.count({where:{status:'SUSPENDED'}}),
-    ]);
-    return {totalUsers,totalStaff,totalCustomers,totalSuspended};
+    const [totalUsers, totalStaff, totalCustomers, totalSuspended] =
+      await Promise.all([
+        this.prisma.user.count(),
+        this.prisma.user.count({ where: { role: 'STAFF' } }),
+        this.prisma.user.count({ where: { role: 'CUSTOMER' } }),
+        this.prisma.user.count({ where: { status: 'SUSPENDED' } }),
+      ]);
+    return { totalUsers, totalStaff, totalCustomers, totalSuspended };
   }
 
+  // Create an account and its audit entry in one database transaction.
   async create(dto: CreateManagedUserDto, admin: AuthenticatedUser) {
     const data = await this.creationData(dto);
     return this.prisma.$transaction(async (tx) => {
@@ -94,6 +84,8 @@ export class UserManagementService {
     });
   }
 
+  // Hash temporary passwords sequentially, then save the entire account batch and audit
+  // entry atomically.
   async importUsers(users: CreateManagedUserDto[], admin: AuthenticatedUser) {
     // Sequential Argon2 work bounds memory. The database batch is all-or-nothing.
     const records: Awaited<
@@ -116,6 +108,7 @@ export class UserManagementService {
     });
   }
 
+  // List public account fields with role/status/search filters and optional pagination.
   async findAll(query: UserManagementQueryDto) {
     const search = query.search?.trim();
 
@@ -161,6 +154,7 @@ export class UserManagementService {
     return rows.map((row) => this.privacy.response(row));
   }
 
+  // Load one managed account using the public field selection.
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -177,6 +171,8 @@ export class UserManagementService {
     return this.privacy.response(user);
   }
 
+  // Enforce administrator/self-management safeguards, update validated account fields,
+  // and record an audit entry.
   async update(
     id: string,
     dto: UpdateManagedUserDto,
@@ -345,6 +341,8 @@ export class UserManagementService {
     });
   }
 
+  // Apply password-reset restrictions and save a temporary password hash with its audit
+  // entry.
   async resetPassword(
     id: string,
     dto: ResetUserPasswordDto,

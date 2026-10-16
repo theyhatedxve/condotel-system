@@ -2,10 +2,15 @@ import { useState } from 'react';
 import apiClient from '../../services/apiClient';
 import './reservation-notes.css';
 
+// Edit special requests for the selected reservation using the existing authorized
+// endpoint.
 export default function ReservationNotesEditor({ reservation, onSaved }) {
+  // Track local state and read any session or route values needed by this component.
   const [notes, setNotes] = useState(reservation.specialRequests || '');
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
+  // Submit edited reservation notes, refresh the parent record, and show any validation
+  // failure.
   async function save(event) {
     event.preventDefault();
     if (busy) return;

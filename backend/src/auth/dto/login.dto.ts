@@ -2,7 +2,9 @@ import { Transform } from 'class-transformer';
 
 import { IsString, MaxLength, MinLength } from 'class-validator';
 
+// Define the validated login input accepted by the API.
 export class LoginDto {
+  // Validate and normalize identifier using the rules declared below.
   @IsString()
   @MinLength(1)
   @MaxLength(255)
@@ -11,6 +13,7 @@ export class LoginDto {
   )
   identifier: string;
 
+  // Validate password using the rules declared below.
   @IsString()
   @MinLength(1)
   @MaxLength(128)

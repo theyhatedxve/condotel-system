@@ -30,6 +30,7 @@ const BLOCKING_STATUSES = [
   ReservationStatus.CONFIRMED,
   ReservationStatus.CHECKED_IN,
 ];
+const MILLISECONDS_PER_DAY = 86400000;
 const relations = {
   guest: {
     select: { id: true, firstName: true, lastName: true, ...contactSelect },
@@ -38,6 +39,8 @@ const relations = {
   payments: { select: { id: true, status: true, amountCentavos: true } },
 } as const;
 
+// Implement reservations operations using the injected dependencies and existing
+// business rules.
 @Injectable()
 export class ReservationsService {
   constructor(
@@ -47,14 +50,17 @@ export class ReservationsService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
+  // Validate real calendar dates and require a stay of at least one whole night.
   private parseDates(checkInValue: string, checkOutValue: string) {
-    const checkIn = new Date(checkInValue),
-      checkOut = new Date(checkOutValue);
+    const checkIn = new Date(checkInValue);
+    const checkOut = new Date(checkOutValue);
     if (
       !Number.isFinite(checkIn.getTime()) ||
       !Number.isFinite(checkOut.getTime()) ||
       checkOut <= checkIn ||
-      !Number.isInteger((checkOut.getTime() - checkIn.getTime()) / 86400000) ||
+      !Number.isInteger(
+        (checkOut.getTime() - checkIn.getTime()) / MILLISECONDS_PER_DAY,
+      ) ||
       !checkInValue.startsWith(checkIn.toISOString().slice(0, 10)) ||
       !checkOutValue.startsWith(checkOut.toISOString().slice(0, 10))
     ) {
@@ -64,6 +70,7 @@ export class ReservationsService {
     }
     return { checkIn, checkOut };
   }
+  // Build the query for blocking reservations whose stay intersects these dates.
   private overlap(roomId: string, checkIn: Date, checkOut: Date) {
     return {
       roomId,
@@ -72,10 +79,13 @@ export class ReservationsService {
       checkOut: { gt: checkIn },
     };
   }
+  // Allow staff/admin access while limiting customers to their own reservation.
   private ensureAccess(guestId: string, user: AuthenticatedUser) {
     if (user.role === UserRole.CUSTOMER && guestId !== user.id)
       throw new ForbiddenException('You cannot access this reservation.');
   }
+  // Append the optional arrival note while preserving the original special-request
+  // value.
   private withArrival(notes: string | null, arrival?: string) {
     return arrival
       ? [notes, 'Estimated arrival: ' + arrival]
@@ -83,6 +93,7 @@ export class ReservationsService {
           .join('\n')
       : notes;
   }
+  // Find active rooms with sufficient capacity and no blocking reservation for the stay.
   async findAvailableRooms(dto: AvailabilityQueryDto) {
     const { checkIn, checkOut } = this.parseDates(dto.checkIn, dto.checkOut);
     return this.prisma.room.findMany({
@@ -101,9 +112,10 @@ export class ReservationsService {
       orderBy: { roomNumber: 'asc' },
     });
   }
+  // List reservations for management with optional status filtering and pagination.
   async findAll(query: ReservationQueryDto) {
     const rows = await this.prisma.reservation.findMany({
-      ...(query.page ? {take:50,skip:(query.page-1)*50} : {}),
+      ...(query.page ? { take: 50, skip: (query.page - 1) * 50 } : {}),
       where: {
         ...(query.status ? { status: query.status } : {}),
         ...(query.guestId ? { guestId: query.guestId } : {}),
@@ -114,6 +126,8 @@ export class ReservationsService {
     });
     return rows.map((row) => this.privacy.response(row));
   }
+  // Return only the signed-in customer's reservations with authorized private fields
+  // restored.
   async findMine(userId: string) {
     const rows = await this.prisma.reservation.findMany({
       where: { guestId: userId },
@@ -125,6 +139,8 @@ export class ReservationsService {
     });
     return rows.map((row) => this.privacy.response(row));
   }
+  // Load a reservation and its relations for internal operations; keep private fields
+  // encrypted.
   private async stored(id: string) {
     const row = await this.prisma.reservation.findUnique({
       where: { id },
@@ -133,11 +149,14 @@ export class ReservationsService {
     if (!row) throw new NotFoundException('Reservation not found.');
     return row;
   }
+  // Check ownership or staff access before returning a decrypted reservation response.
   async findOneAuthorized(id: string, user: AuthenticatedUser) {
     const row = await this.stored(id);
     this.ensureAccess(row.guestId, user);
     return this.privacy.response(row);
   }
+  // Validate the guest and stay, check availability atomically, calculate the server
+  // total, and save encrypted notes.
   async create(user: AuthenticatedUser, dto: CreateReservationDto) {
     const guestId = user.role === UserRole.CUSTOMER ? user.id : dto.guestId;
     if (!guestId) throw new BadRequestException('A guest is required.');
@@ -218,6 +237,8 @@ export class ReservationsService {
     });
     return this.privacy.response(row);
   }
+  // Authorize the caller and update only supplied notes/arrival information on an
+  // editable reservation.
   async updateNotes(
     id: string,
     user: AuthenticatedUser,
@@ -250,6 +271,8 @@ export class ReservationsService {
       );
     return this.findOneAuthorized(id, user);
   }
+  // Enforce allowed reservation transitions and verified payment before updating
+  // reservation/room status.
   async updateStatus(id: string, newStatus: ReservationStatus) {
     const row = await this.stored(id);
     if (newStatus === 'CANCELLED') return this.cancelStored(row);
@@ -301,6 +324,8 @@ export class ReservationsService {
     });
     return this.privacy.response(updated);
   }
+  // Verify that cancellation is safe, cancel unpaid checkout attempts, and release the
+  // reservation.
   private async cancelStored(
     row: Awaited<ReturnType<ReservationsService['stored']>>,
   ) {
@@ -343,6 +368,7 @@ export class ReservationsService {
     });
     return this.privacy.response(cancelled);
   }
+  // Authorize a cancellation request before applying the existing cancellation rules.
   async cancel(id: string, user: AuthenticatedUser) {
     const row = await this.stored(id);
     this.ensureAccess(row.guestId, user);

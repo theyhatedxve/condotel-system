@@ -6,6 +6,7 @@ import { GuestsController } from './guests.controller';
 
 import { GuestsService } from './guests.service';
 
+// Wire the guests controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

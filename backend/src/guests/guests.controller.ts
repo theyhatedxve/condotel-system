@@ -24,12 +24,15 @@ import { UpdateGuestDto } from './update-guest.dto';
 import { GuestsService } from './guests.service';
 import { GuestQueryDto } from './guest-query.dto';
 
+// Expose guests HTTP routes with the declared request validation and access guards.
 @Controller('guests')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.STAFF, UserRole.ADMIN)
 export class GuestsController {
   constructor(private readonly guestsService: GuestsService) {}
 
+  // List customer accounts with optional contact/name search, status filtering, and
+  // pagination.
   @Get()
   findAll(
     @Query()
@@ -38,11 +41,14 @@ export class GuestsController {
     return this.guestsService.findAll(query.search, query.page, query.status);
   }
 
+  // Load a customer account and decrypt the selected contact/profile fields.
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.guestsService.findOne(id);
   }
 
+  // Validate guest identifiers and create an encrypted customer profile with a temporary
+  // password.
   @Post()
   create(
     @Body()
@@ -51,6 +57,8 @@ export class GuestsController {
     return this.guestsService.create(dto);
   }
 
+  // Update an existing customer and its encrypted profile while preserving omitted
+  // fields.
   @Patch(':id')
   update(
     @Param('id') id: string,

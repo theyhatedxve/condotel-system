@@ -1,8 +1,12 @@
 @import './variables.css';
 
+/* Style * to keep padding and borders inside the declared dimensions. */
+
 * {
   box-sizing: border-box;
 }
+
+/* Style html, body, #root to control spacing and dimensions. */
 
 html,
 body,
@@ -10,6 +14,8 @@ body,
   min-height: 100%;
   margin: 0;
 }
+
+/* Style body to set text appearance, style the surface and boundaries. */
 
 body {
   min-width: 320px;
@@ -27,6 +33,8 @@ body {
   color: var(--color-text);
 }
 
+/* Style button, input, select, textarea to control spacing and dimensions. */
+
 button,
 input,
 select,
@@ -34,14 +42,20 @@ textarea {
   font: inherit;
 }
 
+/* Style button to indicate the available pointer interaction. */
+
 button {
   cursor: pointer;
 }
+
+/* Style a to set text appearance. */
 
 a {
   color: inherit;
   text-decoration: none;
 }
+
+/* Style .loading-screen to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .loading-screen {
   min-height: 100vh;
@@ -58,6 +72,8 @@ a {
 
   color: var(--color-text-muted);
 }
+
+/* Style .loading-spinner to style the surface and boundaries. */
 
 .loading-spinner {
   width: 38px;

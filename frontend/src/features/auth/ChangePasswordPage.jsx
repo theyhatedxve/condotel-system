@@ -10,6 +10,7 @@ import { useAuth } from './useAuth';
 
 import './profile.css';
 
+// Choose the existing customer or administration destination after authentication.
 function getHomeRoute(role) {
   if (role === 'ADMIN' || role === 'STAFF') {
     return '/admin/dashboard';
@@ -18,7 +19,9 @@ function getHomeRoute(role) {
   return '/rooms';
 }
 
+// Render the change password page with its loading, error, and record/form states.
 export default function ChangePasswordPage() {
+  // Track local state and read any session or route values needed by this component.
   const { user, refreshUser } = useAuth();
 
   const navigate = useNavigate();
@@ -31,6 +34,8 @@ export default function ChangePasswordPage() {
 
   const [saving, setSaving] = useState(false);
 
+  // Validate the new-password confirmation, change the password, and return to the
+  // account's home route.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -74,6 +79,7 @@ export default function ChangePasswordPage() {
 
   return (
     <main className="change-password-page">
+      {/* Collect the auth form fields and submit them through the handler above. */}
       <form className="change-password-card" onSubmit={handleSubmit}>
         <div className="change-password-icon">
           <KeyRound size={28} />

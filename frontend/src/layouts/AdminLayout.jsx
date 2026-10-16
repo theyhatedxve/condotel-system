@@ -6,6 +6,7 @@ import Topbar from '../layouts/Topbar';
 
 import './layout.css';
 
+// Combine administration navigation, top bar, and the selected management page.
 export default function AdminLayout() {
   return (
     <div className="admin-layout">

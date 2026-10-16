@@ -37,6 +37,7 @@ const filters = [
   },
 ];
 
+// Convert an API failure into a readable message, including validation-message arrays.
 function getErrorMessage(error, fallbackMessage) {
   const message = error.response?.data?.message;
 
@@ -47,7 +48,9 @@ function getErrorMessage(error, fallbackMessage) {
   return message || fallbackMessage;
 }
 
+// Render the rooms page with its loading, error, and record/form states.
 export default function RoomsPage() {
+  // Track local state and read any session or route values needed by this component.
   const { user } = useAuth();
 
   const [rooms, setRooms] = useState([]);
@@ -66,6 +69,7 @@ export default function RoomsPage() {
 
   const canManage = user?.role === 'ADMIN';
 
+  // Load rooms for the selected status and ignore a request completed after unmount.
   useEffect(() => {
     let cancelled = false;
 
@@ -96,6 +100,7 @@ export default function RoomsPage() {
     };
   }, [statusFilter]);
 
+  // Reload rooms with the current management status filter.
   async function refreshRooms() {
     setLoading(true);
 
@@ -111,6 +116,7 @@ export default function RoomsPage() {
     }
   }
 
+  // Select the management room status filter and refresh its loading state.
   function handleFilterChange(value) {
     if (value === statusFilter) {
       return;
@@ -120,16 +126,19 @@ export default function RoomsPage() {
     setStatusFilter(value);
   }
 
+  // Open the room form with the existing new-room defaults.
   function openCreateModal() {
     setSelectedRoom(null);
     setModalOpen(true);
   }
 
+  // Select the room to edit and open its form.
   function openEditModal(room) {
     setSelectedRoom(room);
     setModalOpen(true);
   }
 
+  // Close the management form and clear the selected record.
   function closeModal() {
     if (submitting) {
       return;
@@ -139,6 +148,7 @@ export default function RoomsPage() {
     setSelectedRoom(null);
   }
 
+  // Create or update a room using the selected form mode, then refresh the room list.
   async function handleSave(payload) {
     setSubmitting(true);
 
@@ -160,6 +170,7 @@ export default function RoomsPage() {
     }
   }
 
+  // Confirm room deactivation and refresh the room list after success.
   async function handleDeactivate(room) {
     const confirmed = window.confirm(`Deactivate Room ${room.roomNumber}?`);
 
@@ -176,6 +187,7 @@ export default function RoomsPage() {
     }
   }
 
+  // Restore the selected room and refresh the management list.
   async function handleReactivate(room) {
     try {
       await reactivateRoom(room.id);
@@ -187,7 +199,9 @@ export default function RoomsPage() {
   }
 
   return (
+    /* Display the "Room Management" section and its related actions. */
     <section className="rooms-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="rooms-page-header">
         <div>
           <h1>Room Management</h1>

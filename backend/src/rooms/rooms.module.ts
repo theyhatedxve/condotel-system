@@ -6,6 +6,7 @@ import { RoomsController } from './rooms.controller';
 
 import { RoomsService } from './rooms.service';
 
+// Wire the rooms controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

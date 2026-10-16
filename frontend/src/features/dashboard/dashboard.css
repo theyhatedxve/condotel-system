@@ -1,6 +1,10 @@
+/* Style .dashboard-header to control spacing and dimensions. */
+
 .dashboard-header {
   margin-bottom: 24px;
 }
+
+/* Style .dashboard-header h1 to set text appearance. */
 
 .dashboard-header h1 {
   margin: 0;
@@ -10,6 +14,8 @@
   color: var(--color-navy-950);
 }
 
+/* Style .dashboard-header p to set text appearance. */
+
 .dashboard-header p {
   margin: 7px 0 0;
 
@@ -17,6 +23,8 @@
 
   font-size: 14px;
 }
+
+/* Style .stat-grid to arrange its contents. */
 
 .stat-grid {
   display: grid;
@@ -27,6 +35,8 @@
 
   margin-bottom: 22px;
 }
+
+/* Style .stat-card to arrange its contents, position it within the page, set text appearance. */
 
 .stat-card {
   position: relative;
@@ -47,11 +57,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .stat-card > div to arrange its contents. */
+
 .stat-card > div {
   width: 100%;
   display: flex;
   flex-direction: column;
 }
+
+/* Style .stat-card strong to set text appearance. */
 
 .stat-card strong {
   margin-top: 12px;
@@ -62,6 +76,8 @@
   border-bottom: 4px solid var(--stat-accent);
 }
 
+/* Style .stat-card small to set text appearance. */
+
 .stat-card small {
   margin-top: 14px;
 
@@ -70,6 +86,8 @@
   color: var(--stat-accent);
   padding-right: 26px;
 }
+
+/* Style .stat-card svg to position it within the page, set text appearance. */
 
 .stat-card svg {
   position: absolute;
@@ -81,30 +99,42 @@
   opacity: 0.65;
 }
 
+/* Style .stat-card.blue to define reusable design values, style the surface and boundaries. */
+
 .stat-card.blue {
   --stat-accent: #337bc0;
   background: #ffffff;
 }
+
+/* Style .stat-card.green to define reusable design values, style the surface and boundaries. */
 
 .stat-card.green {
   --stat-accent: #15905e;
   background: #ffffff;
 }
 
+/* Style .stat-card.orange to define reusable design values, style the surface and boundaries. */
+
 .stat-card.orange {
   --stat-accent: #bf7b17;
   background: #ffffff;
 }
+
+/* Style .stat-card.purple to define reusable design values, style the surface and boundaries. */
 
 .stat-card.purple {
   --stat-accent: #8958b4;
   background: #ffffff;
 }
 
+/* Style .stat-title to set text appearance. */
+
 .stat-title {
   font-size: 12px;
   font-weight: 600;
 }
+
+/* Style .dashboard-grid to arrange its contents. */
 
 .dashboard-grid {
   display: grid;
@@ -115,6 +145,8 @@
 
   gap: 18px;
 }
+
+/* Style .dashboard-panel to style the surface and boundaries. */
 
 .dashboard-panel {
   padding: 20px;
@@ -128,6 +160,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .panel-heading to arrange its contents. */
+
 .panel-heading {
   display: flex;
 
@@ -138,6 +172,8 @@
   margin-bottom: 16px;
 }
 
+/* Style .dashboard-panel h2 to set text appearance. */
+
 .dashboard-panel h2 {
   margin: 0;
 
@@ -145,6 +181,8 @@
 
   color: var(--color-navy-950);
 }
+
+/* Style .panel-heading button to set text appearance, style the surface and boundaries. */
 
 .panel-heading button {
   border: none;
@@ -155,9 +193,13 @@
   font-size: 12px;
 }
 
+/* Style .table-wrapper to control spacing and dimensions. */
+
 .table-wrapper {
   overflow-x: auto;
 }
+
+/* Style .dashboard-table to set text appearance. */
 
 .dashboard-table {
   width: 100%;
@@ -166,6 +208,8 @@
 
   font-size: 12px;
 }
+
+/* Style .dashboard-table th, .dashboard-table td to control spacing and dimensions. */
 
 .dashboard-table th,
 .dashboard-table td {
@@ -178,11 +222,15 @@
   white-space: nowrap;
 }
 
+/* Style .dashboard-table th to set text appearance. */
+
 .dashboard-table th {
   color: #63798e;
 
   font-weight: 600;
 }
+
+/* Style .status-badge to arrange its contents, set text appearance. */
 
 .status-badge {
   display: inline-flex;
@@ -196,11 +244,15 @@
   font-weight: 600;
 }
 
+/* Style .status-badge.checked-in to set text appearance, style the surface and boundaries. */
+
 .status-badge.checked-in {
   background: #dcf6eb;
 
   color: #11845b;
 }
+
+/* Style .status-badge.confirmed to set text appearance, style the surface and boundaries. */
 
 .status-badge.confirmed {
   background: #dceeff;
@@ -208,16 +260,22 @@
   color: #1374b9;
 }
 
+/* Style .status-badge.pending to set text appearance, style the surface and boundaries. */
+
 .status-badge.pending {
   background: #fff0d4;
 
   color: #c97804;
 }
 
+/* Style .occupancy-panel to arrange its contents. */
+
 .occupancy-panel {
   display: flex;
   flex-direction: column;
 }
+
+/* Style .occupancy-circle to arrange its contents, style the surface and boundaries. */
 
 .occupancy-circle {
   border-radius: 50%;
@@ -235,6 +293,8 @@
   );
 }
 
+/* Style .dashboard-loading, .dashboard-empty to set text appearance. */
+
 .dashboard-loading,
 .dashboard-empty {
   padding: 30px;
@@ -244,11 +304,15 @@
   text-align: center;
 }
 
+/* Style .occupancy-circle::before to position it within the page. */
+
 .occupancy-circle::before {
   content: '';
 
   position: absolute;
 }
+
+/* Style .occupancy-circle > div to arrange its contents, style the surface and boundaries. */
 
 .occupancy-circle > div {
   width: 112px;
@@ -265,17 +329,23 @@
   background: #ffffff;
 }
 
+/* Style .occupancy-circle strong to set text appearance. */
+
 .occupancy-circle strong {
   font-size: 27px;
 
   color: var(--color-navy-950);
 }
 
+/* Style .occupancy-circle span to set text appearance. */
+
 .occupancy-circle span {
   color: var(--color-text-muted);
 
   font-size: 11px;
 }
+
+/* Style .occupancy-legend to arrange its contents, set text appearance. */
 
 .occupancy-legend {
   display: flex;
@@ -285,6 +355,8 @@
 
   font-size: 11px;
 }
+
+/* Style .occupancy-legend span to arrange its contents. */
 
 .occupancy-legend span {
   display: grid;
@@ -296,6 +368,8 @@
   gap: 8px;
 }
 
+/* Style .occupancy-legend i to control spacing and dimensions. */
+
 .occupancy-legend i {
   width: 7px;
   height: 7px;
@@ -303,29 +377,43 @@
   border-radius: 50%;
 }
 
+/* Style .occupied-dot to style the surface and boundaries. */
+
 .occupied-dot {
   background: #0874c9;
 }
+
+/* Style .available-dot to style the surface and boundaries. */
 
 .available-dot {
   background: #14ae78;
 }
 
+/* Style .maintenance-dot to style the surface and boundaries. */
+
 .maintenance-dot {
   background: #9aaabb;
 }
 
+/* Apply the following layout adjustments when (max-width: 1150px). */
+
 @media (max-width: 1150px) {
+  /* Style .stat-grid to arrange its contents. */
   .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  /* Style .dashboard-grid to arrange its contents. */
 
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .stat-grid to arrange its contents. */
   .stat-grid {
     grid-template-columns: 1fr;
   }

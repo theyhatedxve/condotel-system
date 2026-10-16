@@ -1,10 +1,16 @@
+/* Style .reports-page to control spacing and dimensions. */
+
 .reports-page {
   width: 100%;
 }
 
+/* Style .reports-header to control spacing and dimensions. */
+
 .reports-header {
   margin-bottom: 20px;
 }
+
+/* Style .reports-header h1 to set text appearance. */
 
 .reports-header h1 {
   margin: 0;
@@ -12,11 +18,15 @@
   color: var(--color-navy-950);
 }
 
+/* Style .reports-header p to set text appearance. */
+
 .reports-header p {
   margin: 6px 0 0;
 
   color: var(--color-text-muted);
 }
+
+/* Style .reports-filter-bar to arrange its contents, style the surface and boundaries. */
 
 .reports-filter-bar {
   display: flex;
@@ -37,6 +47,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .reports-filter-bar label to arrange its contents, set text appearance. */
+
 .reports-filter-bar label {
   display: flex;
   flex-direction: column;
@@ -49,6 +61,8 @@
   font-weight: 600;
 }
 
+/* Style .reports-filter-bar input to make keyboard focus visible, style the surface and boundaries. */
+
 .reports-filter-bar input {
   min-height: 38px;
 
@@ -60,6 +74,8 @@
 
   outline: none;
 }
+
+/* Style .reports-filter-bar button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .reports-filter-bar button {
   min-height: 38px;
@@ -84,11 +100,15 @@
   cursor: pointer;
 }
 
+/* Style .reports-filter-bar button:disabled to indicate the available pointer interaction. */
+
 .reports-filter-bar button:disabled {
   opacity: 0.6;
 
   cursor: not-allowed;
 }
+
+/* Style .report-summary-grid to arrange its contents. */
 
 .report-summary-grid {
   display: grid;
@@ -99,6 +119,8 @@
 
   margin-bottom: 20px;
 }
+
+/* Style .report-summary-card to arrange its contents, style the surface and boundaries. */
 
 .report-summary-card {
   display: flex;
@@ -119,11 +141,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .report-summary-card svg to set text appearance. */
+
 .report-summary-card svg {
   flex-shrink: 0;
 
   color: var(--color-blue-700);
 }
+
+/* Style .report-summary-card span to arrange its contents, set text appearance. */
 
 .report-summary-card span {
   display: block;
@@ -135,11 +161,15 @@
   font-size: 11px;
 }
 
+/* Style .report-summary-card strong to set text appearance. */
+
 .report-summary-card strong {
   color: var(--color-navy-950);
 
   font-size: 18px;
 }
+
+/* Style .reports-grid to arrange its contents. */
 
 .reports-grid {
   display: grid;
@@ -148,6 +178,8 @@
 
   gap: 16px;
 }
+
+/* Style .report-panel to style the surface and boundaries. */
 
 .report-panel {
   padding: 20px;
@@ -161,6 +193,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .report-panel h2 to set text appearance. */
+
 .report-panel h2 {
   margin: 0 0 16px;
 
@@ -169,10 +203,14 @@
   font-size: 15px;
 }
 
+/* Style .report-data-list to arrange its contents. */
+
 .report-data-list {
   display: flex;
   flex-direction: column;
 }
+
+/* Style .report-data-list > span to arrange its contents, set text appearance. */
 
 .report-data-list > span {
   display: flex;
@@ -190,13 +228,19 @@
   font-size: 12px;
 }
 
+/* Style .report-data-list > span:last-child to control spacing and dimensions. */
+
 .report-data-list > span:last-child {
   border-bottom: none;
 }
 
+/* Style .report-data-list strong to set text appearance. */
+
 .report-data-list strong {
   color: var(--color-navy-950);
 }
+
+/* Style .reports-loading to set text appearance, style the surface and boundaries. */
 
 .reports-loading {
   padding: 40px;
@@ -212,21 +256,31 @@
   text-align: center;
 }
 
+/* Apply the following layout adjustments when (max-width: 1000px). */
+
 @media (max-width: 1000px) {
+  /* Style .report-summary-grid to arrange its contents. */
   .report-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 700px). */
+
 @media (max-width: 700px) {
+  /* Style .reports-filter-bar to arrange its contents. */
   .reports-filter-bar {
     align-items: stretch;
     flex-direction: column;
   }
 
+  /* Style .report-summary-grid to arrange its contents. */
+
   .report-summary-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Style .reports-grid to arrange its contents. */
 
   .reports-grid {
     grid-template-columns: 1fr;

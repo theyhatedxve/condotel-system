@@ -4,14 +4,18 @@ import { X, Users } from 'lucide-react';
 import RoomPhoto from './RoomPhoto';
 import { formatCurrency } from '../../utils/formatCurrency';
 
+// Show the selected room in a modal with an action to continue to booking.
 export default function RoomDetails({ room, search, onClose }) {
+  // Track local state and read any session or route values needed by this component.
   const dialog = useRef(null);
+  // Open the selected room's browser dialog after mounting.
   useEffect(() => {
     const element = dialog.current;
     if (!element.open) element.showModal();
   }, []);
 
   return (
+    /* Display the selected information in a closable browser dialog. */
     <dialog
       className="stay-dialog"
       ref={dialog}

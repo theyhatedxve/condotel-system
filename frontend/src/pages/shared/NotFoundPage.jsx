@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 
+// Show the unknown-route page and its return action.
 export default function NotFoundPage() {
   return (
     <main className="loading-screen">

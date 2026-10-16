@@ -10,6 +10,7 @@ import App from './App';
 
 import './styles/global.css';
 
+// Mount the app with browser routing and shared authentication available to all pages.
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>

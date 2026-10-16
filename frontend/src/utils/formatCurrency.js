@@ -1,3 +1,5 @@
+// Convert centavos to a Philippine peso display value using the existing number-format
+// rules.
 export function formatCurrency(centavos) {
   const pesos = Number(centavos || 0) / 100;
 

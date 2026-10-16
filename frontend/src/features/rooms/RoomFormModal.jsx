@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import { X } from 'lucide-react';
 
+// Convert the selected record into editable form values, or supply the existing defaults
+// for creation.
 function createInitialForm(room) {
   if (!room) {
     return {
@@ -44,8 +46,10 @@ export default function RoomFormModal({
   onClose,
   onSubmit,
 }) {
+  // Track local state and read any session or route values needed by this component.
   const [form, setForm] = useState(() => createInitialForm(room));
 
+  // Update one controlled form field while retaining the remaining field values.
   function updateField(field, value) {
     setForm((current) => ({
       ...current,
@@ -53,6 +57,8 @@ export default function RoomFormModal({
     }));
   }
 
+  // Convert numeric room inputs and send the current room form to the parent save
+  // handler.
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -84,7 +90,9 @@ export default function RoomFormModal({
 
   return (
     <div className="modal-backdrop">
+      {/* Group the related content and actions into a distinct page section. */}
       <section className="room-modal">
+        {/* Show this section's heading, context, and available actions. */}
         <header className="room-modal-header">
           <div>
             <h2>{room ? 'Edit Room' : 'Add Room'}</h2>
@@ -106,6 +114,7 @@ export default function RoomFormModal({
           </button>
         </header>
 
+        {/* Collect the rooms form fields and submit them through the handler above. */}
         <form className="room-form" onSubmit={handleSubmit}>
           <div className="room-form-grid">
             <label>
@@ -228,6 +237,7 @@ export default function RoomFormModal({
             />
           </label>
 
+          {/* Show the property footer links and contact information. */}
           <footer className="room-modal-actions">
             <button
               type="button"

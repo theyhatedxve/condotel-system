@@ -1,8 +1,10 @@
+/* Style .checkout-fields to arrange its contents. */
 .checkout-fields {
   display: grid;
   gap: 10px;
   min-width: 0;
 }
+/* Style .checkout-method to arrange its contents, set text appearance, style the surface and boundaries. */
 .checkout-method {
   display: flex;
   align-items: center;
@@ -13,38 +15,46 @@
   border-radius: 6px;
   background: linear-gradient(110deg, #fff8e8, #fffdf7);
 }
+/* Style .checkout-method > div to control spacing and dimensions. */
 .checkout-method > div {
   flex: 1;
 }
+/* Style .checkout-method strong to arrange its contents, set text appearance. */
 .checkout-method strong {
   display: block;
   font-size: 13px;
 }
+/* Style .checkout-method small to arrange its contents, set text appearance. */
 .checkout-method small {
   display: block;
   margin-top: 4px;
   color: #6a809b;
   font-size: 11px;
 }
+/* Style .checkout-selected to arrange its contents, set text appearance. */
 .checkout-selected {
   color: #b57d1e;
   display: flex;
 }
+/* Style .checkout-description to set text appearance. */
 .checkout-description {
   color: #6c809c;
   font-size: 11px;
   line-height: 1.6;
   margin-top: 12px !important;
 }
+/* Style .checkout-details to arrange its contents. */
 .checkout-details {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 15px;
   margin: 0;
 }
+/* Style .checkout-details > div to control spacing and dimensions. */
 .checkout-details > div {
   min-width: 0;
 }
+/* Style .checkout-details dt to arrange its contents, set text appearance. */
 .checkout-details dt {
   display: flex;
   align-items: center;
@@ -53,6 +63,7 @@
   font-size: 11px;
   margin-bottom: 7px;
 }
+/* Style .checkout-details dd to set text appearance, style the surface and boundaries. */
 .checkout-details dd {
   margin: 0;
   padding: 10px 12px;
@@ -63,6 +74,7 @@
   color: #234469;
   overflow-wrap: anywhere;
 }
+/* Style .checkout-gateway to arrange its contents, set text appearance, style the surface and boundaries. */
 .checkout-gateway {
   display: flex;
   align-items: center;
@@ -74,28 +86,34 @@
   margin-top: 22px;
   color: #154573;
 }
+/* Style .checkout-gateway > span to arrange its contents, style the surface and boundaries. */
 .checkout-gateway > span {
   padding: 12px;
   background: white;
   border-radius: 50%;
   display: flex;
 }
+/* Style .checkout-gateway > div to control spacing and dimensions. */
 .checkout-gateway > div {
   flex: 1;
 }
+/* Style .checkout-gateway > svg to control spacing and dimensions. */
 .checkout-gateway > svg {
   flex-shrink: 0;
 }
+/* Style .checkout-gateway h3 to set text appearance. */
 .checkout-gateway h3 {
   font-size: 13px;
   line-height: 1.45;
 }
+/* Style .checkout-gateway p to set text appearance. */
 .checkout-gateway p {
   font-size: 11px;
   line-height: 1.65;
   color: #6a809b;
   margin-top: 7px;
 }
+/* Style .checkout-instructions to arrange its contents. */
 .checkout-instructions {
   list-style: none;
   padding: 20px 0 0;
@@ -104,6 +122,7 @@
   justify-content: space-between;
   gap: 12px;
 }
+/* Style .checkout-instructions li to arrange its contents, set text appearance. */
 .checkout-instructions li {
   display: flex;
   align-items: center;
@@ -111,6 +130,7 @@
   color: #56708f;
   font-size: 10px;
 }
+/* Style .checkout-instructions span to arrange its contents, set text appearance, style the surface and boundaries. */
 .checkout-instructions span {
   display: grid;
   place-items: center;
@@ -121,6 +141,7 @@
   border-radius: 50%;
   color: #214b73;
 }
+/* Style .checkout-security to arrange its contents, set text appearance, style the surface and boundaries. */
 .checkout-security {
   display: flex;
   align-items: center;
@@ -131,27 +152,33 @@
   border-radius: 7px;
   color: #123e6a;
 }
+/* Style .checkout-security > div to control spacing and dimensions. */
 .checkout-security > div {
   flex: 1;
 }
+/* Style .checkout-security > svg to control spacing and dimensions. */
 .checkout-security > svg {
   flex-shrink: 0;
 }
+/* Style .checkout-security strong to set text appearance. */
 .checkout-security strong {
   font-size: 12px;
 }
+/* Style .checkout-security p to set text appearance. */
 .checkout-security p {
   color: #6a809b;
   font-size: 10px;
   line-height: 1.6;
   margin-top: 4px;
 }
+/* Style .checkout-actions to arrange its contents. */
 .checkout-actions {
   display: grid;
   grid-template-columns: 1fr 1.7fr;
   gap: 12px;
   margin-top: 16px;
 }
+/* Style .checkout-back, .checkout-pay to indicate the available pointer interaction, arrange its contents, set text appearance. */
 .checkout-back,
 .checkout-pay {
   display: inline-flex;
@@ -166,26 +193,32 @@
   line-height: 1.5;
   cursor: pointer;
 }
+/* Style .checkout-back to set text appearance, style the surface and boundaries. */
 .checkout-back {
   color: #153e68;
   background: white;
   border: 1px solid #375f88;
 }
+/* Style .checkout-pay to set text appearance, style the surface and boundaries. */
 .checkout-pay {
   color: white;
   background: linear-gradient(100deg, #123f6b, #042d54);
   border: 1px solid #123f6b;
 }
+/* Style .checkout-pay:hover to style the surface and boundaries. */
 .checkout-pay:hover {
   background: #174d7f;
 }
+/* Style .checkout-back:hover to style the surface and boundaries. */
 .checkout-back:hover {
   background: #f2f7fc;
 }
+/* Style .checkout-pay:disabled to indicate the available pointer interaction. */
 .checkout-pay:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+/* Style .checkout-redirect to set text appearance. */
 .checkout-redirect {
   text-align: right;
   color: #778ba5;
@@ -193,6 +226,7 @@
   line-height: 1.5;
   margin-top: 7px !important;
 }
+/* Style .checkout-status to arrange its contents, set text appearance. */
 .checkout-status {
   display: flex;
   justify-content: center;
@@ -202,6 +236,7 @@
   font-size: 11px;
   color: #687e99;
 }
+/* Style .checkout-status button to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 .checkout-status button {
   border: 0;
   padding: 0;
@@ -211,62 +246,81 @@
   cursor: pointer;
   font: inherit;
 }
+/* Style .checkout-page .stay-empty .checkout-back to control spacing and dimensions. */
 .checkout-page .stay-empty .checkout-back {
   margin: 12px 5px 0;
 }
+/* Style .checkout-page .booking-summary to control spacing and dimensions. */
 .checkout-page .booking-summary {
   gap: 0;
 }
+/* Style .checkout-page .booking-price-panel to control spacing and dimensions. */
 .checkout-page .booking-price-panel {
   border-top: 0;
   border-radius: 0 0 10px 10px;
 }
+/* Style .checkout-page .booking-summary > section:first-child to control spacing and dimensions. */
 .checkout-page .booking-summary > section:first-child {
   border-radius: 10px 10px 0 0;
   border-bottom: 0;
 }
+/* Style .checkout-page .booking-reassurance to control spacing and dimensions. */
 .checkout-page .booking-reassurance {
   margin-top: 10px;
 }
+/* Apply the following layout adjustments when (max-width: 1050px). */
 @media (max-width: 1050px) {
+  /* Style .checkout-layout to arrange its contents. */
   .checkout-layout {
     grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
   }
+  /* Style .checkout-instructions to arrange its contents. */
   .checkout-instructions {
     flex-direction: column;
   }
+  /* Style .checkout-actions to arrange its contents. */
   .checkout-actions {
     grid-template-columns: 1fr;
   }
+  /* Style .checkout-redirect to control spacing and dimensions. */
   .checkout-redirect {
     text-align: center;
   }
 }
+/* Apply the following layout adjustments when (max-width: 750px). */
 @media (max-width: 750px) {
+  /* Style .checkout-layout to arrange its contents. */
   .checkout-layout {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Style .checkout-page .booking-summary to arrange its contents. */
   .checkout-page .booking-summary {
     grid-row: auto;
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Style .checkout-page .booking-summary > section:first-child to control spacing and dimensions. */
   .checkout-page .booking-summary > section:first-child {
     grid-row: auto;
   }
+  /* Style .checkout-details to arrange its contents. */
   .checkout-details {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Style .checkout-gateway to control spacing and dimensions. */
   .checkout-gateway {
     align-items: flex-start;
     padding: 16px 12px;
     gap: 9px;
   }
+  /* Style .checkout-gateway > span to control spacing and dimensions. */
   .checkout-gateway > span {
     padding: 8px;
   }
+  /* Style .checkout-gateway > svg to arrange its contents. */
   .checkout-gateway > svg {
     display: none;
   }
+  /* Style .checkout-security to control spacing and dimensions. */
   .checkout-security {
     padding: 13px;
   }

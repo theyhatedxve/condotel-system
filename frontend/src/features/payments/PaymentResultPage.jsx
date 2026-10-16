@@ -11,7 +11,10 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import usePaymentConfirmation from './usePaymentConfirmation';
 import './payment-result.css';
 
+// Verify payment on return and route unpaid customers to checkout or staff/admins to
+// Reservations.
 export default function PaymentResultPage() {
+  // Track local state and read any session or route values needed by this component.
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -84,11 +87,14 @@ export default function PaymentResultPage() {
         ? checkoutPath
         : bookingPath
       : '/admin/reservations';
+  // Return a verified unsuccessful payment to the checkout or reservation page
+  // appropriate to this account.
   useEffect(() => {
     if (unsuccessful && reservation) navigate(returnPath, { replace: true });
   }, [unsuccessful, reservation, returnPath, navigate]);
   return (
     <main className="payment-result-page">
+      {/* Group the related content and actions into a distinct page section. */}
       <section
         className="payment-result-card"
         aria-labelledby="payment-result-title"

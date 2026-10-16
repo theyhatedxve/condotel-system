@@ -3,14 +3,21 @@ import apiClient from '../../services/apiClient';
 import { requestMessage } from './bookingUtils';
 import { syncReservationPayment } from '../payments/paymentApi';
 
+// Load room/owned-reservation details and synchronize payment before offering further
+// booking actions.
 export default function useBooking(roomId, reservationId, userId) {
   const key = JSON.stringify([roomId, reservationId, userId]);
+  // Track local state and read any session or route values needed by this component.
   const [attempt, setAttempt] = useState(0);
   const [result, setResult] = useState({ key: null });
   const requestKey = `${key}:${attempt}`;
 
+  // Reload this room/reservation and abort the old request when the route or retry
+  // attempt changes.
   useEffect(() => {
     const controller = new AbortController();
+    // Load the room and owned reservation, then verify payment before enabling booking
+    // actions.
     async function load() {
       try {
         // Always reload the room rate and, when resuming, the customer's own reservation.

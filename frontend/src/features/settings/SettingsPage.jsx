@@ -31,6 +31,7 @@ const initialForm = {
   timezone: 'Asia/Manila',
 };
 
+// Convert saved property settings and nullable values into controlled form inputs.
 function mapSettingsToForm(settings) {
   return {
     propertyName: settings.propertyName ?? '',
@@ -57,7 +58,9 @@ function mapSettingsToForm(settings) {
   };
 }
 
+// Render the settings page with its loading, error, and record/form states.
 export default function SettingsPage() {
+  // Track local state and read any session or route values needed by this component.
   const { user } = useAuth();
 
   const isAdmin = user?.role === 'ADMIN';
@@ -70,6 +73,8 @@ export default function SettingsPage() {
 
   const [updatedAt, setUpdatedAt] = useState(null);
 
+  // Load property settings into controlled form values and ignore late results after
+  // unmount.
   useEffect(() => {
     let cancelled = false;
 
@@ -99,6 +104,7 @@ export default function SettingsPage() {
     };
   }, []);
 
+  // Update the edited form field while retaining the other controlled form values.
   function handleChange(event) {
     const { name, value } = event.target;
 
@@ -109,6 +115,8 @@ export default function SettingsPage() {
     }));
   }
 
+  // Save editable property settings and replace form values with the backend's saved
+  // response.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -163,6 +171,7 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
+      /* Group the related content and actions into a distinct page section. */
       <section className="settings-page">
         <div className="settings-loading">Loading settings...</div>
       </section>
@@ -170,7 +179,9 @@ export default function SettingsPage() {
   }
 
   return (
+    /* Display the "Settings" section and its related actions. */
     <section className="settings-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="settings-header">
         <div>
           <h1>Settings</h1>
@@ -191,6 +202,7 @@ export default function SettingsPage() {
         </div>
       )}
 
+      {/* Collect the settings form fields and submit them through the handler above. */}
       <form onSubmit={handleSubmit}>
         <div className="settings-grid">
           <article className="settings-card">

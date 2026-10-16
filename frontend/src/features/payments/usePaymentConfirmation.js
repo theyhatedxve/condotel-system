@@ -4,21 +4,28 @@ import { cancelPendingCheckout, syncReservationPayment } from './paymentApi';
 const POLL_INTERVAL = 2000;
 const VERIFICATION_WINDOW = 60000;
 
+// Synchronize provider-backed payment state and verify cancellation before showing a
+// return result.
 export default function usePaymentConfirmation(
   reservationId,
   cancelled,
   userId,
 ) {
+  // Track local state and read any session or route values needed by this component.
   const [attempt, setAttempt] = useState(0);
   const key = JSON.stringify([reservationId, cancelled, userId, attempt]);
   const [result, setResult] = useState({ key: null });
 
+  // Verify the return state with the server and clear polling/requests when the
+  // reservation or page changes.
   useEffect(() => {
     if (!reservationId) return;
     const controller = new AbortController();
     let timeout;
     const deadline = Date.now() + VERIFICATION_WINDOW;
 
+    // Synchronize payment, verify any requested cancellation, and poll briefly while
+    // success is still pending.
     async function verify() {
       try {
         let verified = await syncReservationPayment(

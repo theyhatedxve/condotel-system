@@ -21,8 +21,10 @@ import { initialStay, requestMessage } from '../booking/bookingUtils';
 import useHostedCheckout from './useHostedCheckout';
 import './checkout.css';
 
+// Render the shared icon, title, and explanatory text for a booking section.
 function SectionHeading({ icon: Icon, title, children }) {
   return (
+    /* Show this section's heading, context, and available actions. */
     <header className="booking-section-heading">
       <span>
         <Icon size={21} />
@@ -35,6 +37,8 @@ function SectionHeading({ icon: Icon, title, children }) {
   );
 }
 
+// Render verified payment state or offer the secure payment-window action for an unpaid
+// reservation.
 function CheckoutContent({
   room,
   reservation,
@@ -44,6 +48,7 @@ function CheckoutContent({
   paymentError,
   onRefresh,
 }) {
+  // Track local state and read any session or route values needed by this component.
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const busy = useRef(false);
@@ -57,6 +62,7 @@ function CheckoutContent({
   const payable = reservation.status === 'PENDING' && !paid;
   const stay = initialStay(params, reservation, room.capacity);
 
+  // Prevent duplicate payment clicks and start the verified hosted-payment window flow.
   async function pay() {
     if (busy.current || !payable || paymentError) return;
     busy.current = true;
@@ -85,6 +91,7 @@ function CheckoutContent({
       <div className="booking-layout checkout-layout">
         <div className="checkout-fields">
           {confirmed || paid ? (
+            /* Group the related content and actions into a distinct page section. */
             <section className="booking-panel booking-confirmed" role="status">
               <CheckCircle2 size={32} />
               <h2>{confirmed ? 'Booking Confirmed' : 'Payment Received'}</h2>
@@ -99,6 +106,7 @@ function CheckoutContent({
               </Link>
             </section>
           ) : !payable ? (
+            /* Display the "Booking" section and its related actions. */
             <section className="booking-panel">
               <h2>
                 Booking {reservation.status.toLowerCase().replaceAll('_', ' ')}
@@ -112,6 +120,7 @@ function CheckoutContent({
             </section>
           ) : (
             <>
+              {/* Group the related content and actions into a distinct page section. */}
               <section className="booking-panel">
                 <SectionHeading
                   icon={LockKeyhole}
@@ -135,6 +144,7 @@ function CheckoutContent({
                   checkout page.
                 </p>
               </section>
+              {/* Display the "Your payment details stay with the payment provider" section and its related actions. */}
               <section className="booking-panel">
                 <SectionHeading icon={CreditCard} title="Payment Details">
                   Review your details before continuing to payment.
@@ -191,6 +201,7 @@ function CheckoutContent({
                   </li>
                 </ol>
               </section>
+              {/* Group the related content and actions into a distinct page section. */}
               <section className="booking-panel checkout-action-panel">
                 <div className="checkout-security">
                   <ShieldCheck size={32} />
@@ -273,7 +284,9 @@ function CheckoutContent({
   );
 }
 
+// Restore a saved customer reservation and display its payment review page.
 export default function CheckoutPage() {
+  // Track local state and read any session or route values needed by this component.
   const { roomId } = useParams();
   const [params] = useSearchParams();
   const { user } = useAuth();

@@ -15,6 +15,8 @@ import './user-management.css';
 import ManagedAccountActions from './ManagedAccountActions';
 import ListPagination from '../../components/ListPagination';
 
+// Format a record timestamp with this page's existing locale options and missing-value
+// fallback.
 function formatDateTime(value) {
   if (!value) {
     return 'Never';
@@ -33,12 +35,19 @@ function formatDateTime(value) {
   }).format(date);
 }
 
+// Render the user management page with its loading, error, and record/form states.
 export default function UserManagementPage() {
+  // Track local state and read any session or route values needed by this component.
   const { user: currentUser } = useAuth();
 
   const [users, setUsers] = useState([]);
-  const [page,setPage] = useState(1);
-  const [summary,setSummary] = useState({totalUsers:0,totalStaff:0,totalCustomers:0,totalSuspended:0});
+  const [page, setPage] = useState(1);
+  const [summary, setSummary] = useState({
+    totalUsers: 0,
+    totalStaff: 0,
+    totalCustomers: 0,
+    totalSuspended: 0,
+  });
 
   const [loading, setLoading] = useState(true);
 
@@ -70,16 +79,21 @@ export default function UserManagementPage() {
 
   const [resettingPassword, setResettingPassword] = useState(false);
 
+  // Reload managed accounts and the independent account summary using the selected
+  // filters.
   async function loadUsers() {
     setLoading(true);
 
     try {
-      const [result,counts] = await Promise.all([getManagedUsers({
-        page,
-        search: search.trim() || undefined,
-        role: roleFilter || undefined,
-        status: statusFilter || undefined,
-      }),getManagedUserSummary()]);
+      const [result, counts] = await Promise.all([
+        getManagedUsers({
+          page,
+          search: search.trim() || undefined,
+          role: roleFilter || undefined,
+          status: statusFilter || undefined,
+        }),
+        getManagedUserSummary(),
+      ]);
 
       setUsers(Array.isArray(result) ? result : []);
       setSummary(counts);
@@ -90,16 +104,21 @@ export default function UserManagementPage() {
     }
   }
 
+  // Load filtered/paginated accounts and independent summary totals while ignoring stale
+  // results.
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([getManagedUsers({
-      page,
-      search: search.trim() || undefined,
-      role: roleFilter || undefined,
-      status: statusFilter || undefined,
-    }),getManagedUserSummary()])
-      .then(([result,counts]) => {
+    Promise.all([
+      getManagedUsers({
+        page,
+        search: search.trim() || undefined,
+        role: roleFilter || undefined,
+        status: statusFilter || undefined,
+      }),
+      getManagedUserSummary(),
+    ])
+      .then(([result, counts]) => {
         if (!cancelled) {
           setUsers(Array.isArray(result) ? result : []);
           setSummary(counts);
@@ -142,8 +161,9 @@ export default function UserManagementPage() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const {totalStaff,totalCustomers,totalSuspended} = summary;
+  const { totalStaff, totalCustomers, totalSuspended } = summary;
 
+  // Select the record and open its editing form.
   function openEdit(user) {
     setEditingUser(user);
 
@@ -164,6 +184,7 @@ export default function UserManagementPage() {
     });
   }
 
+  // Close the account editing dialog and clear its transient error state.
   function closeEdit() {
     if (savingUser) {
       return;
@@ -172,6 +193,7 @@ export default function UserManagementPage() {
     setEditingUser(null);
   }
 
+  // Select the account and open its temporary-password reset dialog.
   function openResetPassword(user) {
     setResetUser(user);
 
@@ -180,6 +202,7 @@ export default function UserManagementPage() {
     setConfirmPassword('');
   }
 
+  // Close the password-reset dialog and clear its transient form state.
   function closeResetPassword() {
     if (resettingPassword) {
       return;
@@ -192,6 +215,7 @@ export default function UserManagementPage() {
     setConfirmPassword('');
   }
 
+  // Submit account edits, close the dialog on success, and refresh the user list.
   async function handleEditSubmit(event) {
     event.preventDefault();
 
@@ -247,6 +271,7 @@ export default function UserManagementPage() {
     }
   }
 
+  // Submit the temporary-password reset and refresh the managed account list.
   async function handleResetPassword(event) {
     event.preventDefault();
 
@@ -293,7 +318,9 @@ export default function UserManagementPage() {
   }
 
   return (
+    /* Display the "User Management" section and its related actions. */
     <section className="user-management-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="user-management-header">
         <h1>User Management</h1>
 
@@ -336,13 +363,19 @@ export default function UserManagementPage() {
             value={search}
             placeholder="Name/username or exact email/phone"
             maxLength={255}
-            onChange={(event) => {setSearch(event.target.value);setPage(1);}}
+            onChange={(event) => {
+              setSearch(event.target.value);
+              setPage(1);
+            }}
           />
         </div>
 
         <select
           value={roleFilter}
-          onChange={(event) => {setRoleFilter(event.target.value);setPage(1);}}
+          onChange={(event) => {
+            setRoleFilter(event.target.value);
+            setPage(1);
+          }}
         >
           <option value="">All Roles</option>
 
@@ -355,7 +388,10 @@ export default function UserManagementPage() {
 
         <select
           value={statusFilter}
-          onChange={(event) => {setStatusFilter(event.target.value);setPage(1);}}
+          onChange={(event) => {
+            setStatusFilter(event.target.value);
+            setPage(1);
+          }}
         >
           <option value="">All Statuses</option>
 
@@ -371,6 +407,7 @@ export default function UserManagementPage() {
         <div className="user-management-empty">Loading users...</div>
       ) : (
         <div className="user-management-table-wrapper">
+          {/* Display user management records with their existing columns and row actions. */}
           <table className="user-management-table">
             <thead>
               <tr>
@@ -449,10 +486,21 @@ export default function UserManagementPage() {
         </div>
       )}
 
-      <ListPagination label="Users" page={page} count={users.length} loading={loading} onChange={next=>{setLoading(true);setPage(next);}}/>
+      <ListPagination
+        label="Users"
+        page={page}
+        count={users.length}
+        loading={loading}
+        onChange={(next) => {
+          setLoading(true);
+          setPage(next);
+        }}
+      />
       {editingUser && (
         <div className="managed-user-modal-backdrop">
+          {/* Collect the user management form fields and submit them through the handler above. */}
           <form className="managed-user-modal" onSubmit={handleEditSubmit}>
+            {/* Show this section's heading, context, and available actions. */}
             <header>
               <h2>Edit Account</h2>
 
@@ -606,6 +654,7 @@ export default function UserManagementPage() {
               </p>
             )}
 
+            {/* Show the property footer links and contact information. */}
             <footer>
               <button type="button" onClick={closeEdit} disabled={savingUser}>
                 Cancel
@@ -621,10 +670,12 @@ export default function UserManagementPage() {
 
       {resetUser && (
         <div className="managed-user-modal-backdrop">
+          {/* Collect the user management form fields and submit them through the handler above. */}
           <form
             className="managed-user-modal managed-user-reset-modal"
             onSubmit={handleResetPassword}
           >
+            {/* Show this section's heading, context, and available actions. */}
             <header>
               <h2>Reset Password</h2>
 
@@ -676,6 +727,7 @@ export default function UserManagementPage() {
               user must change it on their next login.
             </small>
 
+            {/* Show the property footer links and contact information. */}
             <footer>
               <button
                 type="button"

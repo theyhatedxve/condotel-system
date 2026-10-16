@@ -607,18 +607,39 @@ async function main() {
   );
   migratePrivacy(db, privacy, 'verify');
   // Test pagination without dozens of expensive password hashes. These are isolated fixtures.
-  for(let index=0;index<51;index++) {
-    const id='page-user-'+index;
-    const data={id,...privacy.writeContacts(id,{email:`page${index}@example.test`,phone:null}),passwordHash:hash,firstName:'Page',lastName:'Fixture',updatedAt:new Date().toISOString()};
-    const fields=Object.keys(data);
-    db.prepare(`INSERT INTO User(${fields.map(field=>`"${field}"`).join(',')}) VALUES (${fields.map(()=>'?').join(',')})`).run(...Object.values(data));
+  for (let index = 0; index < 51; index++) {
+    const id = 'page-user-' + index;
+    const data = {
+      id,
+      ...privacy.writeContacts(id, {
+        email: `page${index}@example.test`,
+        phone: null,
+      }),
+      passwordHash: hash,
+      firstName: 'Page',
+      lastName: 'Fixture',
+      updatedAt: new Date().toISOString(),
+    };
+    const fields = Object.keys(data);
+    db.prepare(
+      `INSERT INTO User(${fields.map((field) => `"${field}"`).join(',')}) VALUES (${fields.map(() => '?').join(',')})`,
+    ).run(...Object.values(data));
   }
-  assert.equal((await request('/admin/users?page=1',{token:admin})).length,50);
-  assert((await request('/admin/users?page=2',{token:admin})).length>0);
-  assert.equal((await request('/admin/users/summary',{token:admin})).totalUsers,db.prepare('SELECT count(*) count FROM User').get().count);
-  assert.equal((await request('/guests?page=1',{token:admin})).length,50);
-  assert((await request('/guests?page=2',{token:admin})).length>0);
-  assert.equal((await request('/reservations?page=2',{token:admin})).length,0);
+  assert.equal(
+    (await request('/admin/users?page=1', { token: admin })).length,
+    50,
+  );
+  assert((await request('/admin/users?page=2', { token: admin })).length > 0);
+  assert.equal(
+    (await request('/admin/users/summary', { token: admin })).totalUsers,
+    db.prepare('SELECT count(*) count FROM User').get().count,
+  );
+  assert.equal((await request('/guests?page=1', { token: admin })).length, 50);
+  assert((await request('/guests?page=2', { token: admin })).length > 0);
+  assert.equal(
+    (await request('/reservations?page=2', { token: admin })).length,
+    0,
+  );
   await app.close();
   app = null;
   const nextAes = randomBytes(32).toString('base64'),

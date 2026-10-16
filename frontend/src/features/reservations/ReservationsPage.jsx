@@ -45,7 +45,9 @@ const filters = [
   },
 ];
 
+// Render the reservations page with its loading, error, and record/form states.
 export default function ReservationsPage() {
+  // Track local state and read any session or route values needed by this component.
   const [reservations, setReservations] = useState([]);
   const [page, setPage] = useState(1);
 
@@ -62,6 +64,8 @@ export default function ReservationsPage() {
   const [payingId, setPayingId] = useState(null);
   const { start, waiting, returnToSite } = useHostedCheckout();
 
+  // Load the reservation page and guest selector data whenever the status filter or page
+  // changes.
   useEffect(() => {
     let cancelled = false;
 
@@ -91,6 +95,7 @@ export default function ReservationsPage() {
     };
   }, [statusFilter, page]);
 
+  // Reload the current reservation page and status filter after a change.
   async function refreshReservations() {
     setLoading(true);
 
@@ -103,6 +108,7 @@ export default function ReservationsPage() {
     }
   }
 
+  // Create the submitted reservation, close the form, and refresh the reservation list.
   async function handleCreate(payload) {
     setSubmitting(true);
 
@@ -122,6 +128,7 @@ export default function ReservationsPage() {
     }
   }
 
+  // Prevent overlapping Pay requests and open the verified hosted checkout flow.
   async function handlePayment(reservation) {
     if (paymentInFlight.current) return;
     paymentInFlight.current = true;
@@ -141,6 +148,7 @@ export default function ReservationsPage() {
     }
   }
 
+  // Submit a reservation status transition and refresh the management list.
   async function handleStatus(reservation, status) {
     try {
       await updateReservationStatus(reservation.id, status);
@@ -155,7 +163,9 @@ export default function ReservationsPage() {
   }
 
   return (
+    /* Display the "Reservations" section and its related actions. */
     <section className="reservations-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="reservations-header">
         <div>
           <h1>Reservations</h1>
@@ -215,6 +225,7 @@ export default function ReservationsPage() {
         <div className="rooms-loading">Loading reservations...</div>
       ) : (
         <div className="reservation-table-wrapper">
+          {/* Display reservations records with their existing columns and row actions. */}
           <table className="reservation-table">
             <thead>
               <tr>

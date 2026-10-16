@@ -1,6 +1,10 @@
+/* Style .rooms-page to control spacing and dimensions. */
+
 .rooms-page {
   width: 100%;
 }
+
+/* Style .rooms-page-header to arrange its contents. */
 
 .rooms-page-header {
   display: flex;
@@ -12,6 +16,8 @@
   margin-bottom: 20px;
 }
 
+/* Style .rooms-page-header h1 to set text appearance. */
+
 .rooms-page-header h1 {
   margin: 0;
 
@@ -20,6 +26,8 @@
   font-size: 24px;
 }
 
+/* Style .rooms-page-header p to set text appearance. */
+
 .rooms-page-header p {
   margin: 6px 0 0;
 
@@ -27,6 +35,8 @@
 
   font-size: 13px;
 }
+
+/* Style .primary-button, .secondary-button to set text appearance. */
 
 .primary-button,
 .secondary-button {
@@ -43,6 +53,8 @@
     transform var(--transition-fast);
 }
 
+/* Style .primary-button to set text appearance, style the surface and boundaries. */
+
 .primary-button {
   border: none;
 
@@ -51,15 +63,21 @@
   color: #ffffff;
 }
 
+/* Style .primary-button:hover:not(:disabled) to control spacing and dimensions. */
+
 .primary-button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
+
+/* Style .primary-button:disabled to indicate the available pointer interaction. */
 
 .primary-button:disabled {
   opacity: 0.6;
 
   cursor: not-allowed;
 }
+
+/* Style .secondary-button to set text appearance, style the surface and boundaries. */
 
 .secondary-button {
   border: 1px solid var(--color-border);
@@ -69,12 +87,16 @@
   color: var(--color-text);
 }
 
+/* Style .add-room-button to arrange its contents. */
+
 .add-room-button {
   display: flex;
   align-items: center;
 
   gap: 8px;
 }
+
+/* Style .room-filter-bar to arrange its contents. */
 
 .room-filter-bar {
   display: flex;
@@ -83,6 +105,8 @@
 
   margin-bottom: 20px;
 }
+
+/* Style .room-filter to set text appearance, style the surface and boundaries. */
 
 .room-filter {
   min-height: 35px;
@@ -100,11 +124,15 @@
   font-size: 12px;
 }
 
+/* Style .room-filter.active to set text appearance, style the surface and boundaries. */
+
 .room-filter.active {
   background: var(--color-navy-900);
 
   color: #ffffff;
 }
+
+/* Style .room-grid to arrange its contents. */
 
 .room-grid {
   display: grid;
@@ -113,6 +141,8 @@
 
   gap: 18px;
 }
+
+/* Style .room-card to control overflowing content, style the surface and boundaries. */
 
 .room-card {
   overflow: hidden;
@@ -130,13 +160,19 @@
     opacity var(--transition-fast);
 }
 
+/* Style .room-card:hover to control spacing and dimensions. */
+
 .room-card:hover {
   transform: translateY(-2px);
 }
 
+/* Style .room-card.inactive to control spacing and dimensions. */
+
 .room-card.inactive {
   opacity: 0.65;
 }
+
+/* Style .room-image to control overflowing content, position it within the page, style the surface and boundaries. */
 
 .room-image {
   position: relative;
@@ -148,12 +184,16 @@
   background: #e4edf5;
 }
 
+/* Style .room-image img to control spacing and dimensions. */
+
 .room-image img {
   width: 100%;
   height: 100%;
 
   object-fit: cover;
 }
+
+/* Style .room-image-placeholder to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .room-image-placeholder {
   width: 100%;
@@ -172,6 +212,8 @@
   color: var(--color-navy-800);
 }
 
+/* Style .inactive-overlay to position it within the page, set text appearance, style the surface and boundaries. */
+
 .inactive-overlay {
   position: absolute;
 
@@ -189,9 +231,13 @@
   font-size: 10px;
 }
 
+/* Style .room-card-body to control spacing and dimensions. */
+
 .room-card-body {
   padding: 15px;
 }
+
+/* Style .room-card-heading to arrange its contents. */
 
 .room-card-heading {
   display: flex;
@@ -201,6 +247,8 @@
   gap: 12px;
 }
 
+/* Style .room-card-heading h3 to set text appearance. */
+
 .room-card-heading h3 {
   margin: 0;
 
@@ -209,6 +257,8 @@
   color: var(--color-navy-950);
 }
 
+/* Style .room-card-heading p to set text appearance. */
+
 .room-card-heading p {
   margin: 4px 0 0;
 
@@ -216,6 +266,8 @@
 
   font-size: 11px;
 }
+
+/* Style .room-price to arrange its contents, set text appearance. */
 
 .room-price {
   display: block;
@@ -227,6 +279,8 @@
   font-size: 14px;
 }
 
+/* Style .room-price span to set text appearance. */
+
 .room-price span {
   margin-left: 3px;
 
@@ -236,6 +290,8 @@
 
   font-weight: 400;
 }
+
+/* Style .room-details to arrange its contents, set text appearance. */
 
 .room-details {
   display: flex;
@@ -251,6 +307,8 @@
   font-size: 11px;
 }
 
+/* Style .room-details span to arrange its contents. */
+
 .room-details span {
   display: flex;
 
@@ -258,6 +316,8 @@
 
   gap: 5px;
 }
+
+/* Style .room-card-footer to arrange its contents. */
 
 .room-card-footer {
   display: flex;
@@ -267,6 +327,8 @@
 
   margin-top: 15px;
 }
+
+/* Style .room-status to set text appearance. */
 
 .room-status {
   padding: 4px 8px;
@@ -280,11 +342,15 @@
   text-transform: capitalize;
 }
 
+/* Style .room-status.available to set text appearance, style the surface and boundaries. */
+
 .room-status.available {
   background: #dcf6eb;
 
   color: #11845b;
 }
+
+/* Style .room-status.occupied to set text appearance, style the surface and boundaries. */
 
 .room-status.occupied {
   background: #fde3e3;
@@ -292,17 +358,23 @@
   color: #c03f3f;
 }
 
+/* Style .room-status.maintenance to set text appearance, style the surface and boundaries. */
+
 .room-status.maintenance {
   background: #fff0d4;
 
   color: #c97804;
 }
 
+/* Style .room-actions to arrange its contents. */
+
 .room-actions {
   display: flex;
 
   gap: 5px;
 }
+
+/* Style .room-actions button to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .room-actions button {
   width: 30px;
@@ -321,6 +393,8 @@
   color: var(--color-navy-800);
 }
 
+/* Style .rooms-loading, .rooms-empty, .rooms-error to set text appearance, style the surface and boundaries. */
+
 .rooms-loading,
 .rooms-empty,
 .rooms-error {
@@ -337,6 +411,8 @@
   color: var(--color-text-muted);
 }
 
+/* Style .rooms-error to set text appearance, style the surface and boundaries. */
+
 .rooms-error {
   margin-bottom: 16px;
 
@@ -346,6 +422,8 @@
 
   color: var(--color-danger);
 }
+
+/* Style .modal-backdrop to arrange its contents, position it within the page, style the surface and boundaries. */
 
 .modal-backdrop {
   position: fixed;
@@ -362,6 +440,8 @@
   background: rgba(4, 25, 44, 0.55);
 }
 
+/* Style .room-modal to style the surface and boundaries. */
+
 .room-modal {
   width: min(100%, 720px);
 
@@ -376,6 +456,8 @@
   box-shadow: 0 24px 60px rgba(0, 24, 45, 0.22);
 }
 
+/* Style .room-modal-header to arrange its contents. */
+
 .room-modal-header {
   display: flex;
 
@@ -388,11 +470,15 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Style .room-modal-header h2 to set text appearance. */
+
 .room-modal-header h2 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
+
+/* Style .room-modal-header p to set text appearance. */
 
 .room-modal-header p {
   margin: 5px 0 0;
@@ -401,6 +487,8 @@
 
   font-size: 12px;
 }
+
+/* Style .modal-close-button to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .modal-close-button {
   width: 36px;
@@ -419,9 +507,13 @@
   color: var(--color-text-muted);
 }
 
+/* Style .room-form to control spacing and dimensions. */
+
 .room-form {
   padding: 24px;
 }
+
+/* Style .room-form-grid to arrange its contents. */
 
 .room-form-grid {
   display: grid;
@@ -430,6 +522,8 @@
 
   gap: 16px;
 }
+
+/* Style .room-form label, .room-description-field to arrange its contents, set text appearance. */
 
 .room-form label,
 .room-description-field {
@@ -445,6 +539,8 @@
 
   font-weight: 600;
 }
+
+/* Style .room-form input, .room-form select, .room-form textarea to make keyboard focus visible, set text appearance, style the surface and boundaries. */
 
 .room-form input,
 .room-form select,
@@ -464,6 +560,8 @@
   color: var(--color-text);
 }
 
+/* Style .room-form input:focus, .room-form select:focus, .room-form textarea:focus to style the surface and boundaries. */
+
 .room-form input:focus,
 .room-form select:focus,
 .room-form textarea:focus {
@@ -472,13 +570,19 @@
   box-shadow: 0 0 0 3px rgba(22, 135, 224, 0.1);
 }
 
+/* Style .room-description-field to control spacing and dimensions. */
+
 .room-description-field {
   margin-top: 16px;
 }
 
+/* Style .room-form textarea to control spacing and dimensions. */
+
 .room-form textarea {
   resize: vertical;
 }
+
+/* Style .room-modal-actions to arrange its contents. */
 
 .room-modal-actions {
   display: flex;
@@ -494,21 +598,31 @@
   border-top: 1px solid var(--color-border);
 }
 
+/* Apply the following layout adjustments when (max-width: 1150px). */
+
 @media (max-width: 1150px) {
+  /* Style .room-grid to arrange its contents. */
   .room-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 700px). */
+
 @media (max-width: 700px) {
+  /* Style .room-grid, .room-form-grid to arrange its contents. */
   .room-grid,
   .room-form-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Style .rooms-page-header to arrange its contents. */
+
   .rooms-page-header {
     flex-direction: column;
   }
+
+  /* Style .room-filter-bar to control spacing and dimensions. */
 
   .room-filter-bar {
     overflow-x: auto;

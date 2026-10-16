@@ -68,10 +68,14 @@ const amenities = [
   },
 ];
 
+// Render the public property homepage with room links, benefits, location, and
+// informational dialogs.
 export default function HomePage() {
+  // Track local state and read any session or route values needed by this component.
   const [dialog, setDialog] = useState(null);
   const { user, isAuthenticated, isLoading, logout } = useAuth();
 
+  // Set the homepage document title and restore the previous title on unmount.
   useEffect(() => {
     const previousTitle = document.title;
     document.title = `${property.name} | Your Coastal Stay Awaits`;
@@ -85,9 +89,11 @@ export default function HomePage() {
       <a className="coast-skip" href="#coast-main">
         Skip to main content
       </a>
+      {/* Show this section's heading, context, and available actions. */}
       <header className="coast-header">
         <div className="coast-container coast-header-inner">
           <HomeBrand />
+          {/* Provide the navigation links or page controls for this part of the interface. */}
           <nav aria-label="Main navigation">
             <Link to="/" aria-current="page">
               Home
@@ -138,6 +144,7 @@ export default function HomePage() {
 
       <main id="coast-main">
         <HomeHero onGallery={() => setDialog({ type: 'gallery' })} />
+        {/* Group the related content and actions into a distinct page section. */}
         <section className="coast-benefits" aria-label="Why stay with us">
           <div className="coast-container coast-benefit-grid">
             {benefits.map(({ icon: Icon, title, description }) => (
@@ -155,6 +162,7 @@ export default function HomePage() {
         </section>
         <LocationSection />
         <FeaturedRooms onSelect={(room) => setDialog({ type: 'room', room })} />
+        {/* Group the related content and actions into a distinct page section. */}
         <section
           className="coast-amenities"
           id="amenities"
@@ -174,10 +182,12 @@ export default function HomePage() {
         </section>
       </main>
 
+      {/* Show the property footer links and contact information. */}
       <footer className="coast-footer">
         <div className="coast-container">
           <div className="coast-footer-top">
             <HomeBrand />
+            {/* Provide the navigation links or page controls for this part of the interface. */}
             <nav aria-label="Footer navigation">
               <Link to="/">Home</Link>
               <Link to="/rooms">Rooms</Link>

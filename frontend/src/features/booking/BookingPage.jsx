@@ -4,7 +4,9 @@ import useBooking from './useBooking';
 import BookingForm from './BookingForm';
 import BookingShell from './BookingShell';
 
+// Restore the room and optional saved reservation before rendering the booking form.
 export default function BookingPage() {
+  // Track local state and read any session or route values needed by this component.
   const { roomId } = useParams();
   const [params] = useSearchParams();
   const { user } = useAuth();

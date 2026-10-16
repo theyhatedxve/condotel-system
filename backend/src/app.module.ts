@@ -37,6 +37,7 @@ import { UserManagementModule } from './user-management/user-management.module';
 
 import { UsersModule } from './users/users.module';
 
+// Wire the app controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -16,17 +16,20 @@ import { UpdateSettingsDto } from './update-settings.dto';
 
 import { SettingsService } from './settings.service';
 
+// Expose settings HTTP routes with the declared request validation and access guards.
 @Controller('settings')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.STAFF, UserRole.ADMIN)
 export class SettingsController {
   constructor(private readonly settingsService: SettingsService) {}
 
+  // Load or create the single property-settings record.
   @Get()
   getSettings() {
     return this.settingsService.getSettings();
   }
 
+  // Apply validated editable property/contact/check-in settings to the singleton record.
   @Patch()
   @Roles(UserRole.ADMIN)
   updateSettings(

@@ -76,6 +76,8 @@ const methodOptions = [
   },
 ];
 
+// Format a record timestamp with this page's existing locale options and missing-value
+// fallback.
 function formatDateTime(value) {
   if (!value) {
     return '—';
@@ -90,6 +92,7 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+// Convert a stored payment method into its display label.
 function formatMethod(method) {
   if (!method) {
     return '—';
@@ -102,7 +105,9 @@ function formatMethod(method) {
   return method;
 }
 
+// Render the payments page with its loading, error, and record/form states.
 export default function PaymentsPage() {
+  // Track local state and read any session or route values needed by this component.
   const [payments, setPayments] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -115,6 +120,7 @@ export default function PaymentsPage() {
 
   const [selectedPayment, setSelectedPayment] = useState(null);
 
+  // Load the initial payment list and avoid writing state after this page unmounts.
   useEffect(() => {
     let cancelled = false;
 
@@ -142,6 +148,7 @@ export default function PaymentsPage() {
     };
   }, []);
 
+  // Reload payment records and update the page's loading/error state.
   async function refreshPayments() {
     setLoading(true);
 
@@ -210,7 +217,9 @@ export default function PaymentsPage() {
   });
 
   return (
+    /* Display the "Payments" section and its related actions. */
     <section className="payments-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="payments-header">
         <div>
           <h1>Payments</h1>
@@ -327,6 +336,7 @@ export default function PaymentsPage() {
         </div>
       ) : (
         <div className="payments-table-wrapper">
+          {/* Display payments records with their existing columns and row actions. */}
           <table className="payments-table">
             <thead>
               <tr>
@@ -399,6 +409,7 @@ export default function PaymentsPage() {
       {selectedPayment && (
         <div className="payment-modal-backdrop">
           <div className="payment-details-modal">
+            {/* Show this section's heading, context, and available actions. */}
             <header className="payment-details-header">
               <div>
                 <h2>Payment Details</h2>

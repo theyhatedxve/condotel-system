@@ -1,6 +1,10 @@
+/* Style .transactions-page to control spacing and dimensions. */
+
 .transactions-page {
   width: 100%;
 }
+
+/* Style .transactions-header to arrange its contents. */
 
 .transactions-header {
   display: flex;
@@ -12,17 +16,23 @@
   margin-bottom: 20px;
 }
 
+/* Style .transactions-header h1 to set text appearance. */
+
 .transactions-header h1 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
 
+/* Style .transactions-header p to set text appearance. */
+
 .transactions-header p {
   margin: 6px 0 0;
 
   color: var(--color-text-muted);
 }
+
+/* Style .transactions-refresh-button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .transactions-refresh-button {
   display: inline-flex;
@@ -49,15 +59,21 @@
   cursor: pointer;
 }
 
+/* Style .transactions-refresh-button:hover to style the surface and boundaries. */
+
 .transactions-refresh-button:hover {
   background: #f8fafc;
 }
+
+/* Style .transactions-refresh-button:disabled to indicate the available pointer interaction. */
 
 .transactions-refresh-button:disabled {
   opacity: 0.6;
 
   cursor: not-allowed;
 }
+
+/* Style .transaction-summary-grid to arrange its contents. */
 
 .transaction-summary-grid {
   display: grid;
@@ -68,6 +84,8 @@
 
   margin-bottom: 20px;
 }
+
+/* Style .transaction-summary-card to arrange its contents, style the surface and boundaries. */
 
 .transaction-summary-card {
   display: flex;
@@ -88,6 +106,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .transaction-summary-icon to arrange its contents, set text appearance, style the surface and boundaries. */
+
 .transaction-summary-icon {
   width: 42px;
   height: 42px;
@@ -105,6 +125,8 @@
   color: var(--color-blue-700);
 }
 
+/* Style .transaction-summary-card span to arrange its contents, set text appearance. */
+
 .transaction-summary-card span {
   display: block;
 
@@ -115,11 +137,15 @@
   font-size: 11px;
 }
 
+/* Style .transaction-summary-card strong to set text appearance. */
+
 .transaction-summary-card strong {
   color: var(--color-navy-950);
 
   font-size: 18px;
 }
+
+/* Style .transactions-toolbar to arrange its contents. */
 
 .transactions-toolbar {
   display: grid;
@@ -133,6 +159,8 @@
 
   margin-bottom: 16px;
 }
+
+/* Style .transactions-search to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .transactions-search {
   display: flex;
@@ -153,6 +181,8 @@
   color: var(--color-text-muted);
 }
 
+/* Style .transactions-search input to make keyboard focus visible, set text appearance, style the surface and boundaries. */
+
 .transactions-search input {
   width: 100%;
 
@@ -166,6 +196,8 @@
 
   font-size: 12px;
 }
+
+/* Style .transactions-toolbar select to make keyboard focus visible, set text appearance, style the surface and boundaries. */
 
 .transactions-toolbar select {
   min-height: 40px;
@@ -185,6 +217,8 @@
   font-size: 12px;
 }
 
+/* Style .transactions-table-wrapper to style the surface and boundaries. */
+
 .transactions-table-wrapper {
   width: 100%;
 
@@ -199,11 +233,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .transactions-table to control spacing and dimensions. */
+
 .transactions-table {
   width: 100%;
 
   border-collapse: collapse;
 }
+
+/* Style .transactions-table th, .transactions-table td to set text appearance. */
 
 .transactions-table th,
 .transactions-table td {
@@ -218,6 +256,8 @@
   font-size: 11px;
 }
 
+/* Style .transactions-table th to set text appearance, style the surface and boundaries. */
+
 .transactions-table th {
   color: var(--color-text-muted);
 
@@ -226,21 +266,31 @@
   background: #f8fafc;
 }
 
+/* Style .transactions-table td to set text appearance. */
+
 .transactions-table td {
   color: var(--color-navy-950);
 }
+
+/* Style .transactions-table tbody tr:last-child td to control spacing and dimensions. */
 
 .transactions-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+/* Style .transactions-table tbody tr:hover to style the surface and boundaries. */
+
 .transactions-table tbody tr:hover {
   background: #fbfdff;
 }
 
+/* Style .transaction-reference to set text appearance. */
+
 .transaction-reference {
   font-weight: 600;
 }
+
+/* Style .transaction-type to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .transaction-type {
   display: inline-flex;
@@ -257,6 +307,8 @@
   font-weight: 600;
 }
 
+/* Style .transaction-status to arrange its contents, set text appearance. */
+
 .transaction-status {
   display: inline-flex;
   align-items: center;
@@ -269,11 +321,15 @@
   font-weight: 600;
 }
 
+/* Style .transaction-status.succeeded to set text appearance, style the surface and boundaries. */
+
 .transaction-status.succeeded {
   background: #dcf6eb;
 
   color: #11845b;
 }
+
+/* Style .transaction-status.pending to set text appearance, style the surface and boundaries. */
 
 .transaction-status.pending {
   background: #fff0d4;
@@ -281,11 +337,15 @@
   color: #c97804;
 }
 
+/* Style .transaction-status.failed to set text appearance, style the surface and boundaries. */
+
 .transaction-status.failed {
   background: #fde3e3;
 
   color: #c03f3f;
 }
+
+/* Style .transaction-view-button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .transaction-view-button {
   display: inline-flex;
@@ -308,9 +368,13 @@
   cursor: pointer;
 }
 
+/* Style .transaction-view-button:hover to style the surface and boundaries. */
+
 .transaction-view-button:hover {
   background: #f8fafc;
 }
+
+/* Style .transactions-loading, .transactions-empty to set text appearance, style the surface and boundaries. */
 
 .transactions-loading,
 .transactions-empty {
@@ -329,6 +393,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .transaction-modal-backdrop to arrange its contents, position it within the page, style the surface and boundaries. */
+
 .transaction-modal-backdrop {
   position: fixed;
 
@@ -345,6 +411,8 @@
   background: rgba(15, 23, 42, 0.48);
 }
 
+/* Style .transaction-details-modal to style the surface and boundaries. */
+
 .transaction-details-modal {
   width: min(100%, 620px);
 
@@ -359,6 +427,8 @@
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
+/* Style .transaction-details-header to arrange its contents. */
+
 .transaction-details-header {
   display: flex;
   align-items: flex-start;
@@ -371,11 +441,15 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Style .transaction-details-header h2 to set text appearance. */
+
 .transaction-details-header h2 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
+
+/* Style .transaction-details-header p to set text appearance. */
 
 .transaction-details-header p {
   margin: 5px 0 0;
@@ -384,6 +458,8 @@
 
   font-size: 12px;
 }
+
+/* Style .transaction-modal-close to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .transaction-modal-close {
   width: 34px;
@@ -404,12 +480,16 @@
   cursor: pointer;
 }
 
+/* Style .transaction-details-body to arrange its contents. */
+
 .transaction-details-body {
   display: flex;
   flex-direction: column;
 
   padding: 20px 24px 24px;
 }
+
+/* Style .transaction-detail-row to arrange its contents. */
 
 .transaction-detail-row {
   display: flex;
@@ -423,11 +503,15 @@
   border-bottom: 1px solid #edf2f6;
 }
 
+/* Style .transaction-detail-row > span to set text appearance. */
+
 .transaction-detail-row > span {
   color: var(--color-text-muted);
 
   font-size: 11px;
 }
+
+/* Style .transaction-detail-row > strong to set text appearance. */
 
 .transaction-detail-row > strong {
   color: var(--color-navy-950);
@@ -437,6 +521,8 @@
   text-align: right;
 }
 
+/* Style .transaction-details-divider to style the surface and boundaries. */
+
 .transaction-details-divider {
   height: 1px;
 
@@ -444,6 +530,8 @@
 
   background: var(--color-border);
 }
+
+/* Style .transaction-id-block to arrange its contents. */
 
 .transaction-id-block {
   display: flex;
@@ -454,11 +542,15 @@
   margin-bottom: 14px;
 }
 
+/* Style .transaction-id-block span to set text appearance. */
+
 .transaction-id-block span {
   color: var(--color-text-muted);
 
   font-size: 11px;
 }
+
+/* Style .transaction-id-block code to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .transaction-id-block code {
   display: block;
@@ -476,36 +568,54 @@
   font-size: 10px;
 }
 
+/* Apply the following layout adjustments when (max-width: 1000px). */
+
 @media (max-width: 1000px) {
+  /* Style .transaction-summary-grid to arrange its contents. */
   .transaction-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Style .transactions-toolbar to arrange its contents. */
+
   .transactions-toolbar {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* Style .transactions-search to control spacing and dimensions. */
 
   .transactions-search {
     grid-column: 1 / -1;
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .transactions-header to arrange its contents. */
   .transactions-header {
     flex-direction: column;
   }
+
+  /* Style .transaction-summary-grid to arrange its contents. */
 
   .transaction-summary-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Style .transactions-toolbar to arrange its contents. */
+
   .transactions-toolbar {
     grid-template-columns: 1fr;
   }
 
+  /* Style .transactions-search to control spacing and dimensions. */
+
   .transactions-search {
     grid-column: auto;
   }
+
+  /* Style .transaction-detail-row to arrange its contents. */
 
   .transaction-detail-row {
     align-items: flex-start;
@@ -513,6 +623,8 @@
 
     gap: 5px;
   }
+
+  /* Style .transaction-detail-row > strong to control spacing and dimensions. */
 
   .transaction-detail-row > strong {
     text-align: left;

@@ -6,6 +6,7 @@ import { TransactionsController } from './transactions.controller';
 
 import { TransactionsService } from './transactions.service';
 
+// Wire the transactions controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

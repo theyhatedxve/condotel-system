@@ -2,6 +2,8 @@ import { useState } from 'react';
 
 import { X } from 'lucide-react';
 
+// Convert the selected record into editable form values, or supply the existing defaults
+// for creation.
 function createInitialForm(guest) {
   if (!guest) {
     return {
@@ -53,8 +55,10 @@ export default function GuestFormModal({
   onClose,
   onSubmit,
 }) {
+  // Track local state and read any session or route values needed by this component.
   const [form, setForm] = useState(() => createInitialForm(guest));
 
+  // Update one controlled form field while retaining the remaining field values.
   function updateField(field, value) {
     setForm((current) => ({
       ...current,
@@ -62,6 +66,8 @@ export default function GuestFormModal({
     }));
   }
 
+  // Prevent default form navigation and send the current guest fields to the parent save
+  // handler.
   function handleSubmit(event) {
     event.preventDefault();
 
@@ -100,7 +106,9 @@ export default function GuestFormModal({
 
   return (
     <div className="modal-backdrop">
+      {/* Group the related content and actions into a distinct page section. */}
       <section className="guest-modal">
+        {/* Show this section's heading, context, and available actions. */}
         <header className="guest-modal-header">
           <div>
             <h2>{guest ? 'Edit Guest' : 'Add Guest'}</h2>
@@ -117,6 +125,7 @@ export default function GuestFormModal({
           </button>
         </header>
 
+        {/* Collect the guests form fields and submit them through the handler above. */}
         <form onSubmit={handleSubmit} className="guest-form">
           <div className="guest-form-grid">
             {guest && (
@@ -236,6 +245,7 @@ export default function GuestFormModal({
             />
           </label>
 
+          {/* Show the property footer links and contact information. */}
           <footer className="guest-modal-actions">
             <button
               type="button"

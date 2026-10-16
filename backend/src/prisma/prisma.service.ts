@@ -4,6 +4,8 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 import { PrismaClient } from '../generated/prisma/client';
 
+// Implement prisma operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class PrismaService
   extends PrismaClient
@@ -25,10 +27,12 @@ export class PrismaService
     });
   }
 
+  // Connect the Prisma client when Nest initializes the database service.
   async onModuleInit(): Promise<void> {
     await this.$connect();
   }
 
+  // Disconnect the Prisma client when Nest shuts the service down.
   async onModuleDestroy(): Promise<void> {
     await this.$disconnect();
   }

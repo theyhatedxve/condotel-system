@@ -4,8 +4,10 @@ import RoomPhoto from '../landing/RoomPhoto';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { featuredRooms } from './homeContent';
 
+// Render mock featured-room cards and delegate room selections to the homepage dialog.
 export default function FeaturedRooms({ onSelect }) {
   return (
+    /* Display the "Featured Rooms" section and its related actions. */
     <section className="coast-featured" aria-labelledby="coast-featured-title">
       <div className="coast-container coast-featured-layout">
         <div className="coast-featured-copy">

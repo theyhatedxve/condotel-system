@@ -2,6 +2,7 @@ import { Users } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatCurrency';
 import RoomPhoto from './RoomPhoto';
 
+// Render a room preview, availability, amenities, price, and details action.
 export default function PublicRoomCard({ room, dateSearch, onDetails }) {
   const available = dateSearch || room.status === 'AVAILABLE';
   return (

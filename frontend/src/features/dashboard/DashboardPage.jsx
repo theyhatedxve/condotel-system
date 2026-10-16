@@ -14,10 +14,12 @@ import { formatDate } from '../../utils/formatDate';
 
 import './dashboard.css';
 
+// Map a record status to the existing badge CSS class.
 function getStatusClass(status) {
   return status.toLowerCase().replaceAll('_', '-');
 }
 
+// Convert the stored status into its display label.
 function formatStatus(status) {
   return status
     .split('_')
@@ -25,7 +27,9 @@ function formatStatus(status) {
     .join(' ');
 }
 
+// Render the dashboard page with its loading, error, and record/form states.
 export default function DashboardPage() {
+  // Track local state and read any session or route values needed by this component.
   const { user } = useAuth();
 
   const navigate = useNavigate();
@@ -34,6 +38,7 @@ export default function DashboardPage() {
 
   const [loading, setLoading] = useState(true);
 
+  // Load the dashboard once and ignore its result after this page unmounts.
   useEffect(() => {
     let cancelled = false;
 
@@ -63,6 +68,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
+      /* Group the related content and actions into a distinct page section. */
       <section className="dashboard-page">
         <div className="dashboard-loading">Loading dashboard...</div>
       </section>
@@ -133,7 +139,9 @@ export default function DashboardPage() {
   ];
 
   return (
+    /* Display the "" section and its related actions. */
     <section className="dashboard-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="dashboard-header">
         <h1>
           {'Welcome,'} {user?.firstName || 'Admin'}!
@@ -175,6 +183,7 @@ export default function DashboardPage() {
             <div className="dashboard-empty">No reservations found.</div>
           ) : (
             <div className="table-wrapper">
+              {/* Display dashboard records with their existing columns and row actions. */}
               <table className="dashboard-table">
                 <thead>
                   <tr>

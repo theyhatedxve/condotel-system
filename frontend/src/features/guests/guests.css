@@ -1,3 +1,5 @@
+/* Style .guests-header to arrange its contents. */
+
 .guests-header {
   display: flex;
   justify-content: space-between;
@@ -8,11 +10,15 @@
   margin-bottom: 20px;
 }
 
+/* Style .guests-header h1 to set text appearance. */
+
 .guests-header h1 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
+
+/* Style .guests-header p to set text appearance. */
 
 .guests-header p {
   margin: 6px 0 0;
@@ -20,11 +26,15 @@
   color: var(--color-text-muted);
 }
 
+/* Style .guests-header .primary-button to arrange its contents. */
+
 .guests-header .primary-button {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
+/* Style .guest-search to arrange its contents, style the surface and boundaries. */
 
 .guest-search {
   display: flex;
@@ -43,12 +53,16 @@
   background: #ffffff;
 }
 
+/* Style .guest-search input to make keyboard focus visible, style the surface and boundaries. */
+
 .guest-search input {
   flex: 1;
 
   border: none;
   outline: none;
 }
+
+/* Style .guest-table-wrapper to style the surface and boundaries. */
 
 .guest-table-wrapper {
   overflow-x: auto;
@@ -62,11 +76,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .guest-table to control spacing and dimensions. */
+
 .guest-table {
   width: 100%;
 
   border-collapse: collapse;
 }
+
+/* Style .guest-table th, .guest-table td to set text appearance. */
 
 .guest-table th,
 .guest-table td {
@@ -79,9 +97,13 @@
   font-size: 12px;
 }
 
+/* Style .guest-table th to set text appearance. */
+
 .guest-table th {
   color: var(--color-text-muted);
 }
+
+/* Style .guest-active-badge to set text appearance, style the surface and boundaries. */
 
 .guest-active-badge {
   padding: 4px 8px;
@@ -95,6 +117,8 @@
   font-size: 10px;
   font-weight: 600;
 }
+
+/* Style .table-icon-button to arrange its contents, style the surface and boundaries. */
 
 .table-icon-button {
   width: 30px;
@@ -110,6 +134,8 @@
   background: #ffffff;
 }
 
+/* Style .guest-modal to style the surface and boundaries. */
+
 .guest-modal {
   width: min(100%, 760px);
 
@@ -122,6 +148,8 @@
   background: #ffffff;
 }
 
+/* Style .guest-modal-header to arrange its contents. */
+
 .guest-modal-header {
   display: flex;
   justify-content: space-between;
@@ -131,9 +159,13 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Style .guest-modal-header h2 to control spacing and dimensions. */
+
 .guest-modal-header h2 {
   margin: 0;
 }
+
+/* Style .guest-modal-header p to set text appearance. */
 
 .guest-modal-header p {
   margin: 5px 0 0;
@@ -142,6 +174,8 @@
 
   font-size: 12px;
 }
+
+/* Style .guest-form to arrange its contents. */
 
 .guest-form {
   display: flex;
@@ -152,6 +186,8 @@
   padding: 24px;
 }
 
+/* Style .guest-form-grid to arrange its contents. */
+
 .guest-form-grid {
   display: grid;
 
@@ -159,6 +195,8 @@
 
   gap: 16px;
 }
+
+/* Style .guest-form label to arrange its contents, set text appearance. */
 
 .guest-form label {
   display: flex;
@@ -170,6 +208,8 @@
   font-weight: 600;
 }
 
+/* Style .guest-form input to make keyboard focus visible, style the surface and boundaries. */
+
 .guest-form input {
   padding: 11px 12px;
 
@@ -179,6 +219,8 @@
 
   outline: none;
 }
+
+/* Style .guest-modal-actions to arrange its contents. */
 
 .guest-modal-actions {
   display: flex;
@@ -193,10 +235,15 @@
   border-top: 1px solid var(--color-border);
 }
 
+/* Apply the following layout adjustments when (max-width: 700px). */
+
 @media (max-width: 700px) {
+  /* Style .guest-form-grid to arrange its contents. */
   .guest-form-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Style .guests-header to arrange its contents. */
 
   .guests-header {
     flex-direction: column;

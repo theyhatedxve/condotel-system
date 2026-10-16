@@ -25,6 +25,7 @@ export const publicUserSelect = {
   createdAt: true,
   updatedAt: true,
 } as const;
+// Describe the create customer data data shared by the surrounding code.
 interface CreateCustomerData {
   email: string;
   username?: string;
@@ -33,6 +34,7 @@ interface CreateCustomerData {
   lastName: string;
   phone?: string;
 }
+// Describe the update profile data data shared by the surrounding code.
 interface UpdateProfileData {
   firstName?: string;
   lastName?: string;
@@ -41,6 +43,8 @@ interface UpdateProfileData {
   phone?: string | null;
 }
 
+// Implement users operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class UsersService {
   constructor(
@@ -53,11 +57,14 @@ export class UsersService {
       where: { emailBlindIndex: this.privacy.index('email', email) },
     });
   }
+  // Find an internal account using its normalized username.
   findByUsername(username: string) {
     return this.prisma.user.findUnique({
       where: { username: username.trim().toLowerCase() },
     });
   }
+  // Resolve either login identifier without decrypting contacts before password
+  // verification.
   findByEmailOrUsername(identifier: string) {
     return this.prisma.user.findFirst({
       where: {
@@ -68,9 +75,11 @@ export class UsersService {
       },
     });
   }
+  // Load the internal account, including its hash, for trusted service operations.
   findById(id: string) {
     return this.prisma.user.findUnique({ where: { id } });
   }
+  // Select public account fields and decrypt authorized contact fields for the response.
   async findPublicById(id: string) {
     const row = await this.prisma.user.findUnique({
       where: { id },
@@ -78,6 +87,7 @@ export class UsersService {
     });
     return row ? this.privacy.response(row) : null;
   }
+  // Create a customer with encrypted contacts and an empty guest profile.
   async createCustomer(data: CreateCustomerData) {
     const id = randomUUID();
     return this.privacy.response(
@@ -97,6 +107,8 @@ export class UsersService {
       }),
     );
   }
+  // Check editable identifiers and names, then update the account with encrypted contact
+  // values.
   async updateProfile(id: string, data: UpdateProfileData) {
     const user = await this.findById(id);
     if (!user) throw new NotFoundException('User not found.');
@@ -132,6 +144,7 @@ export class UsersService {
       }),
     );
   }
+  // Store the supplied password hash and its temporary-password flag.
   async updatePassword(
     id: string,
     passwordHash: string,
@@ -145,6 +158,7 @@ export class UsersService {
       }),
     );
   }
+  // Record the login timestamp without returning private account data.
   async updateLastLogin(id: string) {
     await this.prisma.user.update({
       where: { id },

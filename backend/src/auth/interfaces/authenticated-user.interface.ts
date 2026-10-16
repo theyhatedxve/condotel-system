@@ -1,5 +1,6 @@
 import { UserRole, UserStatus } from '../../generated/prisma/enums';
 
+// Describe the authenticated user data shared by the surrounding code.
 export interface AuthenticatedUser {
   id: string;
 

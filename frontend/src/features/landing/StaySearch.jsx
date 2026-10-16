@@ -1,6 +1,8 @@
 import { BedDouble, CalendarDays, Search, Users } from 'lucide-react';
 import { useState } from 'react';
 
+// Format the local calendar date as a date-input value without converting it through
+// UTC.
 function localDate(offset = 0) {
   const date = new Date();
   date.setDate(date.getDate() + offset);
@@ -11,17 +13,22 @@ function localDate(offset = 0) {
   ].join('-');
 }
 
+// Collect and validate stay dates, guest counts, and room type before applying a room
+// search.
 export default function StaySearch({
   onSearch,
   roomTypes,
   roomType,
   onRoomTypeChange,
 }) {
+  // Track local state and read any session or route values needed by this component.
   const [checkIn, setCheckIn] = useState(() => localDate());
   const [checkOut, setCheckOut] = useState(() => localDate(1));
   const [guests, setGuests] = useState('2');
   const [error, setError] = useState('');
 
+  // Validate dates and guest inputs before passing the applied search to the room
+  // browser.
   function submit(event) {
     event.preventDefault();
     if (checkIn < localDate() || checkOut <= checkIn) {
@@ -34,6 +41,7 @@ export default function StaySearch({
   }
 
   return (
+    /* Collect the landing form fields and submit them through the handler above. */
     <form
       className="stay-search"
       onSubmit={submit}

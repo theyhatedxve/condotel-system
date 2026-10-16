@@ -21,6 +21,7 @@ import RoomDetails from './RoomDetails';
 import usePublicRooms from './usePublicRooms';
 import './landing.css';
 
+// Format a stay date for display using the existing fallback for an empty value.
 function displayDate(value) {
   return new Intl.DateTimeFormat('en-PH', {
     month: 'short',
@@ -29,7 +30,10 @@ function displayDate(value) {
   }).format(new Date(`${value}T00:00:00`));
 }
 
+// Combine the stay search, filters, sorting, and room results for authenticated
+// browsing.
 export default function LandingPage() {
+  // Track local state and read any session or route values needed by this component.
   const [search, setSearch] = useState(null);
   const [roomType, setRoomType] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
@@ -56,6 +60,7 @@ export default function LandingPage() {
       });
     });
 
+  // Restore the existing room-browser filter defaults.
   function clearFilters() {
     setRoomType('');
     setMaxPrice('');
@@ -63,6 +68,7 @@ export default function LandingPage() {
     setSort('room-number');
   }
 
+  // Return focus to the stay-search controls for editing.
   function editSearch() {
     document.getElementById('stay-check-in')?.focus();
     document.getElementById('home')?.scrollIntoView({ behavior: 'smooth' });
@@ -73,9 +79,11 @@ export default function LandingPage() {
       <a className="stay-skip" href="#rooms">
         Skip to rooms
       </a>
+      {/* Show this section's heading, context, and available actions. */}
       <header className="stay-header">
         <div className="stay-container stay-header-inner">
           <HomeBrand />
+          {/* Provide the navigation links or page controls for this part of the interface. */}
           <nav aria-label="Main navigation">
             <Link to="/">Home</Link>
             <Link to="/rooms" aria-current="page">
@@ -102,6 +110,7 @@ export default function LandingPage() {
       </header>
 
       <main>
+        {/* Display the "Discover Our Rooms" section and its related actions. */}
         <section
           className="stay-hero"
           id="home"
@@ -109,6 +118,7 @@ export default function LandingPage() {
           style={{ '--stay-hero-room': `url("${featuredRooms[0].imageUrl}")` }}
         >
           <div className="stay-container stay-hero-content">
+            {/* Provide the navigation links or page controls for this part of the interface. */}
             <nav className="stay-breadcrumb" aria-label="Breadcrumb">
               <Link to="/">Home</Link>
               <ChevronRight size={15} />
@@ -132,6 +142,7 @@ export default function LandingPage() {
           />
         </div>
 
+        {/* Display the "A short pause in your search" section and its related actions. */}
         <section
           className="stay-container stay-catalog"
           id="rooms"
@@ -280,6 +291,7 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {/* Group the related content and actions into a distinct page section. */}
         <section
           className="stay-container stay-benefits"
           aria-label="Plan your stay"
@@ -316,6 +328,7 @@ export default function LandingPage() {
           </div>
         </section>
       </main>
+      {/* Show the property footer links and contact information. */}
       <footer className="stay-footer" id="about">
         <div className="stay-container">
           <HomeBrand />

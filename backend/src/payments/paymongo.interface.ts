@@ -1,3 +1,4 @@
+// Describe the paymongo checkout session data shared by the surrounding code.
 export interface PaymongoCheckoutSession {
   data: {
     id: string;
@@ -17,6 +18,7 @@ export interface PaymongoCheckoutSession {
   };
 }
 
+// Describe the paymongo error response data shared by the surrounding code.
 export interface PaymongoErrorResponse {
   errors?: Array<{
     code?: string;
@@ -30,6 +32,7 @@ export interface PaymongoErrorResponse {
   }>;
 }
 
+// Describe the paymongo payment source data shared by the surrounding code.
 export interface PaymongoPaymentSource {
   id?: string;
 
@@ -44,6 +47,7 @@ export interface PaymongoPaymentSource {
       };
 }
 
+// Describe the paymongo payment attempt data shared by the surrounding code.
 export interface PaymongoPaymentAttempt {
   id: string;
 
@@ -64,6 +68,7 @@ export interface PaymongoPaymentAttempt {
   };
 }
 
+// Describe the paymongo checkout session resource data shared by the surrounding code.
 export interface PaymongoCheckoutSessionResource {
   id: string;
 

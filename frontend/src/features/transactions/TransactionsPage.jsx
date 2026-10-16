@@ -46,6 +46,8 @@ const typeOptions = [
   },
 ];
 
+// Format a record timestamp with this page's existing locale options and missing-value
+// fallback.
 function formatDateTime(value) {
   if (!value) {
     return '—';
@@ -60,6 +62,7 @@ function formatDateTime(value) {
   }).format(new Date(value));
 }
 
+// Convert a stored payment method into its display label.
 function formatMethod(method) {
   if (!method) {
     return '—';
@@ -72,7 +75,9 @@ function formatMethod(method) {
   return method;
 }
 
+// Render the transactions page with its loading, error, and record/form states.
 export default function TransactionsPage() {
+  // Track local state and read any session or route values needed by this component.
   const [transactions, setTransactions] = useState([]);
 
   const [loading, setLoading] = useState(true);
@@ -85,6 +90,7 @@ export default function TransactionsPage() {
 
   const [selectedTransaction, setSelectedTransaction] = useState(null);
 
+  // Load the initial transaction list and discard the result after leaving the page.
   useEffect(() => {
     let cancelled = false;
 
@@ -112,6 +118,7 @@ export default function TransactionsPage() {
     };
   }, []);
 
+  // Reload transaction records and update the page's loading/error state.
   async function refreshTransactions() {
     setLoading(true);
 
@@ -189,7 +196,9 @@ export default function TransactionsPage() {
   });
 
   return (
+    /* Display the "Transactions" section and its related actions. */
     <section className="transactions-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="transactions-header">
         <div>
           <h1>Transactions</h1>
@@ -303,6 +312,7 @@ export default function TransactionsPage() {
         </div>
       ) : (
         <div className="transactions-table-wrapper">
+          {/* Display transactions records with their existing columns and row actions. */}
           <table className="transactions-table">
             <thead>
               <tr>
@@ -379,6 +389,7 @@ export default function TransactionsPage() {
       {selectedTransaction && (
         <div className="transaction-modal-backdrop">
           <div className="transaction-details-modal">
+            {/* Show this section's heading, context, and available actions. */}
             <header className="transaction-details-header">
               <div>
                 <h2>Transaction Details</h2>

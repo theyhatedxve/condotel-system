@@ -16,6 +16,7 @@ import { useAuth } from './useAuth';
 
 import './auth.css';
 
+// Choose the existing customer or administration destination after authentication.
 function getHomeRoute(role) {
   switch (role) {
     case 'ADMIN':
@@ -32,7 +33,9 @@ function getHomeRoute(role) {
   }
 }
 
+// Render the login page with its loading, error, and record/form states.
 export default function LoginPage() {
+  // Track local state and read any session or route values needed by this component.
   const navigate = useNavigate();
   const location = useLocation();
   const paymentReturn = location.state?.paymentReturn;
@@ -63,6 +66,8 @@ export default function LoginPage() {
     );
   }
 
+  // Submit credentials, honor the temporary-password requirement, and resume a safe
+  // payment return or role destination.
   async function handleSubmit(event) {
     event.preventDefault();
 
@@ -90,6 +95,7 @@ export default function LoginPage() {
     }
   }
 
+  // Update the login identifier and clear its displayed error.
   function handleIdentifierChange(event) {
     setIdentifier(event.target.value);
 
@@ -98,6 +104,7 @@ export default function LoginPage() {
     }
   }
 
+  // Update the login password and clear its displayed error.
   function handlePasswordChange(event) {
     setPassword(event.target.value);
 
@@ -108,6 +115,7 @@ export default function LoginPage() {
 
   return (
     <main className="login-page">
+      {/* Display the "CONDOTEL" section and its related actions. */}
       <section className="login-visual">
         <div className="login-overlay" />
 
@@ -135,6 +143,7 @@ export default function LoginPage() {
         </div>
       </section>
 
+      {/* Display the "Welcome Back" section and its related actions. */}
       <section className="login-form-panel">
         <div className="login-form-container">
           <Link to="/" className="login-back-link">
@@ -148,6 +157,7 @@ export default function LoginPage() {
             <p>Sign in to your account</p>
           </div>
 
+          {/* Collect the auth form fields and submit them through the handler above. */}
           <form onSubmit={handleSubmit} className="login-form">
             <label className="input-group">
               <span>Email or Username</span>

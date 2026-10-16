@@ -12,6 +12,8 @@ import { UsersService } from '../../users/users.service';
 
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
+// Validate bearer tokens and attach the current active account to authenticated
+// requests.
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -34,6 +36,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  // Reload the JWT subject from the database and reject accounts that are no longer
+  // active.
   async validate(payload: JwtPayload) {
     // Reload account status and role for each authenticated request so existing tokens
     // reflect account suspension and role changes without waiting for token expiry.

@@ -1,5 +1,6 @@
 import { formatCurrency } from '../../utils/formatCurrency';
 
+// Render the controlled room filters and delegate changes to the room browser.
 export default function RoomFilters({
   rooms,
   roomTypes,

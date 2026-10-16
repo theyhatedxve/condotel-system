@@ -14,19 +14,23 @@ import { CreateGuestDto } from './create-guest.dto';
 import { UpdateGuestDto } from './update-guest.dto';
 const guestSelect = { ...publicUserSelect, guestProfile: true } as const;
 
+// Implement guests operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class GuestsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly privacy: PrivateDataService,
   ) {}
+  // List customer accounts with optional contact/name search, status filtering, and
+  // pagination.
   async findAll(search?: string, page?: number, status?: UserStatus) {
-    const q = search?.trim();
+    const searchTerm = search?.trim();
     const rows = await this.prisma.user.findMany({
       where: {
         role: UserRole.CUSTOMER,
         ...(status ? { status } : {}),
-        ...(q ? { OR: this.privacy.contactSearch(q) } : {}),
+        ...(searchTerm ? { OR: this.privacy.contactSearch(searchTerm) } : {}),
       },
       select: guestSelect,
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }, { id: 'asc' }],
@@ -34,6 +38,7 @@ export class GuestsService {
     });
     return rows.map((row) => this.privacy.response(row));
   }
+  // Load a customer account and decrypt the selected contact/profile fields.
   async findOne(id: string) {
     const row = await this.prisma.user.findFirst({
       where: { id, role: UserRole.CUSTOMER },
@@ -42,6 +47,8 @@ export class GuestsService {
     if (!row) throw new NotFoundException('Guest not found.');
     return this.privacy.response(row);
   }
+  // Validate guest identifiers and create an encrypted customer profile with a temporary
+  // password.
   async create(dto: CreateGuestDto) {
     const existing = await this.prisma.user.findUnique({
       where: { emailBlindIndex: this.privacy.index('email', dto.email) },
@@ -80,6 +87,8 @@ export class GuestsService {
     });
     return this.privacy.response(row);
   }
+  // Update an existing customer and its encrypted profile while preserving omitted
+  // fields.
   async update(id: string, dto: UpdateGuestDto) {
     await this.findOne(id);
     if (

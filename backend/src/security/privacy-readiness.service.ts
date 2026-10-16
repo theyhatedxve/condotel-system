@@ -1,12 +1,15 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { PrivateDataService } from './private-data.service';
+// Stop startup when migration, write protections, or configured keys are incomplete.
 @Injectable()
 export class PrivacyReadinessService implements OnApplicationBootstrap {
   constructor(
     private readonly prisma: PrismaService,
     private readonly privacy: PrivateDataService,
   ) {}
+  // Require finalized privacy protections and matching keys before allowing the API to
+  // serve requests.
   async onApplicationBootstrap() {
     try {
       const markers = await this.prisma.$queryRawUnsafe<

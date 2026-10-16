@@ -6,6 +6,7 @@ import { SearchController } from './search.controller';
 
 import { SearchService } from './search.service';
 
+// Wire the search controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

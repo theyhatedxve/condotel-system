@@ -4,7 +4,10 @@ import LoadingScreen from '../features/auth/LoadingScreen';
 
 import { useAuth } from '../features/auth/useAuth';
 
+// Wait for session restoration, require login/password change, and enforce allowed roles
+// before rendering child routes.
 export default function ProtectedRoute({ allowedRoles }) {
+  // Track local state and read any session or route values needed by this component.
   const { user, isLoading, isAuthenticated } = useAuth();
 
   const location = useLocation();

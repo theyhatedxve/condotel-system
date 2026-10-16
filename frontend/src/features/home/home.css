@@ -9,11 +9,13 @@
   font-size: 14px;
   line-height: 1.5;
 }
+/* Style .coast-page *, .coast-page *::before, .coast-page *::after to keep padding and borders inside the declared dimensions. */
 .coast-page *,
 .coast-page *::before,
 .coast-page *::after {
   box-sizing: border-box;
 }
+/* Style .coast-page h1, .coast-page h2, .coast-page h3, .coast-page p, .coast-page figure to control spacing and dimensions. */
 .coast-page h1,
 .coast-page h2,
 .coast-page h3,
@@ -21,24 +23,30 @@
 .coast-page figure {
   margin: 0;
 }
+/* Style .coast-page button to indicate the available pointer interaction. */
 .coast-page button {
   cursor: pointer;
 }
+/* Style .coast-page a, .coast-page button to control the touch highlight appearance. */
 .coast-page a,
 .coast-page button {
   -webkit-tap-highlight-color: transparent;
 }
+/* Style .coast-page :focus-visible to make keyboard focus visible. */
 .coast-page :focus-visible {
   outline: 3px solid #ba8532;
   outline-offset: 4px;
 }
+/* Style .coast-page section to keep anchored content clear of the header. */
 .coast-page section {
   scroll-margin-top: 20px;
 }
+/* Style .coast-container to control spacing and dimensions. */
 .coast-container {
   width: min(1440px, 88%);
   margin-inline: auto;
 }
+/* Style .coast-skip to position it within the page, set text appearance, style the surface and boundaries. */
 .coast-skip {
   position: absolute;
   left: 20px;
@@ -48,13 +56,16 @@
   color: #082a49;
   padding: 12px 18px;
 }
+/* Style .coast-skip:focus to position it within the page. */
 .coast-skip:focus {
   top: 12px;
 }
+/* Style .coast-header to set text appearance, style the surface and boundaries. */
 .coast-header {
   background: linear-gradient(100deg, #0c3457, #06233d);
   color: white;
 }
+/* Style .coast-header-inner to arrange its contents. */
 .coast-header-inner {
   min-height: 76px;
   display: flex;
@@ -62,17 +73,20 @@
   justify-content: space-between;
   gap: 30px;
 }
+/* Style .coast-brand to arrange its contents. */
 .coast-brand {
   display: inline-flex;
   align-items: center;
   gap: 13px;
   flex-shrink: 0;
 }
+/* Style .coast-brand svg to set text appearance. */
 .coast-brand svg {
   width: 51px;
   height: 49px;
   color: #f5f8fc;
 }
+/* Style .coast-brand > span to arrange its contents, set text appearance. */
 .coast-brand > span {
   display: block;
   font-size: 20px;
@@ -80,6 +94,7 @@
   letter-spacing: 5px;
   line-height: 1.35;
 }
+/* Style .coast-brand small to arrange its contents, set text appearance. */
 .coast-brand small {
   display: block;
   color: #edc879;
@@ -89,12 +104,14 @@
   text-align: center;
   margin-top: 4px;
 }
+/* Style .coast-header nav, .coast-footer nav to arrange its contents. */
 .coast-header nav,
 .coast-footer nav {
   display: flex;
   align-items: center;
   gap: 34px;
 }
+/* Style .coast-header nav a, .coast-header nav button to arrange its contents, position it within the page, set text appearance. */
 .coast-header nav a,
 .coast-header nav button {
   min-height: 48px;
@@ -104,6 +121,7 @@
   font-size: 12px;
   font-weight: 500;
 }
+/* Style .coast-header nav button, .coast-footer nav button to set text appearance, style the surface and boundaries. */
 .coast-header nav button,
 .coast-footer nav button {
   border: 0;
@@ -112,9 +130,11 @@
   color: inherit;
   font: inherit;
 }
+/* Style .coast-header nav [aria-current='page'] to set text appearance. */
 .coast-header nav [aria-current='page'] {
   color: var(--coast-gold);
 }
+/* Style .coast-header nav [aria-current='page']::after to position it within the page, style the surface and boundaries. */
 .coast-header nav [aria-current='page']::after {
   content: '';
   position: absolute;
@@ -123,25 +143,30 @@
   height: 2px;
   background: var(--coast-gold);
 }
+/* Style .coast-header nav a:hover, .coast-footer nav a:hover, .coast-header nav button:hover, .coast-footer nav button:hover to set text appearance. */
 .coast-header nav a:hover,
 .coast-footer nav a:hover,
 .coast-header nav button:hover,
 .coast-footer nav button:hover {
   color: var(--coast-gold);
 }
+/* Style .coast-header-actions to arrange its contents. */
 .coast-header-actions {
   display: flex;
   align-items: center;
   gap: 22px;
 }
+/* Style .coast-search-link to arrange its contents. */
 .coast-search-link {
   display: inline-flex;
   padding: 7px;
 }
+/* Style .coast-sign-in to set text appearance. */
 .coast-sign-in {
   font-size: 12px;
   white-space: nowrap;
 }
+/* Style .coast-sign-out to set text appearance, style the surface and boundaries. */
 .coast-sign-out {
   border: 0;
   padding: 0;
@@ -149,9 +174,11 @@
   color: inherit;
   font-family: inherit;
 }
+/* Style .coast-sign-out:hover to set text appearance. */
 .coast-sign-out:hover {
   color: #efc576;
 }
+/* Style .coast-button to arrange its contents, set text appearance, style the surface and boundaries. */
 .coast-button {
   display: inline-flex;
   align-items: center;
@@ -169,38 +196,47 @@
     box-shadow 150ms ease;
   white-space: nowrap;
 }
+/* Style .coast-button-gold to set text appearance, style the surface and boundaries. */
 .coast-button-gold {
   color: #122640;
   background: linear-gradient(110deg, #f1ca80, #eabd6a);
   border-color: #dca653;
   box-shadow: 0 2px 6px #061f3315;
 }
+/* Style .coast-button-gold:hover to style the surface and boundaries. */
 .coast-button-gold:hover {
   background: #f6d594;
 }
+/* Style .coast-button-glass to set text appearance, style the surface and boundaries. */
 .coast-button-glass {
   color: white;
   border-color: #cedae6;
   background: #0b29423b;
 }
+/* Style .coast-button-glass:hover to style the surface and boundaries. */
 .coast-button-glass:hover {
   background: #163c61;
 }
+/* Style .coast-button-navy to set text appearance, style the surface and boundaries. */
 .coast-button-navy {
   background: #0a3157;
   color: white;
 }
+/* Style .coast-button-navy:hover to style the surface and boundaries. */
 .coast-button-navy:hover {
   background: #174c77;
 }
+/* Style .coast-button-outline to set text appearance, style the surface and boundaries. */
 .coast-button-outline {
   border-color: #93a6bf;
   color: #102d4e;
   background: transparent;
 }
+/* Style .coast-button-outline:hover to style the surface and boundaries. */
 .coast-button-outline:hover {
   background: #e7eff7;
 }
+/* Style .coast-hero to control overflowing content, position it within the page, set text appearance. */
 .coast-hero {
   position: relative;
   min-height: 340px;
@@ -209,6 +245,7 @@
   isolation: isolate;
   overflow: hidden;
 }
+/* Style .coast-hero-photo to position it within the page. */
 .coast-hero-photo {
   position: absolute;
   inset: 0;
@@ -217,6 +254,7 @@
   object-fit: cover;
   z-index: -2;
 }
+/* Style .coast-hero::after to position it within the page, style the surface and boundaries. */
 .coast-hero::after {
   content: '';
   position: absolute;
@@ -224,6 +262,7 @@
   z-index: -1;
   background: linear-gradient(90deg, #031e39b8, #09283c42 51%, #09283c00 77%);
 }
+/* Style .coast-hero-inner to arrange its contents, position it within the page. */
 .coast-hero-inner {
   display: flex;
   align-items: center;
@@ -231,10 +270,12 @@
   position: relative;
   padding-block: 26px;
 }
+/* Style .coast-hero-copy to control spacing and dimensions. */
 .coast-hero-copy {
   max-width: 630px;
   padding-bottom: 8px;
 }
+/* Style .coast-eyebrow to set text appearance. */
 .coast-eyebrow {
   color: #78879d;
   font-size: 10px;
@@ -242,10 +283,12 @@
   letter-spacing: 3px;
   text-transform: uppercase;
 }
+/* Style .coast-hero .coast-eyebrow to set text appearance. */
 .coast-hero .coast-eyebrow {
   color: #f0c574;
   margin-bottom: 8px;
 }
+/* Style .coast-hero h1 to set text appearance. */
 .coast-hero h1 {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(38px, 3.5vw, 56px);
@@ -254,17 +297,20 @@
   letter-spacing: -0.6px;
   margin-bottom: 16px;
 }
+/* Style .coast-intro to set text appearance. */
 .coast-intro {
   font-size: 14px;
   line-height: 1.45;
   color: #f1f5fa;
   max-width: 575px;
 }
+/* Style .coast-hero-actions to arrange its contents. */
 .coast-hero-actions {
   display: flex;
   gap: 14px;
   margin-top: 20px;
 }
+/* Style .coast-carousel to arrange its contents, position it within the page, style the surface and boundaries. */
 .coast-carousel {
   position: absolute;
   right: 0;
@@ -277,6 +323,7 @@
   background: #0c243b45;
   backdrop-filter: blur(5px);
 }
+/* Style .coast-carousel button to arrange its contents, set text appearance, style the surface and boundaries. */
 .coast-carousel button {
   width: 33px;
   height: 33px;
@@ -288,6 +335,7 @@
   display: grid;
   place-items: center;
 }
+/* Style .coast-carousel .coast-slide-number to set text appearance, style the surface and boundaries. */
 .coast-carousel .coast-slide-number {
   width: 22px;
   border: 0;
@@ -295,10 +343,12 @@
   border-bottom: 2px solid transparent;
   font-size: 13px;
 }
+/* Style .coast-carousel .is-active to set text appearance. */
 .coast-carousel .is-active {
   border-bottom-color: var(--coast-gold);
   color: var(--coast-gold);
 }
+/* Style .coast-sr-only to control overflowing content, position it within the page. */
 .coast-sr-only {
   position: absolute;
   width: 1px;
@@ -307,16 +357,19 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+/* Style .coast-benefits to style the surface and boundaries. */
 .coast-benefits {
   background: linear-gradient(90deg, #f3f8fc, #edf4fb, #f8fbff);
   padding: 12px 0;
 }
+/* Style .coast-benefit-grid to arrange its contents. */
 .coast-benefit-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 17px;
   max-width: 1330px;
 }
+/* Style .coast-benefit-grid article to arrange its contents, style the surface and boundaries. */
 .coast-benefit-grid article {
   padding: 17px 24px;
   display: flex;
@@ -327,6 +380,7 @@
   border-radius: 10px;
   box-shadow: 0 5px 15px #113e6610;
 }
+/* Style .coast-benefit-icon to arrange its contents, set text appearance, style the surface and boundaries. */
 .coast-benefit-icon {
   width: 57px;
   height: 57px;
@@ -337,16 +391,19 @@
   color: #0d3258;
   border-radius: 50%;
 }
+/* Style .coast-benefit-grid h2 to set text appearance. */
 .coast-benefit-grid h2 {
   font-size: 14px;
   margin-bottom: 4px;
 }
+/* Style .coast-benefit-grid p to set text appearance. */
 .coast-benefit-grid p {
   color: #4f6380;
   font-size: 12px;
   line-height: 1.45;
   max-width: 295px;
 }
+/* Style .coast-location to arrange its contents. */
 .coast-location {
   display: grid;
   grid-template-columns: 1.05fr 1fr 0.8fr;
@@ -354,6 +411,7 @@
   align-items: center;
   padding-block: 22px;
 }
+/* Style .coast-location h2, .coast-featured h2 to set text appearance. */
 .coast-location h2,
 .coast-featured h2 {
   font-family: Georgia, 'Times New Roman', serif;
@@ -363,6 +421,7 @@
   line-height: 1.15;
   margin: 5px 0 10px;
 }
+/* Style .coast-location-copy > p:not(.coast-eyebrow), .coast-featured-copy > p:not(.coast-eyebrow) to set text appearance. */
 .coast-location-copy > p:not(.coast-eyebrow),
 .coast-featured-copy > p:not(.coast-eyebrow) {
   font-size: 13px;
@@ -370,12 +429,14 @@
   color: var(--coast-muted);
   max-width: 440px;
 }
+/* Style .coast-nearby to arrange its contents. */
 .coast-nearby {
   display: flex;
   flex-wrap: wrap;
   row-gap: 14px;
   margin-top: 20px;
 }
+/* Style .coast-nearby > div to arrange its contents. */
 .coast-nearby > div {
   display: flex;
   align-items: center;
@@ -383,13 +444,16 @@
   padding-inline: 10px;
   border-right: 1px solid #e4eaf2;
 }
+/* Style .coast-nearby > div:first-child to control spacing and dimensions. */
 .coast-nearby > div:first-child {
   padding-left: 0;
 }
+/* Style .coast-nearby > div:last-child to style the surface and boundaries. */
 .coast-nearby > div:last-child {
   padding-right: 0;
   border: 0;
 }
+/* Style .coast-nearby-icon to arrange its contents, set text appearance, style the surface and boundaries. */
 .coast-nearby-icon {
   width: 31px;
   height: 31px;
@@ -399,19 +463,23 @@
   background: #faeacb;
   color: #183551;
 }
+/* Style .coast-nearby strong, .coast-nearby small to arrange its contents. */
 .coast-nearby strong,
 .coast-nearby small {
   display: block;
   white-space: nowrap;
 }
+/* Style .coast-nearby strong to set text appearance. */
 .coast-nearby strong {
   font-size: 11px;
 }
+/* Style .coast-nearby small to set text appearance. */
 .coast-nearby small {
   font-size: 9px;
   color: #586e89;
   margin-top: 2px;
 }
+/* Style .coast-map to control overflowing content, position it within the page, style the surface and boundaries. */
 .coast-map {
   height: 215px;
   position: relative;
@@ -419,11 +487,13 @@
   overflow: hidden;
   background: #c9e6ed;
 }
+/* Style .coast-map > svg to arrange its contents. */
 .coast-map > svg {
   width: 100%;
   height: 100%;
   display: block;
 }
+/* Style .coast-map-marker to arrange its contents, position it within the page, set text appearance. */
 .coast-map-marker {
   position: absolute;
   left: 37%;
@@ -433,10 +503,12 @@
   gap: 9px;
   color: #f5ca79;
 }
+/* Style .coast-map-marker > svg to control spacing and dimensions. */
 .coast-map-marker > svg {
   flex-shrink: 0;
   filter: drop-shadow(0 3px 2px #002b4e30);
 }
+/* Style .coast-map-marker > span to set text appearance, style the surface and boundaries. */
 .coast-map-marker > span {
   background: #0a3156;
   color: white;
@@ -444,16 +516,19 @@
   border-radius: 7px;
   box-shadow: 0 5px 15px #072c5140;
 }
+/* Style .coast-map-marker strong to arrange its contents, set text appearance. */
 .coast-map-marker strong {
   display: block;
   font-size: 12px;
 }
+/* Style .coast-map-marker small to arrange its contents, set text appearance. */
 .coast-map-marker small {
   display: block;
   font-size: 9px;
   color: #d2dfef;
   margin-top: 3px;
 }
+/* Style .coast-map-caption to position it within the page, set text appearance, style the surface and boundaries. */
 .coast-map-caption {
   position: absolute;
   bottom: 7px;
@@ -464,6 +539,7 @@
   color: #53677b;
   font-size: 8px;
 }
+/* Style .coast-location-photo to control overflowing content, position it within the page, style the surface and boundaries. */
 .coast-location-photo {
   height: 215px;
   position: relative;
@@ -471,18 +547,21 @@
   border-radius: 9px;
   background: #164264;
 }
+/* Style .coast-location-photo > img to arrange its contents. */
 .coast-location-photo > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+/* Style .coast-location-photo::after to position it within the page, style the surface and boundaries. */
 .coast-location-photo::after {
   content: '';
   position: absolute;
   inset: 0;
   background: linear-gradient(#062e5b60, transparent);
 }
+/* Style .coast-location-photo > span to arrange its contents, position it within the page, set text appearance. */
 .coast-location-photo > span {
   position: absolute;
   z-index: 1;
@@ -494,30 +573,37 @@
   font-size: 12px;
   line-height: 1.3;
 }
+/* Style .coast-location-photo > span > svg to set text appearance. */
 .coast-location-photo > span > svg {
   color: #f3ca7e;
 }
+/* Style .coast-featured to style the surface and boundaries. */
 .coast-featured {
   padding-block: 18px;
   background: linear-gradient(105deg, #f4f8fd, #f8fbff);
 }
+/* Style .coast-featured-layout to arrange its contents. */
 .coast-featured-layout {
   display: grid;
   grid-template-columns: 0.9fr 2.8fr;
   gap: 26px;
   align-items: start;
 }
+/* Style .coast-featured-copy to control spacing and dimensions. */
 .coast-featured-copy {
   padding-top: 6px;
 }
+/* Style .coast-featured-copy .coast-button to control spacing and dimensions. */
 .coast-featured-copy .coast-button {
   margin-top: 18px;
 }
+/* Style .coast-featured-grid to arrange its contents. */
 .coast-featured-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
+/* Style .coast-room-card to arrange its contents, style the surface and boundaries. */
 .coast-room-card {
   min-width: 0;
   display: flex;
@@ -528,34 +614,40 @@
   box-shadow: 0 4px 12px #183c6010;
   background: white;
 }
+/* Style .coast-room-image to control overflowing content, style the surface and boundaries. */
 .coast-room-image {
   height: 123px;
   border-radius: 6px;
   overflow: hidden;
   background: #dce6ee;
 }
+/* Style .coast-room-image img to arrange its contents. */
 .coast-room-image img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: cover;
 }
+/* Style .coast-room-copy to arrange its contents. */
 .coast-room-copy {
   padding: 6px 5px 3px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
+/* Style .coast-room-copy h3 to set text appearance. */
 .coast-room-copy h3 {
   font-size: 14px;
   line-height: 1.25;
 }
+/* Style .coast-room-copy > p to set text appearance. */
 .coast-room-copy > p {
   margin-top: 3px;
   color: #63738a;
   font-size: 11px;
   line-height: 1.35;
 }
+/* Style .coast-room-facts to arrange its contents, set text appearance. */
 .coast-room-facts {
   display: flex;
   gap: 18px;
@@ -564,11 +656,13 @@
   margin-top: 9px;
   font-size: 10px;
 }
+/* Style .coast-room-facts > span to arrange its contents. */
 .coast-room-facts > span {
   display: flex;
   align-items: center;
   gap: 5px;
 }
+/* Style .coast-room-price to arrange its contents. */
 .coast-room-price {
   display: flex;
   align-items: center;
@@ -577,28 +671,34 @@
   margin-top: auto;
   padding-top: 6px;
 }
+/* Style .coast-room-price strong to set text appearance. */
 .coast-room-price strong {
   color: #102342;
   font-size: 16px;
 }
+/* Style .coast-room-price p > span to set text appearance. */
 .coast-room-price p > span {
   font-size: 11px;
   color: #64738b;
 }
+/* Style .coast-room-price .coast-button to set text appearance. */
 .coast-room-price .coast-button {
   padding: 6px 12px;
   min-height: 32px;
   font-size: 10px;
   gap: 8px;
 }
+/* Style .coast-amenities to style the surface and boundaries. */
 .coast-amenities {
   background: linear-gradient(90deg, #edf4fc, #e8f1fb, #f6faff);
   padding-block: 21px;
 }
+/* Style .coast-amenities > div to arrange its contents. */
 .coast-amenities > div {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
 }
+/* Style .coast-amenity to arrange its contents, set text appearance. */
 .coast-amenity {
   display: flex;
   align-items: center;
@@ -608,31 +708,38 @@
   padding-inline: 10px;
   color: #0f345c;
 }
+/* Style .coast-amenity:first-child to control spacing and dimensions. */
 .coast-amenity:first-child {
   justify-content: flex-start;
 }
+/* Style .coast-amenity:last-child to style the surface and boundaries. */
 .coast-amenity:last-child {
   border: 0;
 }
+/* Style .coast-amenity > svg to control spacing and dimensions. */
 .coast-amenity > svg {
   flex-shrink: 0;
 }
+/* Style .coast-amenity strong to arrange its contents, set text appearance. */
 .coast-amenity strong {
   display: block;
   font-size: 11px;
   font-weight: 600;
 }
+/* Style .coast-amenity small to arrange its contents, set text appearance. */
 .coast-amenity small {
   display: block;
   font-size: 10px;
   color: #63778f;
   margin-top: 3px;
 }
+/* Style .coast-footer to set text appearance, style the surface and boundaries. */
 .coast-footer {
   background: linear-gradient(110deg, #0d304f, #06243f);
   color: #e6edf6;
   padding-top: 14px;
 }
+/* Style .coast-footer-top to arrange its contents. */
 .coast-footer-top {
   display: flex;
   align-items: center;
@@ -640,34 +747,41 @@
   gap: 24px;
   padding-bottom: 14px;
 }
+/* Style .coast-footer .coast-brand svg to control spacing and dimensions. */
 .coast-footer .coast-brand svg {
   width: 41px;
   height: 41px;
 }
+/* Style .coast-footer .coast-brand > span to set text appearance. */
 .coast-footer .coast-brand > span {
   font-size: 15px;
   letter-spacing: 4px;
 }
+/* Style .coast-footer .coast-brand small to set text appearance. */
 .coast-footer .coast-brand small {
   font-size: 8px;
   letter-spacing: 4px;
   margin-top: 2px;
 }
+/* Style .coast-footer nav to set text appearance. */
 .coast-footer nav {
   gap: 26px;
   font-size: 11px;
 }
+/* Style .coast-contact to arrange its contents, set text appearance. */
 .coast-contact {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
   font-size: 11px;
 }
+/* Style .coast-contact > span to arrange its contents. */
 .coast-contact > span {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+/* Style .coast-footer-bottom to arrange its contents, set text appearance. */
 .coast-footer-bottom {
   padding: 10px 0 12px;
   border-top: 1px solid #c3d8ec30;
@@ -678,6 +792,7 @@
   font-size: 10px;
   color: #c0d0e2;
 }
+/* Style .coast-dialog to set text appearance, style the surface and boundaries. */
 .coast-dialog {
   width: min(840px, calc(100% - 32px));
   max-height: 90dvh;
@@ -689,10 +804,12 @@
   color: #132d48;
   box-shadow: 0 25px 90px #021c4350;
 }
+/* Style .coast-dialog::backdrop to style the surface and boundaries. */
 .coast-dialog::backdrop {
   background: #041b35bb;
   backdrop-filter: blur(6px);
 }
+/* Style .coast-dialog > header to arrange its contents. */
 .coast-dialog > header {
   display: flex;
   justify-content: space-between;
@@ -701,11 +818,13 @@
   padding: 24px;
   border-bottom: 1px solid #e7edf4;
 }
+/* Style .coast-dialog h2 to set text appearance. */
 .coast-dialog h2 {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 28px;
   margin-top: 5px;
 }
+/* Style .coast-dialog > header > button to arrange its contents, set text appearance, style the surface and boundaries. */
 .coast-dialog > header > button {
   border: 0;
   color: #143656;
@@ -717,361 +836,462 @@
   place-items: center;
   flex-shrink: 0;
 }
+/* Style .coast-gallery to arrange its contents. */
 .coast-gallery {
   padding: 20px;
   display: grid;
   gap: 18px;
 }
+/* Style .coast-gallery img to arrange its contents. */
 .coast-gallery img {
   width: 100%;
   display: block;
   border-radius: 6px;
 }
+/* Style .coast-gallery figcaption to set text appearance. */
 .coast-gallery figcaption {
   padding-top: 8px;
   font-size: 13px;
   color: #53677e;
 }
+/* Style .coast-room-preview to arrange its contents. */
 .coast-room-preview {
   display: grid;
   grid-template-columns: 1.1fr 1fr;
 }
+/* Style .coast-preview-photo to control spacing and dimensions. */
 .coast-preview-photo {
   min-height: 300px;
 }
+/* Style .coast-preview-photo img to arrange its contents. */
 .coast-preview-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
+/* Style .coast-preview-copy, .coast-about-copy to control spacing and dimensions. */
 .coast-preview-copy,
 .coast-about-copy {
   padding: 25px;
 }
+/* Style .coast-preview-copy > p:not(.coast-eyebrow), .coast-about-copy > p to set text appearance. */
 .coast-preview-copy > p:not(.coast-eyebrow),
 .coast-about-copy > p {
   margin-bottom: 18px;
   color: #63738b;
 }
+/* Style .coast-preview-copy .coast-eyebrow to control spacing and dimensions. */
 .coast-preview-copy .coast-eyebrow {
   margin-bottom: 10px;
 }
+/* Style .coast-preview-price to control spacing and dimensions. */
 .coast-preview-price {
   margin-top: 20px !important;
 }
+/* Style .coast-preview-price strong to set text appearance. */
 .coast-preview-price strong {
   font-size: 25px;
   color: #143656;
 }
+/* Style .coast-room-image .stay-photo-placeholder, .coast-preview-photo .stay-photo-placeholder to control spacing and dimensions. */
 .coast-room-image .stay-photo-placeholder,
 .coast-preview-photo .stay-photo-placeholder {
   min-height: 100%;
 }
+/* Apply the following layout adjustments when (min-width: 1700px). */
 @media (min-width: 1700px) {
+  /* Style .coast-hero, .coast-hero-inner to control spacing and dimensions. */
   .coast-hero,
   .coast-hero-inner {
     min-height: 390px;
   }
 }
+/* Apply the following layout adjustments when (max-width: 1250px). */
 @media (max-width: 1250px) {
+  /* Style .coast-container to control spacing and dimensions. */
   .coast-container {
     width: 92%;
   }
+  /* Style .coast-header-inner to control spacing and dimensions. */
   .coast-header-inner {
     gap: 18px;
   }
+  /* Style .coast-header nav to control spacing and dimensions. */
   .coast-header nav {
     gap: 22px;
   }
+  /* Style .coast-header-actions to control spacing and dimensions. */
   .coast-header-actions {
     gap: 12px;
   }
+  /* Style .coast-brand > span to set text appearance. */
   .coast-brand > span {
     font-size: 17px;
     letter-spacing: 3px;
   }
+  /* Style .coast-header-actions .coast-button to control spacing and dimensions. */
   .coast-header-actions .coast-button {
     padding-inline: 16px;
   }
+  /* Style .coast-benefit-grid article to control spacing and dimensions. */
   .coast-benefit-grid article {
     padding: 15px;
     gap: 12px;
   }
+  /* Style .coast-benefit-grid h2 to set text appearance. */
   .coast-benefit-grid h2 {
     font-size: 12px;
   }
+  /* Style .coast-benefit-grid p to set text appearance. */
   .coast-benefit-grid p {
     font-size: 11px;
   }
+  /* Style .coast-location to arrange its contents. */
   .coast-location {
     grid-template-columns: 1.1fr 1fr;
   }
+  /* Style .coast-location-photo to arrange its contents. */
   .coast-location-photo {
     display: none;
   }
+  /* Style .coast-featured-layout to arrange its contents. */
   .coast-featured-layout {
     grid-template-columns: 1fr;
     gap: 18px;
   }
+  /* Style .coast-featured-copy to arrange its contents. */
   .coast-featured-copy {
     display: grid;
     grid-template-columns: 1fr auto;
     column-gap: 24px;
   }
+  /* Style .coast-featured-copy h2, .coast-featured-copy > p to control spacing and dimensions. */
   .coast-featured-copy h2,
   .coast-featured-copy > p {
     grid-column: 1;
   }
+  /* Style .coast-featured-copy .coast-button to control spacing and dimensions. */
   .coast-featured-copy .coast-button {
     grid-column: 2;
     grid-row: 1 / 4;
     align-self: center;
     margin: 0;
   }
+  /* Style .coast-room-image to control spacing and dimensions. */
   .coast-room-image {
     height: 160px;
   }
+  /* Style .coast-amenities > div to arrange its contents. */
   .coast-amenities > div {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 24px 0;
   }
+  /* Style .coast-amenity:nth-child(3) to style the surface and boundaries. */
   .coast-amenity:nth-child(3) {
     border: 0;
   }
+  /* Style .coast-amenity:first-child to control spacing and dimensions. */
   .coast-amenity:first-child {
     justify-content: center;
   }
+  /* Style .coast-footer-top to control spacing and dimensions. */
   .coast-footer-top {
     flex-wrap: wrap;
   }
+  /* Style .coast-contact to control spacing and dimensions. */
   .coast-contact {
     margin-left: auto;
   }
 }
+/* Apply the following layout adjustments when (max-width: 850px). */
 @media (max-width: 850px) {
+  /* Style .coast-header-inner to control spacing and dimensions. */
   .coast-header-inner {
     flex-wrap: wrap;
     padding-block: 10px;
     gap: 5px 20px;
   }
+  /* Style .coast-header nav to control spacing and dimensions. */
   .coast-header nav {
     order: 3;
     width: 100%;
     justify-content: center;
     gap: 32px;
   }
+  /* Style .coast-header-actions to control spacing and dimensions. */
   .coast-header-actions {
     margin-left: auto;
   }
+  /* Style .coast-header .coast-brand svg to control spacing and dimensions. */
   .coast-header .coast-brand svg {
     height: 43px;
     width: 43px;
   }
+  /* Style .coast-hero-copy to control spacing and dimensions. */
   .coast-hero-copy {
     max-width: 550px;
   }
+  /* Style .coast-hero h1 to set text appearance. */
   .coast-hero h1 {
     font-size: 46px;
   }
+  /* Style .coast-hero-inner to control spacing and dimensions. */
   .coast-hero-inner {
     min-height: 380px;
     padding-bottom: 64px;
   }
+  /* Style .coast-hero::after to style the surface and boundaries. */
   .coast-hero::after {
     background: linear-gradient(90deg, #031e39c9, #09283c66);
   }
+  /* Style .coast-carousel to control spacing and dimensions. */
   .coast-carousel {
     bottom: 12px;
     right: 0;
   }
+  /* Style .coast-benefit-grid to control spacing and dimensions. */
   .coast-benefit-grid {
     gap: 10px;
   }
+  /* Style .coast-benefit-grid article to arrange its contents. */
   .coast-benefit-grid article {
     flex-direction: column;
     align-items: flex-start;
   }
+  /* Style .coast-benefit-icon to control spacing and dimensions. */
   .coast-benefit-icon {
     width: 42px;
     height: 42px;
   }
+  /* Style .coast-benefit-icon svg to control spacing and dimensions. */
   .coast-benefit-icon svg {
     width: 23px;
   }
+  /* Style .coast-location h2, .coast-featured h2 to set text appearance. */
   .coast-location h2,
   .coast-featured h2 {
     font-size: 30px;
   }
+  /* Style .coast-location to arrange its contents. */
   .coast-location {
     grid-template-columns: 1fr;
     padding-block: 28px;
   }
+  /* Style .coast-location-copy > p to control spacing and dimensions. */
   .coast-location-copy > p {
     max-width: 100% !important;
   }
+  /* Style .coast-map to control spacing and dimensions. */
   .coast-map {
     height: 230px;
   }
+  /* Style .coast-map-marker to control spacing and dimensions. */
   .coast-map-marker {
     left: 42%;
   }
+  /* Style .coast-featured-grid to control spacing and dimensions. */
   .coast-featured-grid {
     gap: 10px;
   }
+  /* Style .coast-room-price to control spacing and dimensions. */
   .coast-room-price {
     flex-wrap: wrap;
     gap: 8px;
   }
+  /* Style .coast-footer nav to control spacing and dimensions. */
   .coast-footer nav {
     gap: 20px;
   }
+  /* Style .coast-footer-top to control spacing and dimensions. */
   .coast-footer-top {
     gap: 20px;
   }
+  /* Style .coast-contact to control spacing and dimensions. */
   .coast-contact {
     margin-left: 0;
   }
 }
+/* Apply the following layout adjustments when (max-width: 600px). */
 @media (max-width: 600px) {
+  /* Style .coast-container to control spacing and dimensions. */
   .coast-container {
     width: calc(100% - 36px);
   }
+  /* Style .coast-header .coast-brand to control spacing and dimensions. */
   .coast-header .coast-brand {
     gap: 8px;
   }
+  /* Style .coast-header .coast-brand > span to set text appearance. */
   .coast-header .coast-brand > span {
     font-size: 14px;
     letter-spacing: 3px;
   }
+  /* Style .coast-header .coast-brand small to set text appearance. */
   .coast-header .coast-brand small {
     font-size: 8px;
     letter-spacing: 3px;
   }
+  /* Style .coast-search-link to arrange its contents. */
   .coast-search-link {
     display: none;
   }
+  /* Style .coast-header-actions to control spacing and dimensions. */
   .coast-header-actions {
     gap: 12px;
   }
+  /* Style .coast-header-actions .coast-button to set text appearance. */
   .coast-header-actions .coast-button {
     min-height: 36px;
     padding: 8px 12px;
     font-size: 10px;
     gap: 8px;
   }
+  /* Style .coast-header-actions .coast-button svg to arrange its contents. */
   .coast-header-actions .coast-button svg {
     display: none;
   }
+  /* Style .coast-sign-in to set text appearance. */
   .coast-sign-in {
     font-size: 11px;
   }
+  /* Style .coast-header nav to control spacing and dimensions. */
   .coast-header nav {
     gap: 24px;
   }
+  /* Style .coast-header nav a, .coast-header nav button to set text appearance. */
   .coast-header nav a,
   .coast-header nav button {
     font-size: 11px;
     min-height: 36px;
   }
+  /* Style .coast-hero h1 to set text appearance. */
   .coast-hero h1 {
     font-size: 41px;
   }
+  /* Style .coast-hero-inner to control spacing and dimensions. */
   .coast-hero-inner {
     min-height: 415px;
     padding-top: 25px;
     padding-bottom: 76px;
   }
+  /* Style .coast-intro to set text appearance. */
   .coast-intro {
     font-size: 13px;
   }
+  /* Style .coast-desktop-break to arrange its contents. */
   .coast-desktop-break {
     display: none;
   }
+  /* Style .coast-hero-actions to control spacing and dimensions. */
   .coast-hero-actions {
     gap: 10px;
   }
+  /* Style .coast-hero-actions .coast-button to set text appearance. */
   .coast-hero-actions .coast-button {
     padding-inline: 16px;
     font-size: 11px;
   }
+  /* Style .coast-benefit-grid to arrange its contents. */
   .coast-benefit-grid {
     grid-template-columns: 1fr;
   }
+  /* Style .coast-benefit-grid article to arrange its contents. */
   .coast-benefit-grid article {
     flex-direction: row;
     align-items: center;
     gap: 16px;
     padding: 13px 18px;
   }
+  /* Style .coast-benefit-grid h2 to set text appearance. */
   .coast-benefit-grid h2 {
     font-size: 13px;
   }
+  /* Style .coast-benefit-grid p to set text appearance. */
   .coast-benefit-grid p {
     font-size: 12px;
     max-width: none;
   }
+  /* Style .coast-nearby to arrange its contents. */
   .coast-nearby {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 15px 8px;
   }
+  /* Style .coast-nearby > div to style the surface and boundaries. */
   .coast-nearby > div {
     padding: 0;
     border: 0;
   }
+  /* Style .coast-map-marker to control spacing and dimensions. */
   .coast-map-marker {
     left: 28%;
   }
+  /* Style .coast-map-marker > span to control spacing and dimensions. */
   .coast-map-marker > span {
     padding: 9px;
   }
+  /* Style .coast-map-marker strong to set text appearance. */
   .coast-map-marker strong {
     font-size: 11px;
   }
+  /* Style .coast-map-marker small to set text appearance. */
   .coast-map-marker small {
     font-size: 8px;
   }
+  /* Style .coast-featured-copy to arrange its contents. */
   .coast-featured-copy {
     display: block;
   }
+  /* Style .coast-featured-copy .coast-button to control spacing and dimensions. */
   .coast-featured-copy .coast-button {
     margin-top: 15px;
   }
+  /* Style .coast-featured-grid to arrange its contents. */
   .coast-featured-grid {
     grid-template-columns: 1fr;
     gap: 16px;
   }
+  /* Style .coast-room-image to control spacing and dimensions. */
   .coast-room-image {
     height: 190px;
   }
+  /* Style .coast-room-copy to control spacing and dimensions. */
   .coast-room-copy {
     padding: 10px;
   }
+  /* Style .coast-room-copy h3 to set text appearance. */
   .coast-room-copy h3 {
     font-size: 17px;
   }
+  /* Style .coast-room-copy > p to set text appearance. */
   .coast-room-copy > p {
     font-size: 13px;
   }
+  /* Style .coast-room-facts to set text appearance. */
   .coast-room-facts {
     font-size: 12px;
     margin-top: 12px;
   }
+  /* Style .coast-room-price to control spacing and dimensions. */
   .coast-room-price {
     margin-top: 10px;
   }
+  /* Style .coast-room-price strong to set text appearance. */
   .coast-room-price strong {
     font-size: 21px;
   }
+  /* Style .coast-room-price .coast-button to set text appearance. */
   .coast-room-price .coast-button {
     font-size: 12px;
     min-height: 38px;
   }
+  /* Style .coast-amenities > div to arrange its contents. */
   .coast-amenities > div {
     grid-template-columns: 1fr 1fr;
     gap: 22px 10px;
   }
+  /* Style .coast-amenity, .coast-amenity:first-child to style the surface and boundaries. */
   .coast-amenity,
   .coast-amenity:first-child {
     justify-content: flex-start;
@@ -1079,44 +1299,56 @@
     padding: 0;
     gap: 10px;
   }
+  /* Style .coast-amenity strong to set text appearance. */
   .coast-amenity strong {
     font-size: 10px;
   }
+  /* Style .coast-amenity small to set text appearance. */
   .coast-amenity small {
     font-size: 9px;
   }
+  /* Style .coast-amenity > svg to control spacing and dimensions. */
   .coast-amenity > svg {
     width: 25px;
   }
+  /* Style .coast-footer-top to arrange its contents. */
   .coast-footer-top {
     align-items: flex-start;
     flex-direction: column;
     gap: 22px;
   }
+  /* Style .coast-contact to arrange its contents. */
   .coast-contact {
     gap: 12px;
     flex-direction: column;
   }
+  /* Style .coast-footer-bottom to arrange its contents. */
   .coast-footer-bottom {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
   }
+  /* Style .coast-room-preview to arrange its contents. */
   .coast-room-preview {
     grid-template-columns: 1fr;
   }
+  /* Style .coast-preview-photo to control spacing and dimensions. */
   .coast-preview-photo {
     min-height: 0;
     height: 220px;
   }
+  /* Style .coast-dialog > header to control spacing and dimensions. */
   .coast-dialog > header {
     padding: 20px;
   }
+  /* Style .coast-dialog h2 to set text appearance. */
   .coast-dialog h2 {
     font-size: 24px;
   }
 }
+/* Apply the following layout adjustments when (prefers-reduced-motion: reduce). */
 @media (prefers-reduced-motion: reduce) {
+  /* Style .coast-page *, .coast-page *::before, .coast-page *::after to control spacing and dimensions. */
   .coast-page *,
   .coast-page *::before,
   .coast-page *::after {

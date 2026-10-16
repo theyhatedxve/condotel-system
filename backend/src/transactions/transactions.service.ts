@@ -6,6 +6,8 @@ import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
+// Implement transactions operations using the injected dependencies and existing
+// business rules.
 @Injectable()
 export class TransactionsService {
   constructor(
@@ -13,6 +15,8 @@ export class TransactionsService {
     private readonly privacy: PrivateDataService,
   ) {}
 
+  // List recorded payment transactions with reservation, room, and authorized guest
+  // details.
   async findAll() {
     const rows = await this.prisma.transaction.findMany({
       include: {

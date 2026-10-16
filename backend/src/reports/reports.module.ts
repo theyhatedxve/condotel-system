@@ -6,6 +6,7 @@ import { ReportsController } from './reports.controller';
 
 import { ReportsService } from './reports.service';
 
+// Wire the reports controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

@@ -41,11 +41,14 @@ import HomePage from '../features/home/HomePage';
 import BookingPage from '../features/booking/BookingPage';
 import CheckoutPage from '../features/payments/CheckoutPage';
 
+// Map public, customer-only, and staff/admin URLs to their existing pages and layouts.
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Keep the property homepage public. */}
       <Route path="/" element={<HomePage />} />
 
+      {/* Require a restored session for room browsing, profiles, and payment returns. */}
       <Route element={<ProtectedRoute />}>
         <Route path="/rooms" element={<LandingPage />} />
         <Route path="/profile" element={<ProfilePage />} />
@@ -58,16 +61,19 @@ export default function AppRoutes() {
         <Route path="/change-password" element={<ChangePasswordPage />} />
       </Route>
 
+      {/* Customers own the booking and payment-review pages. */}
       <Route element={<ProtectedRoute allowedRoles={['CUSTOMER']} />}>
         <Route path="/booking/:roomId" element={<BookingPage />} />
         <Route path="/booking/:roomId/payment" element={<CheckoutPage />} />
       </Route>
 
+      {/* Keep login and registration reachable before authentication. */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
+      {/* Place management features inside the staff/admin layout and role guard. */}
       <Route element={<ProtectedRoute allowedRoles={['ADMIN', 'STAFF']} />}>
         <Route path="/admin" element={<AdminLayout />}>
           <Route path="profile" element={<ProfilePage />} />

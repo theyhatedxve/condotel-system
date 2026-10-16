@@ -18,9 +18,9 @@ reservations, payments, transactions, reports, settings, and users.
 | `backend/src/generated/prisma/`      | Generated database client                                    |
 | `docs/MAINTENANCE.md`                | Code navigation, formatting, and behavior-preservation notes |
 
-The NFC administration route currently displays a placeholder. The customer home
-route also displays a placeholder. The schema includes NFC-related models, but
-these placeholders should not be mistaken for completed application flows.
+The homepage leads customers into room browsing, booking, and hosted checkout.
+The NFC administration route currently displays a placeholder; the schema retains
+the NFC and device models for that feature.
 
 ## Local development
 
@@ -31,6 +31,10 @@ The backend reads its configuration from `backend/.env`; use
 JWT, payment-provider, and encryption configuration are consumed by their
 respective backend services. Keep an existing environment file when one is
 already configured.
+
+Read [PRIVACY.md](PRIVACY.md) before setting up a new database, applying privacy
+migrations, or rotating encryption keys. Existing encrypted records require their
+matching keys.
 
 Run the API from `backend/`:
 
@@ -66,10 +70,12 @@ npm test -- --runInBand
 npm run build
 ```
 
-The backend unit tests cover the starter controller and encryption service.
-`npm run test:e2e` is a separate check that initializes the application and needs
-its environment and database configuration. There is currently no frontend test
-script.
+The backend unit tests cover the root controller, encryption, privacy maintenance,
+administrator provisioning, and payment verification.
+After building the backend, `npm run test:e2e -- --runInBand` runs isolated HTTP
+workflows with disposable databases and a mocked payment provider. From the
+frontend, `node --experimental-vm-modules --test test/hosted-checkout.test.cjs`
+checks payment-window behavior.
 
 See [the maintenance guide](docs/MAINTENANCE.md) for formatting commands and the
 parts of the system to inspect together when maintaining a feature.

@@ -5,7 +5,9 @@ import RoomPhoto from '../landing/RoomPhoto';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { gallery, property } from './homeContent';
 
+// Render the selected homepage information, gallery, or featured-room dialog.
 export default function HomeDialog({ selection, onClose }) {
+  // Track local state and read any session or route values needed by this component.
   const ref = useRef(null);
   const room = selection.room;
   const title = room
@@ -14,17 +16,20 @@ export default function HomeDialog({ selection, onClose }) {
       ? 'A glimpse of your next escape'
       : `About ${property.name}`;
 
+  // Open the browser dialog after its DOM element is mounted.
   useEffect(() => {
     if (!ref.current.open) ref.current.showModal();
   }, []);
 
   return (
+    /* Display the selected information in a closable browser dialog. */
     <dialog
       ref={ref}
       className="coast-dialog"
       aria-labelledby="coast-dialog-title"
       onClose={onClose}
     >
+      {/* Show this section's heading, context, and available actions. */}
       <header>
         <div>
           <p className="coast-eyebrow">{property.name}</p>

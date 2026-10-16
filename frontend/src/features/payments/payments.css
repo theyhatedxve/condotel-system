@@ -1,6 +1,10 @@
+/* Style .payments-page to control spacing and dimensions. */
+
 .payments-page {
   width: 100%;
 }
+
+/* Style .payments-header to arrange its contents. */
 
 .payments-header {
   display: flex;
@@ -12,17 +16,23 @@
   margin-bottom: 20px;
 }
 
+/* Style .payments-header h1 to set text appearance. */
+
 .payments-header h1 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
 
+/* Style .payments-header p to set text appearance. */
+
 .payments-header p {
   margin: 6px 0 0;
 
   color: var(--color-text-muted);
 }
+
+/* Style .payments-refresh-button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .payments-refresh-button {
   display: inline-flex;
@@ -49,14 +59,20 @@
   cursor: pointer;
 }
 
+/* Style .payments-refresh-button:hover to style the surface and boundaries. */
+
 .payments-refresh-button:hover {
   background: #f8fafc;
 }
+
+/* Style .payments-refresh-button:disabled to indicate the available pointer interaction. */
 
 .payments-refresh-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Style .payment-summary-grid to arrange its contents. */
 
 .payment-summary-grid {
   display: grid;
@@ -67,6 +83,8 @@
 
   margin-bottom: 20px;
 }
+
+/* Style .payment-summary-card to arrange its contents, style the surface and boundaries. */
 
 .payment-summary-card {
   display: flex;
@@ -87,6 +105,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .payment-summary-icon to arrange its contents, set text appearance, style the surface and boundaries. */
+
 .payment-summary-icon {
   width: 42px;
   height: 42px;
@@ -104,6 +124,8 @@
   color: var(--color-blue-700);
 }
 
+/* Style .payment-summary-card span to arrange its contents, set text appearance. */
+
 .payment-summary-card span {
   display: block;
 
@@ -114,11 +136,15 @@
   font-size: 11px;
 }
 
+/* Style .payment-summary-card strong to set text appearance. */
+
 .payment-summary-card strong {
   color: var(--color-navy-950);
 
   font-size: 18px;
 }
+
+/* Style .payments-toolbar to arrange its contents. */
 
 .payments-toolbar {
   display: grid;
@@ -132,6 +158,8 @@
 
   margin-bottom: 16px;
 }
+
+/* Style .payments-search to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .payments-search {
   display: flex;
@@ -152,6 +180,8 @@
   color: var(--color-text-muted);
 }
 
+/* Style .payments-search input to make keyboard focus visible, set text appearance, style the surface and boundaries. */
+
 .payments-search input {
   width: 100%;
 
@@ -164,6 +194,8 @@
 
   font-size: 12px;
 }
+
+/* Style .payments-toolbar select to make keyboard focus visible, set text appearance, style the surface and boundaries. */
 
 .payments-toolbar select {
   min-height: 40px;
@@ -183,6 +215,8 @@
   font-size: 12px;
 }
 
+/* Style .payments-table-wrapper to style the surface and boundaries. */
+
 .payments-table-wrapper {
   width: 100%;
 
@@ -197,11 +231,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .payments-table to control spacing and dimensions. */
+
 .payments-table {
   width: 100%;
 
   border-collapse: collapse;
 }
+
+/* Style .payments-table th, .payments-table td to set text appearance. */
 
 .payments-table th,
 .payments-table td {
@@ -216,6 +254,8 @@
   font-size: 11px;
 }
 
+/* Style .payments-table th to set text appearance, style the surface and boundaries. */
+
 .payments-table th {
   color: var(--color-text-muted);
 
@@ -224,21 +264,31 @@
   background: #f8fafc;
 }
 
+/* Style .payments-table td to set text appearance. */
+
 .payments-table td {
   color: var(--color-navy-950);
 }
+
+/* Style .payments-table tbody tr:last-child td to control spacing and dimensions. */
 
 .payments-table tbody tr:last-child td {
   border-bottom: none;
 }
 
+/* Style .payments-table tbody tr:hover to style the surface and boundaries. */
+
 .payments-table tbody tr:hover {
   background: #fbfdff;
 }
 
+/* Style .payment-reference to set text appearance. */
+
 .payment-reference {
   font-weight: 600;
 }
+
+/* Style .payment-status to arrange its contents, set text appearance. */
 
 .payment-status {
   display: inline-flex;
@@ -252,20 +302,28 @@
   font-weight: 600;
 }
 
+/* Style .payment-status.pending to set text appearance, style the surface and boundaries. */
+
 .payment-status.pending {
   background: #fff0d4;
   color: #c97804;
 }
+
+/* Style .payment-status.paid to set text appearance, style the surface and boundaries. */
 
 .payment-status.paid {
   background: #dcf6eb;
   color: #11845b;
 }
 
+/* Style .payment-status.failed to set text appearance, style the surface and boundaries. */
+
 .payment-status.failed {
   background: #fde3e3;
   color: #c03f3f;
 }
+
+/* Style .payment-status.cancelled, .payment-status.expired to set text appearance, style the surface and boundaries. */
 
 .payment-status.cancelled,
 .payment-status.expired {
@@ -273,10 +331,14 @@
   color: #63798e;
 }
 
+/* Style .payment-status.refunded to set text appearance, style the surface and boundaries. */
+
 .payment-status.refunded {
   background: #ece9ff;
   color: #6655c5;
 }
+
+/* Style .payment-view-button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .payment-view-button {
   display: inline-flex;
@@ -299,9 +361,13 @@
   cursor: pointer;
 }
 
+/* Style .payment-view-button:hover to style the surface and boundaries. */
+
 .payment-view-button:hover {
   background: #f8fafc;
 }
+
+/* Style .payments-loading, .payments-empty to set text appearance, style the surface and boundaries. */
 
 .payments-loading,
 .payments-empty {
@@ -320,6 +386,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .payment-modal-backdrop to arrange its contents, position it within the page, style the surface and boundaries. */
+
 .payment-modal-backdrop {
   position: fixed;
 
@@ -336,6 +404,8 @@
   background: rgba(15, 23, 42, 0.48);
 }
 
+/* Style .payment-details-modal to style the surface and boundaries. */
+
 .payment-details-modal {
   width: min(100%, 620px);
 
@@ -350,6 +420,8 @@
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
 }
 
+/* Style .payment-details-header to arrange its contents. */
+
 .payment-details-header {
   display: flex;
   align-items: flex-start;
@@ -362,11 +434,15 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+/* Style .payment-details-header h2 to set text appearance. */
+
 .payment-details-header h2 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
+
+/* Style .payment-details-header p to set text appearance. */
 
 .payment-details-header p {
   margin: 5px 0 0;
@@ -375,6 +451,8 @@
 
   font-size: 12px;
 }
+
+/* Style .payment-modal-close to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .payment-modal-close {
   width: 34px;
@@ -395,6 +473,8 @@
   cursor: pointer;
 }
 
+/* Style .payment-details-body to arrange its contents. */
+
 .payment-details-body {
   display: flex;
   flex-direction: column;
@@ -403,6 +483,8 @@
 
   padding: 20px 24px 24px;
 }
+
+/* Style .payment-detail-row to arrange its contents. */
 
 .payment-detail-row {
   display: flex;
@@ -416,11 +498,15 @@
   border-bottom: 1px solid #edf2f6;
 }
 
+/* Style .payment-detail-row > span to set text appearance. */
+
 .payment-detail-row > span {
   color: var(--color-text-muted);
 
   font-size: 11px;
 }
+
+/* Style .payment-detail-row > strong to set text appearance. */
 
 .payment-detail-row > strong {
   color: var(--color-navy-950);
@@ -430,6 +516,8 @@
   text-align: right;
 }
 
+/* Style .payment-details-divider to style the surface and boundaries. */
+
 .payment-details-divider {
   height: 1px;
 
@@ -437,6 +525,8 @@
 
   background: var(--color-border);
 }
+
+/* Style .payment-id-block to arrange its contents. */
 
 .payment-id-block {
   display: flex;
@@ -447,11 +537,15 @@
   margin-bottom: 14px;
 }
 
+/* Style .payment-id-block span to set text appearance. */
+
 .payment-id-block span {
   color: var(--color-text-muted);
 
   font-size: 11px;
 }
+
+/* Style .payment-id-block code to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .payment-id-block code {
   display: block;
@@ -469,6 +563,8 @@
   font-size: 10px;
 }
 
+/* Style .payment-failure-box to set text appearance, style the surface and boundaries. */
+
 .payment-failure-box {
   margin-top: 18px;
 
@@ -483,9 +579,13 @@
   color: #9f2f2f;
 }
 
+/* Style .payment-failure-box strong to set text appearance. */
+
 .payment-failure-box strong {
   font-size: 11px;
 }
+
+/* Style .payment-failure-box p to set text appearance. */
 
 .payment-failure-box p {
   margin: 6px 0 0;
@@ -494,40 +594,60 @@
   line-height: 1.5;
 }
 
+/* Apply the following layout adjustments when (max-width: 1000px). */
+
 @media (max-width: 1000px) {
+  /* Style .payment-summary-grid to arrange its contents. */
   .payment-summary-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Style .payments-toolbar to arrange its contents. */
+
   .payments-toolbar {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* Style .payments-search to control spacing and dimensions. */
 
   .payments-search {
     grid-column: 1 / -1;
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .payments-header to arrange its contents. */
   .payments-header {
     flex-direction: column;
   }
+
+  /* Style .payment-summary-grid to arrange its contents. */
 
   .payment-summary-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Style .payments-toolbar to arrange its contents. */
+
   .payments-toolbar {
     grid-template-columns: 1fr;
   }
+
+  /* Style .payments-search to control spacing and dimensions. */
 
   .payments-search {
     grid-column: auto;
   }
 
+  /* Style .payment-details-modal to control spacing and dimensions. */
+
   .payment-details-modal {
     width: 100%;
   }
+
+  /* Style .payment-detail-row to arrange its contents. */
 
   .payment-detail-row {
     align-items: flex-start;
@@ -535,6 +655,8 @@
 
     gap: 5px;
   }
+
+  /* Style .payment-detail-row > strong to control spacing and dimensions. */
 
   .payment-detail-row > strong {
     text-align: left;

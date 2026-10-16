@@ -1,6 +1,10 @@
+/* Style .settings-page to control spacing and dimensions. */
+
 .settings-page {
   width: 100%;
 }
+
+/* Style .settings-header to arrange its contents. */
 
 .settings-header {
   display: flex;
@@ -12,17 +16,23 @@
   margin-bottom: 20px;
 }
 
+/* Style .settings-header h1 to set text appearance. */
+
 .settings-header h1 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
 
+/* Style .settings-header p to set text appearance. */
+
 .settings-header p {
   margin: 6px 0 0;
 
   color: var(--color-text-muted);
 }
+
+/* Style .settings-access-badge to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .settings-access-badge {
   display: inline-flex;
@@ -44,6 +54,8 @@
   font-weight: 600;
 }
 
+/* Style .settings-readonly-notice to set text appearance, style the surface and boundaries. */
+
 .settings-readonly-notice {
   margin-bottom: 16px;
 
@@ -60,6 +72,8 @@
   font-size: 12px;
 }
 
+/* Style .settings-grid to arrange its contents. */
+
 .settings-grid {
   display: grid;
 
@@ -67,6 +81,8 @@
 
   gap: 16px;
 }
+
+/* Style .settings-card to style the surface and boundaries. */
 
 .settings-card {
   padding: 20px;
@@ -80,6 +96,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .settings-card-header to arrange its contents. */
+
 .settings-card-header {
   display: flex;
   align-items: flex-start;
@@ -89,6 +107,8 @@
   margin-bottom: 18px;
 }
 
+/* Style .settings-card-header > svg to set text appearance. */
+
 .settings-card-header > svg {
   flex-shrink: 0;
 
@@ -96,6 +116,8 @@
 
   color: var(--color-blue-700);
 }
+
+/* Style .settings-card-header h2 to set text appearance. */
 
 .settings-card-header h2 {
   margin: 0;
@@ -105,6 +127,8 @@
   font-size: 15px;
 }
 
+/* Style .settings-card-header p to set text appearance. */
+
 .settings-card-header p {
   margin: 4px 0 0;
 
@@ -113,6 +137,8 @@
   font-size: 11px;
 }
 
+/* Style .settings-form-grid to arrange its contents. */
+
 .settings-form-grid {
   display: grid;
 
@@ -120,6 +146,8 @@
 
   gap: 14px;
 }
+
+/* Style .settings-field to arrange its contents, set text appearance. */
 
 .settings-field {
   display: flex;
@@ -133,9 +161,13 @@
   font-weight: 600;
 }
 
+/* Style .settings-field-full to control spacing and dimensions. */
+
 .settings-field-full {
   grid-column: 1 / -1;
 }
+
+/* Style .settings-field > span to arrange its contents. */
 
 .settings-field > span {
   display: flex;
@@ -143,6 +175,8 @@
 
   gap: 5px;
 }
+
+/* Style .settings-field input to keep padding and borders inside the declared dimensions, make keyboard focus visible, set text appearance. */
 
 .settings-field input {
   width: 100%;
@@ -167,9 +201,13 @@
   font-weight: 400;
 }
 
+/* Style .settings-field input:focus to control spacing and dimensions. */
+
 .settings-field input:focus {
   border-color: var(--color-blue-700);
 }
+
+/* Style .settings-field input:disabled to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 
 .settings-field input:disabled {
   background: #f6f8fa;
@@ -179,6 +217,8 @@
   cursor: not-allowed;
 }
 
+/* Style .settings-helper-text to set text appearance. */
+
 .settings-helper-text {
   margin: 14px 0 0;
 
@@ -187,6 +227,8 @@
   font-size: 10px;
   line-height: 1.6;
 }
+
+/* Style .settings-security-note to arrange its contents, style the surface and boundaries. */
 
 .settings-security-note {
   display: flex;
@@ -205,17 +247,23 @@
   background: #f4f9fd;
 }
 
+/* Style .settings-security-note > svg to set text appearance. */
+
 .settings-security-note > svg {
   flex-shrink: 0;
 
   color: var(--color-blue-700);
 }
 
+/* Style .settings-security-note strong to set text appearance. */
+
 .settings-security-note strong {
   color: var(--color-navy-950);
 
   font-size: 11px;
 }
+
+/* Style .settings-security-note p to set text appearance. */
 
 .settings-security-note p {
   margin: 5px 0 0;
@@ -225,6 +273,8 @@
   font-size: 10px;
   line-height: 1.6;
 }
+
+/* Style .settings-footer to arrange its contents, style the surface and boundaries. */
 
 .settings-footer {
   display: flex;
@@ -246,11 +296,15 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .settings-footer span to set text appearance. */
+
 .settings-footer span {
   color: var(--color-text-muted);
 
   font-size: 10px;
 }
+
+/* Style .settings-save-button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .settings-save-button {
   display: inline-flex;
@@ -277,11 +331,15 @@
   cursor: pointer;
 }
 
+/* Style .settings-save-button:disabled to indicate the available pointer interaction. */
+
 .settings-save-button:disabled {
   opacity: 0.6;
 
   cursor: not-allowed;
 }
+
+/* Style .settings-loading to set text appearance, style the surface and boundaries. */
 
 .settings-loading {
   padding: 40px;
@@ -297,29 +355,43 @@
   text-align: center;
 }
 
+/* Apply the following layout adjustments when (max-width: 900px). */
+
 @media (max-width: 900px) {
+  /* Style .settings-grid to arrange its contents. */
   .settings-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 650px). */
+
 @media (max-width: 650px) {
+  /* Style .settings-header to arrange its contents. */
   .settings-header {
     flex-direction: column;
   }
+
+  /* Style .settings-form-grid to arrange its contents. */
 
   .settings-form-grid {
     grid-template-columns: 1fr;
   }
 
+  /* Style .settings-field-full to control spacing and dimensions. */
+
   .settings-field-full {
     grid-column: auto;
   }
+
+  /* Style .settings-footer to arrange its contents. */
 
   .settings-footer {
     align-items: stretch;
     flex-direction: column;
   }
+
+  /* Style .settings-save-button to control spacing and dimensions. */
 
   .settings-save-button {
     width: 100%;

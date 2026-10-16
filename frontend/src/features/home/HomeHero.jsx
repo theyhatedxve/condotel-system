@@ -3,15 +3,19 @@ import { Link } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Images } from 'lucide-react';
 import { gallery } from './homeContent';
 
+// Render the hero image slides and the room/gallery actions.
 export default function HomeHero({ onGallery }) {
+  // Track local state and read any session or route values needed by this component.
   const [active, setActive] = useState(0);
   const photo = gallery[active];
 
+  // Move the hero carousel by the requested direction with wraparound.
   function step(direction) {
     setActive((index) => (index + direction + gallery.length) % gallery.length);
   }
 
   return (
+    /* Display the "Your Modern Coastal Stay Awaits" section and its related actions. */
     <section className="coast-hero" aria-labelledby="coast-title">
       <img
         className="coast-hero-photo"

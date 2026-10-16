@@ -1,3 +1,5 @@
+// Format the local calendar date as a date-input value without converting it through
+// UTC.
 export function localDate(offset = 0) {
   const date = new Date();
   date.setDate(date.getDate() + offset);
@@ -8,12 +10,14 @@ export function localDate(offset = 0) {
   ].join('-');
 }
 
+// Calculate whole stay nights from the chosen calendar dates.
 export function nightsBetween(checkIn, checkOut) {
   // Date-only values are UTC midnight so daylight-saving changes cannot add a night.
   const nights = (Date.parse(checkOut) - Date.parse(checkIn)) / 86400000;
   return Number.isFinite(nights) && nights > 0 ? nights : 0;
 }
 
+// Format a stay date for display using the existing fallback for an empty value.
 export function displayDate(value) {
   if (!value) return 'Select a date';
   return new Intl.DateTimeFormat('en-PH', {
@@ -24,11 +28,14 @@ export function displayDate(value) {
   }).format(new Date(value));
 }
 
+// Extract an API error message and combine validation messages for display.
 export function requestMessage(error, fallback) {
   const message = error.response?.data?.message;
   return Array.isArray(message) ? message.join(' ') : message || fallback;
 }
 
+// Restore saved reservation values or derive the initial stay from room/search
+// parameters.
 export function initialStay(params, reservation, capacity) {
   const checkIn = reservation?.checkIn?.slice(0, 10) || params.get('checkIn');
   const checkOut =

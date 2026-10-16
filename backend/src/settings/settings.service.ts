@@ -8,6 +8,8 @@ import { UpdateSettingsDto } from './update-settings.dto';
 
 const SYSTEM_SETTINGS_ID = 'system';
 
+// Implement settings operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class SettingsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -27,6 +29,7 @@ export class SettingsService {
     });
   }
 
+  // Apply validated editable property/contact/check-in settings to the singleton record.
   async updateSettings(dto: UpdateSettingsDto, user: AuthenticatedUser) {
     const propertyName = dto.propertyName.trim();
 

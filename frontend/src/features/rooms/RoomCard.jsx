@@ -9,6 +9,7 @@ import {
 
 import { formatCurrency } from '../../utils/formatCurrency';
 
+// Map a record status to the existing badge CSS class.
 function getStatusClass(status) {
   return status.toLowerCase().replaceAll('_', '-');
 }

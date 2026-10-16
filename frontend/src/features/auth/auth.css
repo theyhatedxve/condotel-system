@@ -1,3 +1,5 @@
+/* Style .login-page to arrange its contents, position it within the page, style the surface and boundaries. */
+
 .login-page {
   position: relative;
   min-height: 100vh;
@@ -8,10 +10,11 @@
   isolation: isolate;
   background:
     linear-gradient(135deg, rgba(5, 27, 53, 0.42), rgba(4, 23, 43, 0.64)),
-    url('../../assets/login-background.jpg')
-      center / cover,
+    url('../../assets/login-background.jpg') center / cover,
     #0b2d4b;
 }
+
+/* Style .login-visual to control overflowing content, arrange its contents, position it within the page. */
 
 .login-visual {
   position: absolute;
@@ -34,6 +37,8 @@
   pointer-events: none;
 }
 
+/* Style .login-visual::before to position it within the page, style the surface and boundaries. */
+
 .login-visual::before {
   content: '';
 
@@ -43,6 +48,8 @@
 
   background: linear-gradient(to top, rgba(3, 20, 38, 0.35), transparent 45%);
 }
+
+/* Style .login-visual::after to position it within the page, style the surface and boundaries. */
 
 .login-visual::after {
   content: '';
@@ -62,6 +69,8 @@
   filter: blur(2px);
 }
 
+/* Style .login-overlay to position it within the page, style the surface and boundaries. */
+
 .login-overlay {
   position: absolute;
   inset: 0;
@@ -73,11 +82,15 @@
   );
 }
 
+/* Style .login-brand, .login-tagline to position it within the page. */
+
 .login-brand,
 .login-tagline {
   position: relative;
   z-index: 2;
 }
+
+/* Style .login-brand to arrange its contents. */
 
 .login-brand {
   margin-top: 0;
@@ -89,9 +102,13 @@
   text-align: left;
 }
 
+/* Style .brand-icon-large to control spacing and dimensions. */
+
 .brand-icon-large {
   margin-bottom: 8px;
 }
+
+/* Style .login-brand h1 to set text appearance. */
 
 .login-brand h1 {
   margin: 0;
@@ -100,6 +117,8 @@
 
   letter-spacing: 0.12em;
 }
+
+/* Style .login-brand p to set text appearance. */
 
 .login-brand p {
   margin: 8px 0 0;
@@ -110,11 +129,15 @@
   opacity: 0.88;
 }
 
+/* Style .login-tagline to control spacing and dimensions. */
+
 .login-tagline {
   max-width: 270px;
 
   margin-bottom: 0;
 }
+
+/* Style .login-tagline h2 to set text appearance. */
 
 .login-tagline h2 {
   margin: 0 0 12px;
@@ -122,6 +145,8 @@
   font-size: 19px;
   font-weight: 600;
 }
+
+/* Style .login-tagline p to set text appearance. */
 
 .login-tagline p {
   margin: 0 0 18px;
@@ -133,6 +158,8 @@
   line-height: 1.6;
 }
 
+/* Style .login-feature to arrange its contents, set text appearance. */
+
 .login-feature {
   display: flex;
   align-items: center;
@@ -142,6 +169,8 @@
 
   color: rgba(255, 255, 255, 0.92);
 }
+
+/* Style .login-form-panel to arrange its contents, position it within the page. */
 
 .login-form-panel {
   position: relative;
@@ -155,6 +184,8 @@
   padding: 56px 24px;
 }
 
+/* Style .login-form-container to set text appearance, style the surface and boundaries. */
+
 .login-form-container {
   width: min(100%, 430px);
   padding: 30px 34px;
@@ -166,6 +197,8 @@
   box-shadow: 0 24px 70px rgba(0, 17, 37, 0.3);
   color: #102c45;
 }
+
+/* Style .login-back-link to arrange its contents, set text appearance. */
 
 .login-back-link {
   display: inline-flex;
@@ -179,19 +212,27 @@
   border-radius: var(--radius-sm);
 }
 
+/* Style .login-back-link:hover to control spacing and dimensions. */
+
 .login-back-link:hover {
   text-decoration: underline;
 }
+
+/* Style .login-back-link:focus-visible to make keyboard focus visible. */
 
 .login-back-link:focus-visible {
   outline: 2px solid var(--color-blue-500);
   outline-offset: 4px;
 }
 
+/* Style .login-heading to control spacing and dimensions. */
+
 .login-heading {
   margin-bottom: 30px;
   text-align: center;
 }
+
+/* Style .login-heading h2 to set text appearance. */
 
 .login-heading h2 {
   margin: 0 0 8px;
@@ -201,11 +242,15 @@
   color: #102c45;
 }
 
+/* Style .login-heading p to set text appearance. */
+
 .login-heading p {
   margin: 0;
 
   color: #465c70;
 }
+
+/* Style .login-form to arrange its contents. */
 
 .login-form {
   display: flex;
@@ -213,6 +258,8 @@
 
   gap: 20px;
 }
+
+/* Style .input-group to arrange its contents, set text appearance. */
 
 .input-group {
   display: flex;
@@ -225,6 +272,8 @@
 
   color: var(--color-text);
 }
+
+/* Style .input-wrapper to arrange its contents, style the surface and boundaries. */
 
 .input-wrapper {
   height: 48px;
@@ -247,17 +296,23 @@
     box-shadow var(--transition-fast);
 }
 
+/* Style .input-wrapper:focus-within to style the surface and boundaries. */
+
 .input-wrapper:focus-within {
   border-color: var(--color-blue-500);
 
   box-shadow: 0 0 0 3px rgba(22, 135, 224, 0.12);
 }
 
+/* Style .input-wrapper svg to set text appearance. */
+
 .input-wrapper svg {
   color: #6c849b;
 
   flex-shrink: 0;
 }
+
+/* Style .input-wrapper input to make keyboard focus visible, set text appearance, style the surface and boundaries. */
 
 .input-wrapper input {
   width: 100%;
@@ -269,6 +324,8 @@
 
   color: var(--color-text);
 }
+
+/* Style .password-toggle to arrange its contents, set text appearance, style the surface and boundaries. */
 
 .password-toggle {
   display: flex;
@@ -282,6 +339,8 @@
   color: var(--color-text-muted);
 }
 
+/* Style .login-options to arrange its contents, set text appearance. */
+
 .login-options {
   display: flex;
 
@@ -293,6 +352,8 @@
   font-size: 13px;
 }
 
+/* Style .remember-option to arrange its contents, set text appearance. */
+
 .remember-option {
   display: flex;
   align-items: center;
@@ -302,9 +363,13 @@
   color: var(--color-text-muted);
 }
 
+/* Style .remember-option input to control spacing and dimensions. */
+
 .remember-option input {
   accent-color: var(--color-blue-700);
 }
+
+/* Style .text-button to set text appearance, style the surface and boundaries. */
 
 .text-button {
   padding: 0;
@@ -316,6 +381,8 @@
 
   font-size: 13px;
 }
+
+/* Style .login-error to set text appearance, style the surface and boundaries. */
 
 .login-error {
   padding: 11px 13px;
@@ -330,6 +397,8 @@
 
   font-size: 13px;
 }
+
+/* Style .sign-in-button to set text appearance, style the surface and boundaries. */
 
 .sign-in-button {
   min-height: 48px;
@@ -350,14 +419,20 @@
     opacity var(--transition-fast);
 }
 
+/* Style .sign-in-button:hover:not(:disabled) to control spacing and dimensions. */
+
 .sign-in-button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
+
+/* Style .sign-in-button:disabled to indicate the available pointer interaction. */
 
 .sign-in-button:disabled {
   opacity: 0.65;
   cursor: not-allowed;
 }
+
+/* Style .login-footer to set text appearance. */
 
 .login-footer {
   margin-top: 28px;
@@ -369,32 +444,48 @@
   font-size: 12px;
 }
 
+/* Apply the following layout adjustments when (max-width: 860px). */
+
 @media (max-width: 860px) {
+  /* Style .login-page to control spacing and dimensions. */
   .login-page {
     padding: 24px 0;
   }
 
+  /* Style .login-visual to arrange its contents. */
+
   .login-visual {
     display: none;
   }
+
+  /* Style .login-form-panel to control spacing and dimensions. */
 
   .login-form-panel {
     padding: 24px;
   }
 }
 
+/* Apply the following layout adjustments when (min-width: 861px) and (max-width: 1180px). */
+
 @media (min-width: 861px) and (max-width: 1180px) {
+  /* Style .login-visual to control spacing and dimensions. */
   .login-visual {
     padding: 28px;
   }
+
+  /* Style .login-tagline to control spacing and dimensions. */
 
   .login-tagline {
     max-width: 180px;
   }
 
+  /* Style .login-tagline h2 to set text appearance. */
+
   .login-tagline h2 {
     font-size: 16px;
   }
+
+  /* Style .login-tagline p, .login-feature to set text appearance. */
 
   .login-tagline p,
   .login-feature {
@@ -402,14 +493,21 @@
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 480px). */
+
 @media (max-width: 480px) {
+  /* Style .login-form-panel to control spacing and dimensions. */
   .login-form-panel {
     padding: 16px;
   }
 
+  /* Style .login-form-container to control spacing and dimensions. */
+
   .login-form-container {
     padding: 24px;
   }
+
+  /* Style .login-options to control spacing and dimensions. */
 
   .login-options {
     gap: 10px;

@@ -9,36 +9,44 @@
   font-size: 13px;
   line-height: 1.45;
 }
+/* Style .stay-page *, .stay-page *::before, .stay-page *::after to keep padding and borders inside the declared dimensions. */
 .stay-page *,
 .stay-page *::before,
 .stay-page *::after {
   box-sizing: border-box;
 }
+/* Style .stay-page h1, .stay-page h2, .stay-page h3, .stay-page p to control spacing and dimensions. */
 .stay-page h1,
 .stay-page h2,
 .stay-page h3,
 .stay-page p {
   margin: 0;
 }
+/* Style .stay-page button, .stay-page input, .stay-page select to control spacing and dimensions. */
 .stay-page button,
 .stay-page input,
 .stay-page select {
   font: inherit;
 }
+/* Style .stay-page button to indicate the available pointer interaction. */
 .stay-page button {
   cursor: pointer;
 }
+/* Style .stay-page :focus-visible to make keyboard focus visible. */
 .stay-page :focus-visible {
   outline: 3px solid #c1923d;
   outline-offset: 4px;
 }
+/* Style .stay-page section to keep anchored content clear of the header. */
 .stay-page section {
   scroll-margin-top: 20px;
 }
+/* Style .stay-container to control spacing and dimensions. */
 .stay-container {
   width: min(1304px, 88%);
   margin-inline: auto;
 }
+/* Style .stay-skip to position it within the page, set text appearance, style the surface and boundaries. */
 .stay-skip {
   position: absolute;
   top: -80px;
@@ -48,13 +56,16 @@
   background: white;
   color: #082e52;
 }
+/* Style .stay-skip:focus to position it within the page. */
 .stay-skip:focus {
   top: 12px;
 }
+/* Style .stay-header to set text appearance, style the surface and boundaries. */
 .stay-header {
   background: linear-gradient(110deg, #0a3357, #052440);
   color: #fff;
 }
+/* Style .stay-header-inner to arrange its contents. */
 .stay-header-inner {
   min-height: 70px;
   display: flex;
@@ -62,26 +73,32 @@
   justify-content: space-between;
   gap: 28px;
 }
+/* Style .stay-header .coast-brand to control spacing and dimensions. */
 .stay-header .coast-brand {
   gap: 12px;
 }
+/* Style .stay-header .coast-brand svg to control spacing and dimensions. */
 .stay-header .coast-brand svg {
   width: 45px;
   height: 46px;
 }
+/* Style .stay-header .coast-brand > span to set text appearance. */
 .stay-header .coast-brand > span {
   font-size: 17px;
   letter-spacing: 4px;
 }
+/* Style .stay-header .coast-brand small to set text appearance. */
 .stay-header .coast-brand small {
   font-size: 9px;
   letter-spacing: 4px;
 }
+/* Style .stay-header nav to arrange its contents. */
 .stay-header nav {
   display: flex;
   align-items: center;
   gap: 34px;
 }
+/* Style .stay-header nav a to arrange its contents, set text appearance. */
 .stay-header nav a {
   display: flex;
   align-items: center;
@@ -90,16 +107,19 @@
   font-size: 12px;
   font-weight: 600;
 }
+/* Style .stay-header nav a:hover, .stay-header nav a[aria-current='page'] to set text appearance. */
 .stay-header nav a:hover,
 .stay-header nav a[aria-current='page'] {
   border-color: #edc474;
   color: #edc474;
 }
+/* Style .stay-header-actions to arrange its contents. */
 .stay-header-actions {
   display: flex;
   align-items: center;
   gap: 23px;
 }
+/* Style .stay-search-link to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-search-link {
   display: flex;
   padding: 8px;
@@ -107,6 +127,7 @@
   background: none;
   color: #fff;
 }
+/* Style .stay-book to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-book {
   display: inline-flex;
   align-items: center;
@@ -119,9 +140,11 @@
   color: #092e50;
   font-weight: 650 !important;
 }
+/* Style .stay-book:hover to style the surface and boundaries. */
 .stay-book:hover {
   background: #ffdaa0;
 }
+/* Style .stay-hero to position it within the page, set text appearance, style the surface and boundaries. */
 .stay-hero {
   position: relative;
   min-height: 230px;
@@ -138,6 +161,7 @@
     url('../../assets/homepage-background.png') center 52% / cover,
     #173f61;
 }
+/* Style .stay-breadcrumb to arrange its contents, set text appearance. */
 .stay-breadcrumb {
   display: flex;
   align-items: center;
@@ -146,9 +170,11 @@
   font-size: 12px;
   margin-bottom: 9px;
 }
+/* Style .stay-breadcrumb a:hover to control spacing and dimensions. */
 .stay-breadcrumb a:hover {
   text-decoration: underline;
 }
+/* Style .stay-hero h1 to set text appearance. */
 .stay-hero h1 {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(34px, 3.2vw, 48px);
@@ -158,17 +184,20 @@
   font-weight: 600;
   margin-bottom: 10px;
 }
+/* Style .stay-hero-subtitle to set text appearance. */
 .stay-hero-subtitle {
   max-width: 610px;
   font-size: 15px;
   color: #f0f5fa;
   line-height: 1.45;
 }
+/* Style .stay-search-wrap to position it within the page. */
 .stay-search-wrap {
   position: relative;
   margin-top: -36px;
   z-index: 1;
 }
+/* Style .stay-search to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-search {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1.1fr 1.15fr;
@@ -179,6 +208,7 @@
   box-shadow: 0 7px 30px #173e6010;
   color: var(--stay-ink);
 }
+/* Style .stay-search label to arrange its contents, style the surface and boundaries. */
 .stay-search label {
   display: flex;
   align-items: center;
@@ -189,16 +219,19 @@
   border-radius: 7px;
   box-shadow: 0 2px 8px #173f6108;
 }
+/* Style .stay-search label > svg to set text appearance. */
 .stay-search label > svg {
   color: #0b3d6b;
   flex-shrink: 0;
 }
+/* Style .stay-search label > span to set text appearance. */
 .stay-search label > span {
   flex: 1;
   min-width: 0;
   font-size: 11px;
   color: var(--stay-muted);
 }
+/* Style .stay-search input, .stay-search select to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-search input,
 .stay-search select {
   display: block;
@@ -211,11 +244,13 @@
   font-size: 12px;
   font-weight: 650;
 }
+/* Style .stay-search-error to set text appearance. */
 .stay-search-error {
   grid-column: 1 / -1;
   color: #a42424;
   padding: 3px;
 }
+/* Style .stay-button to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-button {
   display: inline-flex;
   align-items: center;
@@ -229,18 +264,22 @@
   font-weight: 600 !important;
   text-align: center;
 }
+/* Style .stay-button:hover to style the surface and boundaries. */
 .stay-button:hover {
   background: #145784;
 }
+/* Style .stay-catalog to control spacing and dimensions. */
 .stay-catalog {
   padding-block: 17px 14px;
 }
+/* Style .stay-catalog-layout to arrange its contents. */
 .stay-catalog-layout {
   display: grid;
   grid-template-columns: 250px minmax(0, 1fr);
   gap: 18px;
   align-items: start;
 }
+/* Style .stay-sidebar to style the surface and boundaries. */
 .stay-sidebar {
   padding: 18px;
   border: 1px solid #edf3f8;
@@ -248,6 +287,7 @@
   background: #fff;
   box-shadow: 0 4px 18px #183d6104;
 }
+/* Style .stay-sidebar-title to arrange its contents. */
 .stay-sidebar-title {
   display: flex;
   justify-content: space-between;
@@ -256,11 +296,13 @@
   padding-bottom: 12px;
   border-bottom: 1px solid #edf2f7;
 }
+/* Style .stay-sidebar-title h2 to set text appearance. */
 .stay-sidebar-title h2 {
   font-size: 15px;
   color: var(--stay-ink);
   font-weight: 700;
 }
+/* Style .stay-text-button to set text appearance, style the surface and boundaries. */
 .stay-text-button {
   padding: 0;
   border: 0;
@@ -270,10 +312,12 @@
   text-decoration: underline;
   text-underline-offset: 2px;
 }
+/* Style .stay-filter-section to control spacing and dimensions. */
 .stay-filter-section {
   padding-block: 15px;
   border-bottom: 1px solid #edf2f7;
 }
+/* Style .stay-filter-section summary to indicate the available pointer interaction, arrange its contents, set text appearance. */
 .stay-filter-section summary {
   cursor: pointer;
   font-size: 12px;
@@ -283,9 +327,11 @@
   align-items: center;
   gap: 4px;
 }
+/* Style .stay-filter-section summary::-webkit-details-marker to arrange its contents. */
 .stay-filter-section summary::-webkit-details-marker {
   display: none;
 }
+/* Style .stay-filter-section summary::after to control spacing and dimensions. */
 .stay-filter-section summary::after {
   content: '';
   width: 6px;
@@ -296,18 +342,22 @@
   margin-left: auto;
   margin-right: 3px;
 }
+/* Style .stay-filter-section[open] summary::after to control spacing and dimensions. */
 .stay-filter-section[open] summary::after {
   transform: rotate(225deg);
 }
+/* Style .stay-filter-section summary > span to set text appearance. */
 .stay-filter-section summary > span {
   color: var(--stay-muted);
   font-weight: 400;
   font-size: 10px;
 }
+/* Style .stay-price-control to arrange its contents. */
 .stay-price-control {
   display: block;
   margin-top: 14px;
 }
+/* Style .stay-price-control > span to arrange its contents, set text appearance. */
 .stay-price-control > span {
   display: flex;
   flex-wrap: wrap;
@@ -316,10 +366,12 @@
   font-size: 10px;
   color: var(--stay-muted);
 }
+/* Style .stay-price-control strong to set text appearance. */
 .stay-price-control strong {
   color: #153e65;
   font-weight: 600;
 }
+/* Style .stay-price-control input to indicate the available pointer interaction, arrange its contents. */
 .stay-price-control input {
   display: block;
   width: 100%;
@@ -327,18 +379,21 @@
   accent-color: #06477e;
   cursor: pointer;
 }
+/* Style .stay-price-labels to arrange its contents, set text appearance. */
 .stay-price-labels {
   display: flex;
   justify-content: space-between;
   font-size: 10px;
   color: var(--stay-muted);
 }
+/* Style .stay-price-preset to arrange its contents, set text appearance. */
 .stay-price-preset {
   display: block;
   margin-top: 13px;
   font-size: 10px;
   color: var(--stay-muted);
 }
+/* Style .stay-price-preset select to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-price-preset select {
   display: block;
   width: 100%;
@@ -350,11 +405,13 @@
   background: #fff;
   font-size: 11px;
 }
+/* Style .stay-type-options to arrange its contents. */
 .stay-type-options {
   display: grid;
   gap: 9px;
   margin-top: 13px;
 }
+/* Style .stay-type-options label to indicate the available pointer interaction, arrange its contents, set text appearance. */
 .stay-type-options label {
   display: flex;
   align-items: center;
@@ -362,17 +419,20 @@
   font-size: 12px;
   cursor: pointer;
 }
+/* Style .stay-type-options input to control spacing and dimensions. */
 .stay-type-options input {
   width: 15px;
   height: 15px;
   margin: 0;
   accent-color: #0861c1;
 }
+/* Style .stay-type-options small to set text appearance. */
 .stay-type-options small {
   margin-left: auto;
   color: var(--stay-muted);
   font-size: 10px;
 }
+/* Style .stay-availability to arrange its contents. */
 .stay-availability {
   display: flex;
   align-items: center;
@@ -380,15 +440,18 @@
   gap: 10px;
   padding-top: 16px;
 }
+/* Style .stay-availability strong to set text appearance. */
 .stay-availability strong {
   font-size: 12px;
 }
+/* Style .stay-availability small to arrange its contents, set text appearance. */
 .stay-availability small {
   display: block;
   margin-top: 5px;
   color: var(--stay-muted);
   font-size: 10px;
 }
+/* Style .stay-availability input to indicate the available pointer interaction, style the surface and boundaries. */
 .stay-availability input {
   appearance: none;
   width: 37px;
@@ -401,6 +464,7 @@
   border-radius: 20px;
   cursor: pointer;
 }
+/* Style .stay-availability input::before to arrange its contents, style the surface and boundaries. */
 .stay-availability input::before {
   content: '';
   display: block;
@@ -411,16 +475,20 @@
   box-shadow: 0 1px 3px #10223e30;
   transition: transform 0.15s ease;
 }
+/* Style .stay-availability input:checked to style the surface and boundaries. */
 .stay-availability input:checked {
   background: #0863cf;
 }
+/* Style .stay-availability input:checked::before to control spacing and dimensions. */
 .stay-availability input:checked::before {
   transform: translateX(16px);
 }
+/* Style .stay-availability input:disabled to indicate the available pointer interaction. */
 .stay-availability input:disabled {
   opacity: 0.6;
   cursor: default;
 }
+/* Style .stay-search-summary to arrange its contents, set text appearance. */
 .stay-search-summary {
   display: grid;
   gap: 10px;
@@ -429,6 +497,7 @@
   margin-top: 16px;
   font-size: 11px;
 }
+/* Style .stay-search-summary p to arrange its contents, set text appearance. */
 .stay-search-summary p {
   display: flex;
   align-items: center;
@@ -436,13 +505,16 @@
   flex-wrap: wrap;
   color: var(--stay-muted);
 }
+/* Style .stay-search-summary button to control spacing and dimensions. */
 .stay-search-summary button {
   text-align: left;
   justify-self: start;
 }
+/* Style .stay-results to control spacing and dimensions. */
 .stay-results {
   min-width: 0;
 }
+/* Style .stay-results-toolbar to arrange its contents. */
 .stay-results-toolbar {
   min-height: 39px;
   display: flex;
@@ -451,15 +523,18 @@
   gap: 12px;
   margin-bottom: 10px;
 }
+/* Style .stay-result-count to set text appearance. */
 .stay-result-count {
   color: #526a86;
   font-size: 12px;
 }
+/* Style .stay-results-controls to arrange its contents. */
 .stay-results-controls {
   display: flex;
   align-items: center;
   gap: 12px;
 }
+/* Style .stay-sort to arrange its contents, set text appearance. */
 .stay-sort {
   display: flex;
   align-items: center;
@@ -468,6 +543,7 @@
   font-size: 11px;
   white-space: nowrap;
 }
+/* Style .stay-sort select to set text appearance, style the surface and boundaries. */
 .stay-sort select {
   max-width: 175px;
   padding: 9px 10px;
@@ -477,10 +553,12 @@
   border-radius: 6px;
   font-size: 11px;
 }
+/* Style .stay-layout-toggle to arrange its contents. */
 .stay-layout-toggle {
   display: flex;
   gap: 5px;
 }
+/* Style .stay-layout-toggle button to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-layout-toggle button {
   display: flex;
   align-items: center;
@@ -492,16 +570,19 @@
   color: #254c72;
   background: #fff;
 }
+/* Style .stay-layout-toggle button[aria-pressed='true'] to set text appearance, style the surface and boundaries. */
 .stay-layout-toggle button[aria-pressed='true'] {
   color: #fff;
   background: #07335a;
   border-color: #07335a;
 }
+/* Style .stay-room-grid to arrange its contents. */
 .stay-room-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 13px;
 }
+/* Style .stay-room-card to control overflowing content, arrange its contents, style the surface and boundaries. */
 .stay-room-card {
   min-width: 0;
   padding: 6px;
@@ -514,9 +595,11 @@
   overflow: hidden;
   transition: box-shadow 0.15s ease;
 }
+/* Style .stay-room-card:hover to style the surface and boundaries. */
 .stay-room-card:hover {
   box-shadow: 0 7px 22px #153d6114;
 }
+/* Style .stay-room-photo to control overflowing content, position it within the page. */
 .stay-room-photo {
   position: relative;
   height: 145px;
@@ -524,12 +607,14 @@
   border-radius: 7px;
   flex-shrink: 0;
 }
+/* Style .stay-room-photo img, .stay-detail-photo img to control spacing and dimensions. */
 .stay-room-photo img,
 .stay-detail-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
+/* Style .stay-photo-placeholder to arrange its contents, set text appearance, style the surface and boundaries. */
 .stay-photo-placeholder {
   width: 100%;
   height: 100%;
@@ -543,6 +628,7 @@
   gap: 10px;
   font-size: 12px;
 }
+/* Style .stay-status to position it within the page, set text appearance, style the surface and boundaries. */
 .stay-status {
   position: absolute;
   top: 9px;
@@ -555,28 +641,33 @@
   font-weight: 600;
   box-shadow: 0 2px 6px #003b4220;
 }
+/* Style .stay-status-muted to style the surface and boundaries. */
 .stay-status-muted {
   background: #6b7585;
   text-transform: capitalize;
 }
+/* Style .stay-room-content to arrange its contents. */
 .stay-room-content {
   display: flex;
   flex-direction: column;
   flex: 1;
   padding: 8px 7px 3px;
 }
+/* Style .stay-room-type to set text appearance. */
 .stay-room-type {
   color: #6b7d93;
   text-transform: uppercase;
   letter-spacing: 1px;
   font-size: 9px;
 }
+/* Style .stay-room-content h3 to set text appearance. */
 .stay-room-content h3 {
   color: #122947;
   font-size: 14px;
   line-height: 1.3;
   margin: 3px 0 5px;
 }
+/* Style .stay-room-description to control overflowing content, arrange its contents, set text appearance. */
 .stay-room-description {
   color: #697c95;
   font-size: 11px;
@@ -586,6 +677,7 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* Style .stay-room-meta to arrange its contents, set text appearance. */
 .stay-room-meta {
   display: flex;
   align-items: center;
@@ -595,9 +687,11 @@
   font-size: 10px;
   margin: 10px 0 !important;
 }
+/* Style .stay-room-meta > span to control spacing and dimensions. */
 .stay-room-meta > span {
   margin-left: auto;
 }
+/* Style .stay-room-bottom to arrange its contents. */
 .stay-room-bottom {
   display: flex;
   align-items: center;
@@ -607,39 +701,49 @@
   margin-top: auto;
   padding-top: 5px;
 }
+/* Style .stay-room-bottom strong to set text appearance. */
 .stay-room-bottom strong {
   font-size: 18px;
   letter-spacing: -0.5px;
 }
+/* Style .stay-room-bottom p > span to set text appearance. */
 .stay-room-bottom p > span {
   font-size: 11px;
   color: #60758e;
 }
+/* Style .stay-room-bottom .stay-button to set text appearance. */
 .stay-room-bottom .stay-button {
   font-size: 10px;
   padding: 8px 17px;
 }
+/* Style .stay-room-list to arrange its contents. */
 .stay-room-list {
   grid-template-columns: minmax(0, 1fr);
 }
+/* Style .stay-room-list .stay-room-card to arrange its contents. */
 .stay-room-list .stay-room-card {
   flex-direction: row;
   gap: 10px;
 }
+/* Style .stay-room-list .stay-room-photo to control spacing and dimensions. */
 .stay-room-list .stay-room-photo {
   width: 32%;
   min-height: 170px;
   height: auto;
 }
+/* Style .stay-room-list .stay-room-content to control spacing and dimensions. */
 .stay-room-list .stay-room-content {
   padding: 12px;
 }
+/* Style .stay-room-list .stay-room-description to control spacing and dimensions. */
 .stay-room-list .stay-room-description {
   -webkit-line-clamp: 3;
 }
+/* Style .stay-room-list .stay-room-content h3 to set text appearance. */
 .stay-room-list .stay-room-content h3 {
   font-size: 18px;
 }
+/* Style .stay-empty to arrange its contents, style the surface and boundaries. */
 .stay-empty {
   min-height: 300px;
   padding: 36px;
@@ -653,24 +757,29 @@
   border-radius: 12px;
   background: #fff;
 }
+/* Style .stay-empty h2 to set text appearance. */
 .stay-empty h2 {
   color: #173c60;
   font-size: 20px;
 }
+/* Style .stay-empty p to set text appearance. */
 .stay-empty p {
   color: #6c8198;
 }
+/* Style .stay-skeleton to style the surface and boundaries. */
 .stay-skeleton {
   height: 290px;
   padding: 6px;
   border-radius: 10px;
   background: #fff;
 }
+/* Style .stay-skeleton > div to style the surface and boundaries. */
 .stay-skeleton > div {
   height: 145px;
   border-radius: 7px;
   background: #e1ebf3;
 }
+/* Style .stay-skeleton > span to arrange its contents, style the surface and boundaries. */
 .stay-skeleton > span {
   display: block;
   width: 75%;
@@ -679,6 +788,7 @@
   margin: 20px 8px;
   background: #e1ebf3;
 }
+/* Style .stay-benefits to arrange its contents, style the surface and boundaries. */
 .stay-benefits {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -688,6 +798,7 @@
   border-radius: 10px;
   margin-bottom: 24px;
 }
+/* Style .stay-benefits > div to arrange its contents. */
 .stay-benefits > div {
   display: flex;
   align-items: center;
@@ -695,36 +806,44 @@
   padding-inline: 20px;
   border-right: 1px solid #e5edf6;
 }
+/* Style .stay-benefits > div:first-child to control spacing and dimensions. */
 .stay-benefits > div:first-child {
   padding-left: 0;
 }
+/* Style .stay-benefits > div:last-child to style the surface and boundaries. */
 .stay-benefits > div:last-child {
   border: 0;
   padding-right: 0;
 }
+/* Style .stay-benefits svg to set text appearance. */
 .stay-benefits svg {
   width: 28px;
   height: 28px;
   color: #0c3b70;
   flex-shrink: 0;
 }
+/* Style .stay-benefits strong, .stay-benefits small to arrange its contents. */
 .stay-benefits strong,
 .stay-benefits small {
   display: block;
 }
+/* Style .stay-benefits strong to set text appearance. */
 .stay-benefits strong {
   font-size: 12px;
   margin-bottom: 3px;
 }
+/* Style .stay-benefits small to set text appearance. */
 .stay-benefits small {
   color: #637893;
   font-size: 10px;
   line-height: 1.4;
 }
+/* Style .stay-footer to set text appearance, style the surface and boundaries. */
 .stay-footer {
   background: #082c4b;
   color: #e3ebf4;
 }
+/* Style .stay-footer > div to arrange its contents. */
 .stay-footer > div {
   display: flex;
   align-items: center;
@@ -732,23 +851,28 @@
   gap: 24px;
   padding-block: 24px;
 }
+/* Style .stay-footer .coast-brand > span to set text appearance. */
 .stay-footer .coast-brand > span {
   font-size: 15px;
   letter-spacing: 3px;
 }
+/* Style .stay-footer .coast-brand svg to control spacing and dimensions. */
 .stay-footer .coast-brand svg {
   width: 40px;
 }
+/* Style .stay-footer p to set text appearance. */
 .stay-footer p {
   font-size: 11px;
   color: #c5d6e6;
 }
+/* Style .stay-footer a:last-child to arrange its contents, set text appearance. */
 .stay-footer a:last-child {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   font-size: 11px;
 }
+/* Style .stay-dialog to set text appearance, style the surface and boundaries. */
 .stay-dialog {
   width: min(580px, calc(100% - 32px));
   max-height: 90dvh;
@@ -760,10 +884,12 @@
   background: #fff;
   box-shadow: 0 24px 80px #001b3550;
 }
+/* Style .stay-dialog::backdrop to style the surface and boundaries. */
 .stay-dialog::backdrop {
   background: #001b3590;
   backdrop-filter: blur(4px);
 }
+/* Style .stay-dialog-close to arrange its contents, position it within the page, set text appearance. */
 .stay-dialog-close {
   position: absolute;
   top: 14px;
@@ -776,174 +902,224 @@
   background: #fff;
   color: #10223d;
 }
+/* Style .stay-detail-photo to control spacing and dimensions. */
 .stay-detail-photo {
   height: 250px;
 }
+/* Style .stay-detail-content to control spacing and dimensions. */
 .stay-detail-content {
   padding: 26px;
 }
+/* Style .stay-detail-content h2 to set text appearance. */
 .stay-detail-content h2 {
   color: #102e51;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: 30px;
   margin: 6px 0 14px;
 }
+/* Style .stay-detail-content > p to set text appearance. */
 .stay-detail-content > p {
   color: #63758d;
 }
+/* Style .stay-detail-price to arrange its contents, set text appearance. */
 .stay-detail-price {
   display: block;
   font-size: 24px;
   margin: 20px 0;
 }
+/* Style .stay-detail-price small to set text appearance. */
 .stay-detail-price small {
   font-size: 13px;
   font-weight: 400;
 }
+/* Apply the following layout adjustments when (max-width: 1150px). */
 @media (max-width: 1150px) {
+  /* Style .stay-header nav to control spacing and dimensions. */
   .stay-header nav {
     gap: 20px;
   }
+  /* Style .stay-header-inner to control spacing and dimensions. */
   .stay-header-inner {
     gap: 18px;
   }
+  /* Style .stay-header-actions to control spacing and dimensions. */
   .stay-header-actions {
     gap: 10px;
   }
+  /* Style .stay-book to control spacing and dimensions. */
   .stay-book {
     padding-inline: 15px;
   }
+  /* Style .stay-catalog-layout to arrange its contents. */
   .stay-catalog-layout {
     grid-template-columns: 215px minmax(0, 1fr);
   }
+  /* Style .stay-room-grid to arrange its contents. */
   .stay-room-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* Style .stay-room-list to arrange its contents. */
   .stay-room-list {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Style .stay-search to control spacing and dimensions. */
   .stay-search {
     gap: 7px;
   }
+  /* Style .stay-search label to control spacing and dimensions. */
   .stay-search label {
     padding: 9px;
     gap: 8px;
   }
+  /* Style .stay-search label > svg to control spacing and dimensions. */
   .stay-search label > svg {
     width: 18px;
   }
+  /* Style .stay-search > button to set text appearance. */
   .stay-search > button {
     padding-inline: 10px;
     font-size: 11px;
   }
+  /* Style .stay-benefits to control spacing and dimensions. */
   .stay-benefits {
     padding-inline: 14px;
   }
+  /* Style .stay-benefits > div to control spacing and dimensions. */
   .stay-benefits > div {
     gap: 10px;
     padding-inline: 12px;
   }
 }
+/* Apply the following layout adjustments when (max-width: 850px). */
 @media (max-width: 850px) {
+  /* Style .stay-header-inner to control spacing and dimensions. */
   .stay-header-inner {
     flex-wrap: wrap;
     padding-block: 12px 0;
     gap: 8px;
   }
+  /* Style .stay-header nav to control spacing and dimensions. */
   .stay-header nav {
     order: 3;
     width: 100%;
     justify-content: center;
     gap: 30px;
   }
+  /* Style .stay-header nav a to control spacing and dimensions. */
   .stay-header nav a {
     min-height: 40px;
   }
+  /* Style .stay-search to arrange its contents. */
   .stay-search {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* Style .stay-search > button to control spacing and dimensions. */
   .stay-search > button {
     grid-column: 1 / -1;
   }
+  /* Style .stay-hero to control spacing and dimensions. */
   .stay-hero {
     padding-bottom: 65px;
   }
+  /* Style .stay-hero-subtitle to set text appearance. */
   .stay-hero-subtitle {
     max-width: 470px;
     font-size: 14px;
   }
+  /* Style .stay-catalog-layout to arrange its contents. */
   .stay-catalog-layout {
     grid-template-columns: 190px minmax(0, 1fr);
     gap: 14px;
   }
+  /* Style .stay-sidebar to control spacing and dimensions. */
   .stay-sidebar {
     padding: 14px;
   }
+  /* Style .stay-results-toolbar to control spacing and dimensions. */
   .stay-results-toolbar {
     flex-wrap: wrap;
   }
+  /* Style .stay-results-controls to control spacing and dimensions. */
   .stay-results-controls {
     width: 100%;
     justify-content: space-between;
   }
+  /* Style .stay-sort to control spacing and dimensions. */
   .stay-sort {
     flex: 1;
   }
+  /* Style .stay-sort select to control spacing and dimensions. */
   .stay-sort select {
     min-width: 0;
     flex: 1;
   }
+  /* Style .stay-benefits to arrange its contents. */
   .stay-benefits {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 18px 0;
   }
+  /* Style .stay-benefits > div to control spacing and dimensions. */
   .stay-benefits > div {
     padding: 0 15px;
   }
+  /* Style .stay-benefits > div:nth-child(2) to style the surface and boundaries. */
   .stay-benefits > div:nth-child(2) {
     border: 0;
   }
+  /* Style .stay-benefits > div:nth-child(3) to control spacing and dimensions. */
   .stay-benefits > div:nth-child(3) {
     padding-left: 0;
   }
+  /* Style .stay-footer > div to control spacing and dimensions. */
   .stay-footer > div {
     flex-wrap: wrap;
     gap: 15px;
   }
 }
+/* Apply the following layout adjustments when (max-width: 620px). */
 @media (max-width: 620px) {
+  /* Style .stay-container to control spacing and dimensions. */
   .stay-container {
     width: 92%;
   }
+  /* Style .stay-header .coast-brand svg to control spacing and dimensions. */
   .stay-header .coast-brand svg {
     width: 34px;
     height: 40px;
   }
+  /* Style .stay-header .coast-brand > span to set text appearance. */
   .stay-header .coast-brand > span {
     font-size: 13px;
     letter-spacing: 3px;
   }
+  /* Style .stay-header .coast-brand small to set text appearance. */
   .stay-header .coast-brand small {
     font-size: 7px;
     letter-spacing: 3px;
   }
+  /* Style .stay-header-actions to control spacing and dimensions. */
   .stay-header-actions {
     gap: 4px;
   }
+  /* Style .stay-book to set text appearance. */
   .stay-book {
     padding: 9px 12px;
     font-size: 11px !important;
     gap: 8px;
   }
+  /* Style .stay-search-link to arrange its contents. */
   .stay-search-link {
     display: none;
   }
+  /* Style .stay-header nav to control spacing and dimensions. */
   .stay-header nav {
     gap: 25px;
   }
+  /* Style .stay-header nav a to set text appearance. */
   .stay-header nav a {
     font-size: 11px;
   }
+  /* Style .stay-hero to control spacing and dimensions. */
   .stay-hero {
     padding-top: 26px;
     min-height: 215px;
@@ -952,123 +1128,157 @@
       auto 100%,
       cover;
   }
+  /* Style .stay-hero h1 to set text appearance. */
   .stay-hero h1 {
     font-size: 36px;
   }
+  /* Style .stay-hero-subtitle to set text appearance. */
   .stay-hero-subtitle {
     max-width: 330px;
     font-size: 13px;
   }
+  /* Style .stay-desktop-break to arrange its contents. */
   .stay-desktop-break {
     display: none;
   }
+  /* Style .stay-search to control spacing and dimensions. */
   .stay-search {
     padding: 9px;
   }
+  /* Style .stay-search label to control spacing and dimensions. */
   .stay-search label {
     padding: 10px 8px;
   }
+  /* Style .stay-search input, .stay-search select to set text appearance. */
   .stay-search input,
   .stay-search select {
     font-size: 12px;
   }
+  /* Style .stay-search > button to control spacing and dimensions. */
   .stay-search > button {
     min-height: 42px;
   }
+  /* Style .stay-catalog-layout to arrange its contents. */
   .stay-catalog-layout {
     grid-template-columns: minmax(0, 1fr);
     gap: 17px;
   }
+  /* Style .stay-sidebar to arrange its contents. */
   .stay-sidebar {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0 18px;
   }
+  /* Style .stay-sidebar-title to control spacing and dimensions. */
   .stay-sidebar-title {
     grid-column: 1 / -1;
   }
+  /* Style .stay-filter-section to style the surface and boundaries. */
   .stay-filter-section {
     border: 0;
     padding-block: 12px;
   }
+  /* Style .stay-filter-section summary to set text appearance. */
   .stay-filter-section summary {
     font-size: 11px;
   }
+  /* Style .stay-availability to control spacing and dimensions. */
   .stay-availability {
     grid-column: 1 / -1;
     border-top: 1px solid #edf2f7;
     padding-block: 12px 0;
   }
+  /* Style .stay-search-summary to control spacing and dimensions. */
   .stay-search-summary {
     grid-column: 1 / -1;
   }
+  /* Style .stay-room-grid to arrange its contents. */
   .stay-room-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 15px;
   }
+  /* Style .stay-room-photo to control spacing and dimensions. */
   .stay-room-photo {
     height: 205px;
   }
+  /* Style .stay-room-content to control spacing and dimensions. */
   .stay-room-content {
     padding: 11px 9px 7px;
   }
+  /* Style .stay-room-content h3 to set text appearance. */
   .stay-room-content h3 {
     font-size: 17px;
   }
+  /* Style .stay-room-description to set text appearance. */
   .stay-room-description {
     font-size: 12px;
   }
+  /* Style .stay-room-meta to set text appearance. */
   .stay-room-meta {
     font-size: 11px;
     margin-block: 12px !important;
   }
+  /* Style .stay-room-bottom to control spacing and dimensions. */
   .stay-room-bottom {
     padding-top: 4px;
   }
+  /* Style .stay-room-bottom .stay-button to set text appearance. */
   .stay-room-bottom .stay-button {
     font-size: 11px;
     padding: 10px 18px;
   }
+  /* Style .stay-room-bottom strong to set text appearance. */
   .stay-room-bottom strong {
     font-size: 21px;
   }
+  /* Style .stay-room-list .stay-room-card to arrange its contents. */
   .stay-room-list .stay-room-card {
     flex-direction: column;
     gap: 0;
   }
+  /* Style .stay-room-list .stay-room-photo to control spacing and dimensions. */
   .stay-room-list .stay-room-photo {
     width: 100%;
     height: 150px;
     min-height: 0;
   }
+  /* Style .stay-room-list .stay-room-content to control spacing and dimensions. */
   .stay-room-list .stay-room-content {
     padding: 11px 9px 7px;
   }
+  /* Style .stay-benefits to control spacing and dimensions. */
   .stay-benefits {
     padding: 17px 14px;
   }
+  /* Style .stay-benefits > div to control spacing and dimensions. */
   .stay-benefits > div {
     gap: 9px;
     padding-inline: 10px;
     align-items: flex-start;
   }
+  /* Style .stay-benefits svg to control spacing and dimensions. */
   .stay-benefits svg {
     width: 23px;
     height: 23px;
   }
+  /* Style .stay-benefits strong to set text appearance. */
   .stay-benefits strong {
     font-size: 11px;
   }
+  /* Style .stay-benefits small to set text appearance. */
   .stay-benefits small {
     font-size: 10px;
   }
+  /* Style .stay-footer > div to arrange its contents. */
   .stay-footer > div {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
 }
+/* Apply the following layout adjustments when (prefers-reduced-motion: reduce). */
 @media (prefers-reduced-motion: reduce) {
+  /* Style .stay-page *, .stay-page *::before to control spacing and dimensions. */
   .stay-page *,
   .stay-page *::before {
     transition: none;

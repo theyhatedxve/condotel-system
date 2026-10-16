@@ -6,6 +6,7 @@ import { NotificationsController } from './notifications.controller';
 
 import { NotificationsService } from './notifications.service';
 
+// Wire the notifications controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule],
 

@@ -9,9 +9,11 @@ import GuestFormModal from './GuestFormModal';
 import './guests.css';
 import ListPagination from '../../components/ListPagination';
 
+// Render the guests page with its loading, error, and record/form states.
 export default function GuestsPage() {
+  // Track local state and read any session or route values needed by this component.
   const [guests, setGuests] = useState([]);
-  const [page,setPage] = useState(1);
+  const [page, setPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +31,8 @@ export default function GuestsPage() {
 
   const [submitting, setSubmitting] = useState(false);
 
+  // Load guest records for the applied search, status, and page while ignoring stale
+  // results.
   useEffect(() => {
     let cancelled = false;
 
@@ -55,6 +59,7 @@ export default function GuestsPage() {
     };
   }, [appliedSearch, status, page]);
 
+  // Reload the current guest list after saving or reapplying its filters.
   async function refreshGuests() {
     setLoading(true);
 
@@ -74,6 +79,7 @@ export default function GuestsPage() {
     }
   }
 
+  // Apply the entered search text and reset guest pagination when the search changes.
   function handleSearch(event) {
     event.preventDefault();
     if (appliedSearch === search.trim()) {
@@ -85,16 +91,19 @@ export default function GuestsPage() {
     setPage(1);
   }
 
+  // Open an empty guest form for account creation.
   function openCreate() {
     setSelectedGuest(null);
     setModalOpen(true);
   }
 
+  // Select the record and open its editing form.
   function openEdit(guest) {
     setSelectedGuest(guest);
     setModalOpen(true);
   }
 
+  // Create or update the selected guest, then close the form and reload its list.
   async function handleSave(payload) {
     setSubmitting(true);
 
@@ -120,7 +129,9 @@ export default function GuestsPage() {
   }
 
   return (
+    /* Display the "Guest Management" section and its related actions. */
     <section className="guests-page">
+      {/* Show this section's heading, context, and available actions. */}
       <header className="guests-header">
         <div>
           <h1>Guest Management</h1>
@@ -134,6 +145,7 @@ export default function GuestsPage() {
         </button>
       </header>
 
+      {/* Collect the guests form fields and submit them through the handler above. */}
       <form className="guest-search" onSubmit={handleSearch}>
         <Search size={17} />
 
@@ -169,6 +181,7 @@ export default function GuestsPage() {
         <div className="rooms-loading">Loading guests...</div>
       ) : (
         <div className="guest-table-wrapper">
+          {/* Display guests records with their existing columns and row actions. */}
           <table className="guest-table">
             <thead>
               <tr>
@@ -211,7 +224,16 @@ export default function GuestsPage() {
         </div>
       )}
 
-      <ListPagination label="Guests" page={page} count={guests.length} loading={loading} onChange={next=>{setLoading(true);setPage(next);}}/>
+      <ListPagination
+        label="Guests"
+        page={page}
+        count={guests.length}
+        loading={loading}
+        onChange={(next) => {
+          setLoading(true);
+          setPage(next);
+        }}
+      />
       {modalOpen && (
         <GuestFormModal
           key={selectedGuest?.id ?? 'new-guest'}

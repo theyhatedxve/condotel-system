@@ -10,6 +10,7 @@ import { PaymentsService } from './payments.service';
 
 import { NotificationsModule } from '../notifications/notifications.module';
 
+// Wire the payments controllers, services, and imported dependencies into Nest.
 @Module({
   imports: [AuthModule, NotificationsModule],
 

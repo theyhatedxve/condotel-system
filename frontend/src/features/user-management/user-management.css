@@ -1,12 +1,17 @@
+/* Style .user-management-page to control spacing and dimensions. */
+
 .user-management-page {
   width: 100%;
 }
+
+/* Style .managed-account-actions to arrange its contents. */
 
 .managed-account-actions {
   display: flex;
   gap: 10px;
   margin-top: 12px;
 }
+/* Style .managed-account-actions button to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 .managed-account-actions button {
   padding: 9px 14px;
   border: 1px solid var(--color-border);
@@ -15,6 +20,7 @@
   color: white;
   cursor: pointer;
 }
+/* Style .managed-user-modal textarea to style the surface and boundaries. */
 .managed-user-modal textarea {
   width: 100%;
   min-width: 0;
@@ -26,9 +32,13 @@
   resize: vertical;
 }
 
+/* Style .user-management-header to control spacing and dimensions. */
+
 .user-management-header {
   margin-bottom: 20px;
 }
+
+/* Style .user-management-header h1 to set text appearance. */
 
 .user-management-header h1 {
   margin: 0;
@@ -36,11 +46,15 @@
   color: var(--color-navy-950);
 }
 
+/* Style .user-management-header p to set text appearance. */
+
 .user-management-header p {
   margin: 6px 0 0;
 
   color: var(--color-text-muted);
 }
+
+/* Style .user-management-summary to arrange its contents. */
 
 .user-management-summary {
   display: grid;
@@ -51,6 +65,8 @@
 
   margin-bottom: 18px;
 }
+
+/* Style .user-management-summary article to style the surface and boundaries. */
 
 .user-management-summary article {
   padding: 16px;
@@ -64,6 +80,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .user-management-summary span to arrange its contents, set text appearance. */
+
 .user-management-summary span {
   display: block;
 
@@ -71,6 +89,8 @@
 
   font-size: 10px;
 }
+
+/* Style .user-management-summary strong to arrange its contents, set text appearance. */
 
 .user-management-summary strong {
   display: block;
@@ -81,6 +101,8 @@
 
   font-size: 20px;
 }
+
+/* Style .user-management-toolbar to arrange its contents. */
 
 .user-management-toolbar {
   display: grid;
@@ -94,6 +116,8 @@
 
   margin-bottom: 15px;
 }
+
+/* Style .user-management-search to arrange its contents, style the surface and boundaries. */
 
 .user-management-search {
   display: flex;
@@ -110,6 +134,8 @@
   background: #ffffff;
 }
 
+/* Style .user-management-search input to make keyboard focus visible, style the surface and boundaries. */
+
 .user-management-search input {
   width: 100%;
 
@@ -121,6 +147,8 @@
 
   background: transparent;
 }
+
+/* Style .user-management-toolbar select to set text appearance, style the surface and boundaries. */
 
 .user-management-toolbar select {
   min-height: 40px;
@@ -136,6 +164,8 @@
   color: var(--color-navy-950);
 }
 
+/* Style .user-management-table-wrapper to style the surface and boundaries. */
+
 .user-management-table-wrapper {
   overflow-x: auto;
 
@@ -148,6 +178,8 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Style .user-management-table to set text appearance. */
+
 .user-management-table {
   width: 100%;
 
@@ -155,6 +187,8 @@
 
   font-size: 11px;
 }
+
+/* Style .user-management-table th, .user-management-table td to control spacing and dimensions. */
 
 .user-management-table th,
 .user-management-table td {
@@ -167,6 +201,8 @@
   white-space: nowrap;
 }
 
+/* Style .user-management-table th to set text appearance, style the surface and boundaries. */
+
 .user-management-table th {
   background: #f8fafc;
 
@@ -175,16 +211,22 @@
   font-weight: 600;
 }
 
+/* Style .user-management-table td > strong, .user-management-table td > small to arrange its contents. */
+
 .user-management-table td > strong,
 .user-management-table td > small {
   display: block;
 }
+
+/* Style .user-management-table td > small to set text appearance. */
 
 .user-management-table td > small {
   margin-top: 3px;
 
   color: var(--color-text-muted);
 }
+
+/* Style .user-management-no-results to set text appearance. */
 
 .user-management-no-results {
   padding: 36px !important;
@@ -193,6 +235,8 @@
 
   text-align: center !important;
 }
+
+/* Style .managed-user-status to arrange its contents, set text appearance. */
 
 .managed-user-status {
   display: inline-flex;
@@ -205,11 +249,15 @@
   font-weight: 600;
 }
 
+/* Style .managed-user-status.active to set text appearance, style the surface and boundaries. */
+
 .managed-user-status.active {
   background: #dcf6eb;
 
   color: #11845b;
 }
+
+/* Style .managed-user-status.inactive to set text appearance, style the surface and boundaries. */
 
 .managed-user-status.inactive {
   background: #edf1f4;
@@ -217,17 +265,23 @@
   color: #63798e;
 }
 
+/* Style .managed-user-status.suspended to set text appearance, style the surface and boundaries. */
+
 .managed-user-status.suspended {
   background: #fde3e3;
 
   color: #c03f3f;
 }
 
+/* Style .managed-user-actions to arrange its contents. */
+
 .managed-user-actions {
   display: flex;
 
   gap: 6px;
 }
+
+/* Style .managed-user-actions button to indicate the available pointer interaction, arrange its contents, set text appearance. */
 
 .managed-user-actions button {
   display: inline-flex;
@@ -250,9 +304,13 @@
   cursor: pointer;
 }
 
+/* Style .managed-user-actions button:hover to style the surface and boundaries. */
+
 .managed-user-actions button:hover {
   background: #f8fafc;
 }
+
+/* Style .user-management-empty to set text appearance. */
 
 .user-management-empty {
   padding: 40px;
@@ -261,6 +319,8 @@
 
   text-align: center;
 }
+
+/* Style .managed-user-modal-backdrop to arrange its contents, position it within the page, style the surface and boundaries. */
 
 .managed-user-modal-backdrop {
   position: fixed;
@@ -276,6 +336,8 @@
 
   background: rgba(15, 23, 42, 0.48);
 }
+
+/* Style .managed-user-modal to style the surface and boundaries. */
 
 .managed-user-modal {
   width: min(100%, 650px);
@@ -293,6 +355,8 @@
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.2);
 }
 
+/* Style .managed-user-modal header to arrange its contents. */
+
 .managed-user-modal header {
   display: flex;
   align-items: center;
@@ -303,11 +367,15 @@
   margin-bottom: 18px;
 }
 
+/* Style .managed-user-modal header h2 to set text appearance. */
+
 .managed-user-modal header h2 {
   margin: 0;
 
   color: var(--color-navy-950);
 }
+
+/* Style .managed-user-modal header button to indicate the available pointer interaction, arrange its contents, style the surface and boundaries. */
 
 .managed-user-modal header button {
   width: 34px;
@@ -325,6 +393,8 @@
   cursor: pointer;
 }
 
+/* Style .managed-user-form-grid to arrange its contents. */
+
 .managed-user-form-grid {
   display: grid;
 
@@ -332,6 +402,8 @@
 
   gap: 12px;
 }
+
+/* Style .managed-user-form-grid label, .managed-user-reset-modal label to arrange its contents, set text appearance. */
 
 .managed-user-form-grid label,
 .managed-user-reset-modal label {
@@ -345,6 +417,8 @@
   font-size: 10px;
   font-weight: 600;
 }
+
+/* Style .managed-user-form-grid input, .managed-user-form-grid select, .managed-user-reset-modal input to keep padding and borders inside the declared dimensions, make keyboard focus visible, style the surface and boundaries. */
 
 .managed-user-form-grid input,
 .managed-user-form-grid select,
@@ -364,11 +438,15 @@
   background: #ffffff;
 }
 
+/* Style .managed-user-form-grid input:focus, .managed-user-form-grid select:focus, .managed-user-reset-modal input:focus to control spacing and dimensions. */
+
 .managed-user-form-grid input:focus,
 .managed-user-form-grid select:focus,
 .managed-user-reset-modal input:focus {
   border-color: var(--color-blue-700);
 }
+
+/* Style .managed-user-form-grid select:disabled to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 
 .managed-user-form-grid select:disabled {
   background: #f6f8fa;
@@ -377,6 +455,8 @@
 
   cursor: not-allowed;
 }
+
+/* Style .managed-user-admin-note to set text appearance, style the surface and boundaries. */
 
 .managed-user-admin-note {
   margin: 14px 0 0;
@@ -394,6 +474,8 @@
   font-size: 10px;
 }
 
+/* Style .managed-user-modal footer to arrange its contents. */
+
 .managed-user-modal footer {
   display: flex;
   justify-content: flex-end;
@@ -402,6 +484,8 @@
 
   margin-top: 20px;
 }
+
+/* Style .managed-user-modal footer button to indicate the available pointer interaction, style the surface and boundaries. */
 
 .managed-user-modal footer button {
   min-height: 38px;
@@ -417,6 +501,8 @@
   cursor: pointer;
 }
 
+/* Style .managed-user-modal footer button[type='submit'] to set text appearance, style the surface and boundaries. */
+
 .managed-user-modal footer button[type='submit'] {
   border-color: var(--color-blue-700);
 
@@ -425,11 +511,15 @@
   color: #ffffff;
 }
 
+/* Style .managed-user-modal footer button:disabled to indicate the available pointer interaction. */
+
 .managed-user-modal footer button:disabled {
   opacity: 0.6;
 
   cursor: not-allowed;
 }
+
+/* Style .managed-user-reset-modal to arrange its contents. */
 
 .managed-user-reset-modal {
   width: min(100%, 460px);
@@ -440,6 +530,8 @@
   gap: 13px;
 }
 
+/* Style .managed-user-reset-modal > p, .managed-user-reset-modal > small to set text appearance. */
+
 .managed-user-reset-modal > p,
 .managed-user-reset-modal > small {
   color: var(--color-text-muted);
@@ -447,30 +539,44 @@
   font-size: 10px;
 }
 
+/* Style .managed-user-reset-modal > p to control spacing and dimensions. */
+
 .managed-user-reset-modal > p {
   margin: 0;
 }
 
+/* Apply the following layout adjustments when (max-width: 850px). */
+
 @media (max-width: 850px) {
+  /* Style .user-management-summary to arrange its contents. */
   .user-management-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  /* Style .user-management-toolbar to arrange its contents. */
+
   .user-management-toolbar {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* Style .user-management-search to control spacing and dimensions. */
 
   .user-management-search {
     grid-column: 1 / -1;
   }
 }
 
+/* Apply the following layout adjustments when (max-width: 600px). */
+
 @media (max-width: 600px) {
+  /* Style .user-management-summary, .user-management-toolbar, .managed-user-form-grid to arrange its contents. */
   .user-management-summary,
   .user-management-toolbar,
   .managed-user-form-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Style .user-management-search to control spacing and dimensions. */
 
   .user-management-search {
     grid-column: auto;

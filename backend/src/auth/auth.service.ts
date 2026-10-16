@@ -23,6 +23,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
+// Implement auth operations using the injected dependencies and existing business rules.
 @Injectable()
 export class AuthService {
   constructor(
@@ -31,6 +32,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  // Reject duplicate identifiers, hash the password, and create a customer account.
   async register(dto: RegisterDto) {
     const existingEmail = await this.usersService.findByEmail(dto.email);
 
@@ -48,7 +50,7 @@ export class AuthService {
       }
     }
 
-    // Passwords use non-reversible Argon2id hashes; AES is reserved for secret key material.
+    // Hash passwords with Argon2id; AES protects fields that authorized code must read.
     const passwordHash = await argon2.hash(dto.password, {
       type: argon2.argon2id,
     });
@@ -74,6 +76,8 @@ export class AuthService {
     };
   }
 
+  // Verify an active account and password, record login time, and return its JWT and
+  // public profile.
   async login(dto: LoginDto) {
     const user = await this.usersService.findByEmailOrUsername(dto.identifier);
 
@@ -112,6 +116,7 @@ export class AuthService {
     };
   }
 
+  // Update the signed-in account through the validated user service.
   async updateProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.usersService.updateProfile(userId, dto);
 
@@ -122,6 +127,8 @@ export class AuthService {
     };
   }
 
+  // Verify the current password before storing a new hash and clearing the
+  // temporary-password requirement.
   async changePassword(userId: string, dto: ChangePasswordDto) {
     const user = await this.usersService.findById(userId);
 

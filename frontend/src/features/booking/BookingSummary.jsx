@@ -10,6 +10,8 @@ import RoomPhoto from '../landing/RoomPhoto';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { displayDate, nightsBetween } from './bookingUtils';
 
+// Render the selected room, stay, guest counts, and server reservation total when
+// available.
 export default function BookingSummary({
   room,
   stay,
@@ -23,7 +25,9 @@ export default function BookingSummary({
     : nights * room.ratePerNightCentavos;
   return (
     <aside className="booking-summary" aria-label="Your booking summary">
+      {/* Display the "Your Booking Summary" section and its related actions. */}
       <section className="booking-panel">
+        {/* Show this section's heading, context, and available actions. */}
         <header className="booking-section-heading">
           <span>
             <CalendarDays size={21} />
@@ -102,6 +106,7 @@ export default function BookingSummary({
           </div>
         </dl>
       </section>
+      {/* Display the "Price Breakdown" section and its related actions. */}
       <section
         className="booking-panel booking-price-panel"
         aria-label="Price breakdown"
@@ -125,6 +130,7 @@ export default function BookingSummary({
             : 'Your final amount is calculated when you confirm your reservation.'}
         </p>
       </section>
+      {/* Display the "Why Book With Seabreeze" section and its related actions. */}
       <section className="booking-panel booking-reassurance">
         <h2>
           <ShieldCheck size={21} />

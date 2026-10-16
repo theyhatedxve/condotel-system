@@ -33,6 +33,8 @@ import { CheckoutRejectedException, PaymongoService } from './paymongo.service';
 
 import { NotificationsService } from '../notifications/notifications.service';
 
+// Implement payments operations using the injected dependencies and existing business
+// rules.
 @Injectable()
 export class PaymentsService {
   constructor(
@@ -44,6 +46,7 @@ export class PaymentsService {
     private readonly notificationsService: NotificationsService,
   ) {}
 
+  // Restrict customers to payments belonging to their own reservation.
   private ensureReservationAccess(user: AuthenticatedUser, guestId: string) {
     if (user.role === UserRole.CUSTOMER && user.id !== guestId) {
       throw new ForbiddenException(
@@ -52,6 +55,7 @@ export class PaymentsService {
     }
   }
 
+  // Translate provider method names to the system's stored payment-method enum.
   private mapPaymentMethod(type?: string): PaymentMethod {
     const normalizedType = type?.trim().toLowerCase();
 
@@ -71,6 +75,8 @@ export class PaymentsService {
     }
   }
 
+  // Verify a provider session against the stored reservation and amount before recording
+  // its payment.
   async reconcile(id: string, checkoutSessionId: string) {
     const payment = await this.prisma.payment.findUnique({
       where: { id },
@@ -108,6 +114,8 @@ export class PaymentsService {
     return this.recordPaidCheckout(session);
   }
 
+  // Reuse a ready checkout or claim a new pending attempt while blocking
+  // duplicate/uncertain charges.
   async createCheckout(reservationId: string, user: AuthenticatedUser) {
     const reservation = await this.prisma.reservation.findUnique({
       where: {
@@ -140,6 +148,7 @@ export class PaymentsService {
 
     this.ensureReservationAccess(user, reservation.guestId);
 
+    // Check local payment/booking state before creating or reusing hosted checkout.
     const paidPayment = reservation.payments.find(
       (payment) => payment.status === PaymentStatus.PAID,
     );
@@ -174,6 +183,7 @@ export class PaymentsService {
       };
     }
 
+    // Claim the attempt atomically so concurrent Pay requests cannot create duplicates.
     const payment = await this.prisma.$transaction(async (tx) => {
       const latest = await tx.reservation.findUnique({
         where: { id: reservationId },
@@ -244,6 +254,7 @@ export class PaymentsService {
         checkoutUrl: updatedPayment.checkoutUrl,
       };
     } catch (error) {
+      // Only a definite provider rejection permits retry; an uncertain attempt stays pending.
       const rejected = error instanceof CheckoutRejectedException;
       await this.prisma.payment.updateMany({
         where: {
@@ -265,6 +276,8 @@ export class PaymentsService {
     }
   }
 
+  // Check for paid attempts, expire unpaid hosted sessions, then mark local attempts
+  // cancelled.
   async cancelPendingPaymentsForReservation(reservationId: string) {
     const pendingPayments = await this.prisma.payment.findMany({
       where: {
@@ -325,6 +338,8 @@ export class PaymentsService {
     };
   }
 
+  // Authorize the reservation and allow checkout cancellation only in cancellable
+  // states.
   async cancelPendingCheckout(reservationId: string, user: AuthenticatedUser) {
     const reservation = await this.prisma.reservation.findUnique({
       where: {
@@ -357,6 +372,8 @@ export class PaymentsService {
     return this.cancelPendingPaymentsForReservation(reservationId);
   }
 
+  // List management payment records with authorized guest contacts and transaction
+  // details.
   async findAll() {
     const rows = await this.prisma.payment.findMany({
       include: {
@@ -385,6 +402,7 @@ export class PaymentsService {
     return rows.map((row) => this.privacy.response(row));
   }
 
+  // Check reservation access before listing its payment attempts and transactions.
   async findByReservation(reservationId: string, user: AuthenticatedUser) {
     const reservation = await this.prisma.reservation.findUnique({
       where: {
@@ -417,6 +435,8 @@ export class PaymentsService {
     });
   }
 
+  // Read the stored provider session and return verified payment/booking state and a
+  // safe checkout outcome.
   async syncCheckout(reservationId: string, user: AuthenticatedUser) {
     const reservation = await this.prisma.reservation.findUnique({
       where: { id: reservationId },
@@ -469,6 +489,7 @@ export class PaymentsService {
     return { reservation: updatedReservation, payments, checkoutOutcome };
   }
 
+  // Find the latest successful payment attempt reported by the provider.
   private findPaidAttempt(payments: PaymongoPaymentAttempt[] | undefined) {
     if (!payments) {
       return undefined;
@@ -479,6 +500,7 @@ export class PaymentsService {
       .find((payment) => payment.attributes.status === 'paid');
   }
 
+  // Authenticate the raw callback and process only the supported paid-checkout event.
   async handlePaymongoWebhook(
     rawBody: Buffer,
     signatureHeader: string | undefined,

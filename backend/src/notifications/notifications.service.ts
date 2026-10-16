@@ -9,6 +9,7 @@ import {
 
 import { PrismaService } from '../prisma/prisma.service';
 
+// Describe the create staff notification input data shared by the surrounding code.
 interface CreateStaffNotificationInput {
   type: NotificationType;
 
@@ -23,12 +24,16 @@ interface CreateStaffNotificationInput {
   dedupeKeyPrefix?: string;
 }
 
+// Implement notifications operations using the injected dependencies and existing
+// business rules.
 @Injectable()
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
   constructor(private readonly prisma: PrismaService) {}
 
+  // Deliver an event to active staff/admins and deduplicate it separately for each
+  // recipient.
   private async createForStaffAndAdmins(input: CreateStaffNotificationInput) {
     const recipients = await this.prisma.user.findMany({
       where: {
@@ -144,6 +149,7 @@ export class NotificationsService {
     }
   }
 
+  // Build the notification for a newly created reservation.
   async notifyReservationCreated(input: {
     reservationId: string;
     referenceNo: string;
@@ -167,6 +173,7 @@ export class NotificationsService {
     });
   }
 
+  // Build the notification for a cancelled reservation.
   async notifyReservationCancelled(input: {
     reservationId: string;
     referenceNo: string;
@@ -189,6 +196,7 @@ export class NotificationsService {
     });
   }
 
+  // Build the notification for a verified received payment.
   async notifyPaymentReceived(input: {
     paymentId: string;
     reservationId: string;
@@ -275,6 +283,7 @@ export class NotificationsService {
     }
   }
 
+  // Load notifications belonging to the current account, including any due reminders.
   async findForUser(userId: string, take = 10) {
     await this.createUpcomingCheckInNotifications();
 
@@ -293,6 +302,7 @@ export class NotificationsService {
     });
   }
 
+  // Count unread notifications for this account.
   async getUnreadCount(userId: string) {
     await this.createUpcomingCheckInNotifications();
 
@@ -309,6 +319,7 @@ export class NotificationsService {
     };
   }
 
+  // Mark one notification read only when it belongs to the current account.
   async markAsRead(notificationId: string, userId: string) {
     const notification = await this.prisma.notification.findFirst({
       where: {
@@ -339,6 +350,7 @@ export class NotificationsService {
     });
   }
 
+  // Mark all unread notifications belonging to the current account as read.
   async markAllAsRead(userId: string) {
     const result = await this.prisma.notification.updateMany({
       where: {

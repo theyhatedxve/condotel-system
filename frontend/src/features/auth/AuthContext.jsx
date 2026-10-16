@@ -10,11 +10,14 @@ import {
 
 import { AuthContext } from './auth-context';
 
+// Restore and share the signed-in account, login/logout actions, and loading state.
 export function AuthProvider({ children }) {
+  // Track local state and read any session or route values needed by this component.
   const [user, setUser] = useState(null);
 
   const [isLoading, setIsLoading] = useState(() => Boolean(getAccessToken()));
 
+  // Reload the current account and replace the shared authentication profile.
   const refreshUser = useCallback(async () => {
     const result = await getCurrentUser();
 
@@ -23,6 +26,8 @@ export function AuthProvider({ children }) {
     return result.user;
   }, []);
 
+  // Authenticate credentials, store the access token according to Remember Me, and share
+  // the returned account.
   const login = useCallback(async ({ identifier, password, rememberMe }) => {
     const result = await loginUser({
       identifier,
@@ -36,6 +41,7 @@ export function AuthProvider({ children }) {
     return result.user;
   }, []);
 
+  // Clear stored tokens and remove the shared signed-in account.
   const logout = useCallback(() => {
     clearAccessToken();
 

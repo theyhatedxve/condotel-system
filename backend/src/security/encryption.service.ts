@@ -8,6 +8,7 @@ import {
   timingSafeEqual,
 } from 'node:crypto';
 
+// Carry the Base64 ciphertext, IV, and authentication tag for one encrypted value.
 export interface EncryptedValue {
   ciphertext: string;
   iv: string;
@@ -20,6 +21,7 @@ const IV_BYTES = 12;
 const AUTH_TAG_BYTES = 16;
 const DECRYPTION_ERROR = 'Encrypted value could not be decrypted.';
 
+// Provide authenticated encryption and keyed contact lookup without persisting keys.
 @Injectable()
 export class EncryptionService {
   constructor(private readonly configService: ConfigService) {}
@@ -51,6 +53,8 @@ export class EncryptionService {
     };
   }
 
+  // Authenticate the ciphertext, tag, and optional context before returning any
+  // plaintext.
   decrypt(encrypted: EncryptedValue, context?: string): string {
     const key = this.getMasterKey();
 
@@ -88,6 +92,7 @@ export class EncryptionService {
     return randomBytes(KEY_BYTES).toString('base64');
   }
 
+  // Compute a domain-separated contact lookup hash using the independent search key.
   blindIndex(field: 'email' | 'phone', value: string): string {
     const encoded = this.configService.get<string>('CONTACT_SEARCH_KEY');
     if (!encoded) throw new Error('Contact search key is not configured.');
@@ -105,6 +110,7 @@ export class EncryptionService {
       .digest('hex');
   }
 
+  // Load and validate the configured AES key without generating a replacement.
   private getMasterKey(): Buffer {
     // Load on use: never generate a replacement key or require AES at startup.
     const encoded = this.configService.get<string>('AES_MASTER_KEY');
@@ -125,6 +131,8 @@ export class EncryptionService {
     return key;
   }
 
+  // Reject noncanonical Base64 rather than accepting the decoder's permissive input
+  // handling.
   private decodeBase64(value: string, errorMessage: string): Buffer {
     if (typeof value !== 'string') {
       throw new Error(errorMessage);

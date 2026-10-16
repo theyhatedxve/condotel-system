@@ -1,14 +1,18 @@
 import { useState } from 'react';
 import { useAuth } from '../auth/useAuth';
 import apiClient from '../../services/apiClient';
+// Let an administrator verify a provider session for an unresolved pending payment.
 export default function ReconcilePaymentAction({ payment, onSaved }) {
+  // Track local state and read any session or route values needed by this component.
   const { user } = useAuth();
   const [session, setSession] = useState(
-      payment.paymongoCheckoutSessionId || '',
-    ),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
+    payment.paymongoCheckoutSessionId || '',
+  );
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
   if (user?.role !== 'ADMIN' || payment.status !== 'PENDING') return null;
+  // Submit the checkout session ID for server-side reconciliation and refresh the
+  // payment display.
   async function reconcile() {
     if (busy) return;
     setBusy(true);

@@ -15,6 +15,8 @@ const specifications = [
   { table: 'Reservation', fields: ['specialRequests'] },
 ] as const;
 
+// Visit database records in stable batches so offline maintenance does not load the
+// whole table at once.
 function eachRow(db: Database, table: string, visit: (row: Row) => void) {
   let after = '';
   for (;;) {
@@ -26,6 +28,7 @@ function eachRow(db: Database, table: string, visit: (row: Row) => void) {
     after = rows[rows.length - 1].id;
   }
 }
+// Write the supplied encrypted field values to one maintenance record.
 function update(
   db: Database,
   table: string,
@@ -60,6 +63,7 @@ export function migratePrivacy(
     throw new Error('Invalid encryption configuration.');
   const result: Record<string, number | string> = { phase };
   db.transaction(() => {
+    // Detect normalized-email collisions before writing any migrated envelopes.
     const identities = new Map<string, string>();
     eachRow(db, 'User', (row) => {
       if (row.email !== null && typeof row.email !== 'string')
@@ -103,6 +107,7 @@ export function migratePrivacy(
                   ? normalizeEmail(legacy)
                   : normalizePhone(legacy) || null
                 : legacy;
+          // Backfill retains plaintext until every encrypted value can be compared.
           if (phase === 'backfill' && absent && legacy !== null) {
             Object.assign(
               data,
@@ -129,6 +134,7 @@ export function migratePrivacy(
       });
       result[table] = count;
     }
+    // Finalize only after verification, then protect future writes with database triggers.
     if (phase === 'finalize') {
       for (const { table, fields } of specifications) {
         db.exec(
@@ -162,6 +168,8 @@ export function migratePrivacy(
   return result;
 }
 
+// Re-encrypt private/device data and rebuild contact indexes atomically using explicitly
+// supplied next keys.
 export function rotatePrivacy(
   db: Database,
   current: EncryptionService,
@@ -178,6 +186,7 @@ export function rotatePrivacy(
       ready?.keyCheck !== previous.index('email', 'condotel:privacy-ready:v1')
     )
       throw new Error('Finalize privacy migration before rotation.');
+    // Validate the supplied next keys before rebuilding unique contact lookup indexes.
     replacement.index('email', 'configuration-check');
     db.exec('DROP INDEX User_emailBlindIndex_key');
     for (const { table, fields } of specifications)

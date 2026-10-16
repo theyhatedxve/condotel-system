@@ -1,3 +1,5 @@
+/* Style .payment-result-page to arrange its contents, style the surface and boundaries. */
+
 .payment-result-page {
   min-height: 100vh;
   display: flex;
@@ -6,6 +8,8 @@
   padding: 24px;
   background: #f5f7fa;
 }
+
+/* Style .payment-result-card to style the surface and boundaries. */
 
 .payment-result-card {
   width: 100%;
@@ -18,22 +22,30 @@
   box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
 }
 
+/* Style .payment-result-icon to arrange its contents. */
+
 .payment-result-icon {
   display: flex;
   justify-content: center;
   margin-bottom: 18px;
 }
 
+/* Style .payment-result-icon.success to set text appearance. */
+
 .payment-result-icon.success {
   color: #16a34a;
 }
 
+/* Style .payment-result-icon.cancelled to set text appearance. */
+
 .payment-result-icon.cancelled {
   color: #dc2626;
 }
+/* Style .payment-result-icon.pending to set text appearance. */
 .payment-result-icon.pending {
   color: #a77923;
 }
+/* Style .payment-confirmation-details to set text appearance, style the surface and boundaries. */
 .payment-confirmation-details {
   margin: 24px 0 0;
   padding: 16px;
@@ -41,16 +53,19 @@
   background: #f5f8fc;
   font-size: 13px;
 }
+/* Style .payment-confirmation-details > div to arrange its contents. */
 .payment-confirmation-details > div {
   display: flex;
   justify-content: space-between;
   gap: 14px;
   padding: 7px 0;
 }
+/* Style .payment-confirmation-details dt to set text appearance. */
 .payment-confirmation-details dt {
   color: #667085;
   text-align: left;
 }
+/* Style .payment-confirmation-details dd to set text appearance. */
 .payment-confirmation-details dd {
   margin: 0;
   color: #163c70;
@@ -58,6 +73,7 @@
   text-align: right;
   overflow-wrap: anywhere;
 }
+/* Style .payment-result-return to arrange its contents, set text appearance, style the surface and boundaries. */
 .payment-result-return {
   display: block;
   margin-top: 24px;
@@ -68,31 +84,41 @@
   font-size: 14px;
   font-weight: 600;
 }
+/* Style .payment-result-card button to arrange its contents. */
 .payment-result-card button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
 }
+/* Apply the following layout adjustments when (max-width: 500px). */
 @media (max-width: 500px) {
+  /* Style .payment-result-card to control spacing and dimensions. */
   .payment-result-card {
     padding: 28px 20px;
   }
+  /* Style .payment-result-card h1 to set text appearance. */
   .payment-result-card h1 {
     font-size: 26px;
   }
 }
+
+/* Style .payment-result-card h1 to set text appearance. */
 
 .payment-result-card h1 {
   margin: 0 0 12px;
   color: #172033;
 }
 
+/* Style .payment-result-card p to set text appearance. */
+
 .payment-result-card p {
   margin: 0;
   line-height: 1.6;
   color: #667085;
 }
+
+/* Style .payment-result-reference to set text appearance, style the surface and boundaries. */
 
 .payment-result-reference {
   margin-top: 20px;
@@ -102,6 +128,8 @@
   background: #f8fafc;
   border-radius: 8px;
 }
+
+/* Style .payment-result-card button to indicate the available pointer interaction, set text appearance, style the surface and boundaries. */
 
 .payment-result-card button {
   margin-top: 24px;
@@ -113,6 +141,8 @@
   color: #ffffff;
   background: #163c70;
 }
+
+/* Style .payment-result-card button:hover to control spacing and dimensions. */
 
 .payment-result-card button:hover {
   opacity: 0.92;
