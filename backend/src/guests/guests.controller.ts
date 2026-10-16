@@ -22,6 +22,7 @@ import { CreateGuestDto } from './create-guest.dto';
 import { UpdateGuestDto } from './update-guest.dto';
 
 import { GuestsService } from './guests.service';
+import { GuestQueryDto } from './guest-query.dto';
 
 @Controller('guests')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -31,10 +32,10 @@ export class GuestsController {
 
   @Get()
   findAll(
-    @Query('search')
-    search?: string,
+    @Query()
+    query: GuestQueryDto,
   ) {
-    return this.guestsService.findAll(search);
+    return this.guestsService.findAll(query.search, query.page, query.status);
   }
 
   @Get(':id')

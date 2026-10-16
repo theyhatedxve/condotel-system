@@ -1,5 +1,9 @@
 import apiClient from '../../services/apiClient';
 
+export async function getManagedUserSummary() {
+  return (await apiClient.get('/admin/users/summary')).data;
+}
+
 export async function getManagedUsers(params = {}) {
   const response = await apiClient.get('/admin/users', {
     params,

@@ -1,13 +1,20 @@
+import {
+  PrivateDataService,
+  contactSelect,
+} from '../security/private-data.service';
 import { Injectable } from '@nestjs/common';
 
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class TransactionsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly privacy: PrivateDataService,
+  ) {}
 
   async findAll() {
-    return this.prisma.transaction.findMany({
+    const rows = await this.prisma.transaction.findMany({
       include: {
         payment: {
           include: {
@@ -18,7 +25,7 @@ export class TransactionsService {
                     id: true,
                     firstName: true,
                     lastName: true,
-                    email: true,
+                    ...contactSelect,
                   },
                 },
 
@@ -40,5 +47,6 @@ export class TransactionsService {
         occurredAt: 'desc',
       },
     });
+    return rows.map((row) => this.privacy.response(row));
   }
 }

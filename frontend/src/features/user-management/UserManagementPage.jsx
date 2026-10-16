@@ -4,6 +4,7 @@ import { KeyRound, Search, UserCog, X } from 'lucide-react';
 
 import {
   getManagedUsers,
+  getManagedUserSummary,
   resetManagedUserPassword,
   updateManagedUser,
 } from './userManagementApi';
@@ -11,6 +12,8 @@ import {
 import { useAuth } from '../auth/useAuth';
 
 import './user-management.css';
+import ManagedAccountActions from './ManagedAccountActions';
+import ListPagination from '../../components/ListPagination';
 
 function formatDateTime(value) {
   if (!value) {
@@ -34,6 +37,8 @@ export default function UserManagementPage() {
   const { user: currentUser } = useAuth();
 
   const [users, setUsers] = useState([]);
+  const [page,setPage] = useState(1);
+  const [summary,setSummary] = useState({totalUsers:0,totalStaff:0,totalCustomers:0,totalSuspended:0});
 
   const [loading, setLoading] = useState(true);
 
@@ -69,9 +74,15 @@ export default function UserManagementPage() {
     setLoading(true);
 
     try {
-      const result = await getManagedUsers();
+      const [result,counts] = await Promise.all([getManagedUsers({
+        page,
+        search: search.trim() || undefined,
+        role: roleFilter || undefined,
+        status: statusFilter || undefined,
+      }),getManagedUserSummary()]);
 
       setUsers(Array.isArray(result) ? result : []);
+      setSummary(counts);
     } catch {
       window.alert('Unable to load users.');
     } finally {
@@ -82,10 +93,16 @@ export default function UserManagementPage() {
   useEffect(() => {
     let cancelled = false;
 
-    getManagedUsers()
-      .then((result) => {
+    Promise.all([getManagedUsers({
+      page,
+      search: search.trim() || undefined,
+      role: roleFilter || undefined,
+      status: statusFilter || undefined,
+    }),getManagedUserSummary()])
+      .then(([result,counts]) => {
         if (!cancelled) {
           setUsers(Array.isArray(result) ? result : []);
+          setSummary(counts);
         }
       })
       .catch(() => {
@@ -102,24 +119,21 @@ export default function UserManagementPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [search, roleFilter, statusFilter, page]);
 
   const normalizedSearch = search.trim().toLowerCase();
 
   const filteredUsers = users.filter((user) => {
-    const searchable = [
-      user.firstName,
-      user.lastName,
-      user.email,
-      user.username,
-      user.phone,
-    ]
+    const searchable = [user.firstName, user.lastName, user.username]
       .filter(Boolean)
       .join(' ')
       .toLowerCase();
 
     const matchesSearch =
-      !normalizedSearch || searchable.includes(normalizedSearch);
+      !normalizedSearch ||
+      searchable.includes(normalizedSearch) ||
+      user.email?.toLowerCase() === normalizedSearch ||
+      user.phone === search.trim();
 
     const matchesRole = !roleFilter || user.role === roleFilter;
 
@@ -128,15 +142,7 @@ export default function UserManagementPage() {
     return matchesSearch && matchesRole && matchesStatus;
   });
 
-  const totalStaff = users.filter((user) => user.role === 'STAFF').length;
-
-  const totalCustomers = users.filter(
-    (user) => user.role === 'CUSTOMER',
-  ).length;
-
-  const totalSuspended = users.filter(
-    (user) => user.status === 'SUSPENDED',
-  ).length;
+  const {totalStaff,totalCustomers,totalSuspended} = summary;
 
   function openEdit(user) {
     setEditingUser(user);
@@ -292,13 +298,14 @@ export default function UserManagementPage() {
         <h1>User Management</h1>
 
         <p>Manage Staff and Customer accounts.</p>
+        <ManagedAccountActions onSaved={loadUsers} />
       </header>
 
       <div className="user-management-summary">
         <article>
           <span>Total Users</span>
 
-          <strong>{users.length}</strong>
+          <strong>{summary.totalUsers}</strong>
         </article>
 
         <article>
@@ -327,14 +334,15 @@ export default function UserManagementPage() {
           <input
             type="search"
             value={search}
-            placeholder="Search name, email, username, or phone..."
-            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Name/username or exact email/phone"
+            maxLength={255}
+            onChange={(event) => {setSearch(event.target.value);setPage(1);}}
           />
         </div>
 
         <select
           value={roleFilter}
-          onChange={(event) => setRoleFilter(event.target.value)}
+          onChange={(event) => {setRoleFilter(event.target.value);setPage(1);}}
         >
           <option value="">All Roles</option>
 
@@ -347,7 +355,7 @@ export default function UserManagementPage() {
 
         <select
           value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value)}
+          onChange={(event) => {setStatusFilter(event.target.value);setPage(1);}}
         >
           <option value="">All Statuses</option>
 
@@ -441,6 +449,7 @@ export default function UserManagementPage() {
         </div>
       )}
 
+      <ListPagination label="Users" page={page} count={users.length} loading={loading} onChange={next=>{setLoading(true);setPage(next);}}/>
       {editingUser && (
         <div className="managed-user-modal-backdrop">
           <form className="managed-user-modal" onSubmit={handleEditSubmit}>

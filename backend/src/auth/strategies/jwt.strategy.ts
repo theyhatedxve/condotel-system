@@ -43,10 +43,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException('User account is unavailable.');
     }
 
+    const profile = await this.usersService.findPublicById(user.id);
+    if (!profile)
+      throw new UnauthorizedException('User account is unavailable.');
     return {
       id: user.id,
 
-      email: user.email,
+      email: profile.email,
 
       username: user.username,
 
@@ -54,7 +57,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
       lastName: user.lastName,
 
-      phone: user.phone,
+      phone: profile.phone,
 
       role: user.role,
 

@@ -23,7 +23,7 @@ import { NotificationsService } from './notifications.service';
 
 @Controller('notifications')
 @UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(UserRole.STAFF, UserRole.ADMIN)
+@Roles(UserRole.STAFF, UserRole.ADMIN, UserRole.CUSTOMER)
 export class NotificationsController {
   constructor(private readonly notificationsService: NotificationsService) {}
 

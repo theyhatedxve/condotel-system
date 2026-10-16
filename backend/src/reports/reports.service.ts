@@ -1,3 +1,4 @@
+import { PrivateDataService } from '../security/private-data.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 
 import {
@@ -14,7 +15,96 @@ import { ReportRangeQueryDto } from './report-range-query.dto';
 
 @Injectable()
 export class ReportsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly privacy: PrivateDataService,
+  ) {}
+
+  async getCustomerDashboard(userId: string) {
+    const today = this.getManilaDateString();
+    const { start, endExclusive } = this.createRange(today, today);
+    const tomorrow = new Date(`${today}T00:00:00Z`);
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    const hotelDay = new Date(`${today}T00:00:00Z`);
+    const scope = { guestId: userId };
+    const [rooms, current, checkIns, checkOuts, paid, recent] =
+      await Promise.all([
+        this.prisma.room.groupBy({
+          by: ['status'],
+          where: { isActive: true },
+          _count: { _all: true },
+        }),
+        this.prisma.reservation.aggregate({
+          where: { ...scope, status: 'CHECKED_IN' },
+          _sum: { adults: true, children: true },
+        }),
+        this.prisma.reservation.count({
+          where: {
+            ...scope,
+            status: { not: 'CANCELLED' },
+            checkIn: { gte: hotelDay, lt: tomorrow },
+          },
+        }),
+        this.prisma.reservation.count({
+          where: {
+            ...scope,
+            status: { not: 'CANCELLED' },
+            checkOut: { gte: hotelDay, lt: tomorrow },
+          },
+        }),
+        this.prisma.payment.aggregate({
+          where: {
+            reservation: scope,
+            status: 'PAID',
+            paidAt: { gte: start, lt: endExclusive },
+          },
+          _sum: { amountCentavos: true },
+          _count: { id: true },
+        }),
+        this.prisma.reservation.findMany({
+          where: scope,
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            id: true,
+            referenceNo: true,
+            status: true,
+            checkIn: true,
+            checkOut: true,
+            guest: { select: { id: true, firstName: true, lastName: true } },
+            room: { select: { id: true, roomNumber: true } },
+          },
+        }),
+      ]);
+    const totalRooms = rooms.reduce((sum, group) => sum + group._count._all, 0);
+    const count = (status: RoomStatus) =>
+      rooms.find((group) => group.status === status)?._count._all ?? 0;
+    const occupiedRooms = count(RoomStatus.OCCUPIED),
+      availableRooms = count(RoomStatus.AVAILABLE),
+      maintenanceRooms = count(RoomStatus.MAINTENANCE);
+    return {
+      date: today,
+      statistics: {
+        totalRooms,
+        currentGuests:
+          (current._sum.adults ?? 0) + (current._sum.children ?? 0),
+        todayCheckIns: checkIns,
+        todayCheckOuts: checkOuts,
+        todayPaymentCount: paid._count.id,
+        todayPaymentsCentavos: paid._sum.amountCentavos ?? 0,
+      },
+      occupancy: {
+        totalRooms,
+        availableRooms,
+        occupiedRooms,
+        maintenanceRooms,
+        occupancyPercent: totalRooms
+          ? Math.round((100 * occupiedRooms) / totalRooms)
+          : 0,
+      },
+      recentReservations: recent,
+    };
+  }
 
   private getManilaDateString(date = new Date()) {
     const formatter = new Intl.DateTimeFormat('en-US', {
@@ -291,7 +381,9 @@ export class ReportsService {
         occupancyPercent,
       },
 
-      recentReservations,
+      recentReservations: recentReservations.map((row) =>
+        this.privacy.response(row),
+      ),
     };
   }
 

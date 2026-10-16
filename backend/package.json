@@ -6,6 +6,10 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "privacy:migrate": "ts-node scripts/privacy.ts",
+    "privacy:rotate": "ts-node scripts/privacy.ts rotate",
+    "account:create-admin": "ts-node scripts/create-admin.ts",
+    "test:integration": "npm run build && node test/integration.cjs",
     "build": "nest build",
     "deploy": "nest deploy",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -32,6 +36,7 @@
     "@prisma/adapter-better-sqlite3": "^7.10.0",
     "@prisma/client": "^7.10.0",
     "argon2": "^0.45.1",
+    "better-sqlite3": "^12.11.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "dotenv": "^18.0.5",

@@ -1,12 +1,13 @@
 import apiClient from '../../services/apiClient';
 
-export async function getReservations(status) {
+export async function getReservations(status, page) {
   const response = await apiClient.get('/reservations', {
     params: status
       ? {
           status,
+          page,
         }
-      : {},
+      : page ? {page} : {},
   });
 
   return response.data;

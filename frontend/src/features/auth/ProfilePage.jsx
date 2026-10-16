@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { Save, UserRound } from 'lucide-react';
 
@@ -7,11 +8,13 @@ import { updateMyProfile } from './authApi';
 import { useAuth } from './useAuth';
 
 import './profile.css';
+import CustomerNotifications from '../notifications/CustomerNotifications';
 
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
 
   const [form, setForm] = useState(() => ({
+    email: user?.email ?? '',
     firstName: user?.firstName ?? '',
 
     lastName: user?.lastName ?? '',
@@ -46,6 +49,7 @@ export default function ProfilePage() {
 
     try {
       const result = await updateMyProfile({
+        email: form.email.trim(),
         firstName: form.firstName.trim(),
 
         lastName: form.lastName.trim(),
@@ -56,6 +60,7 @@ export default function ProfilePage() {
       });
 
       setForm({
+        email: result.user.email,
         firstName: result.user.firstName ?? '',
 
         lastName: result.user.lastName ?? '',
@@ -84,6 +89,13 @@ export default function ProfilePage() {
         <h1>My Profile</h1>
 
         <p>Manage your personal account information.</p>
+        {user?.role === 'CUSTOMER' && (
+          <>
+            <Link to="/">Back to Homepage</Link>
+            {' · '}
+            <Link to="/change-password">Change Password</Link>
+          </>
+        )}
       </header>
 
       <form className="profile-card" onSubmit={handleSubmit}>
@@ -150,7 +162,14 @@ export default function ProfilePage() {
 
           <label className="profile-full-field">
             Email
-            <input type="email" value={user?.email ?? ''} disabled readOnly />
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              maxLength={255}
+              required
+            />
           </label>
 
           <label>
@@ -172,6 +191,7 @@ export default function ProfilePage() {
           </button>
         </div>
       </form>
+      {user?.role === 'CUSTOMER' && <CustomerNotifications />}
     </section>
   );
 }

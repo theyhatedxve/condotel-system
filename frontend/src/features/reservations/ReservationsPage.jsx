@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Plus } from 'lucide-react';
 
@@ -11,6 +11,8 @@ import {
 import { getGuests } from '../guests/guestApi';
 
 import ReservationFormModal from './ReservationFormModal';
+import ReservationNotesEditor from './ReservationNotesEditor';
+import ListPagination from '../../components/ListPagination';
 
 import { formatCurrency } from '../../utils/formatCurrency';
 
@@ -45,6 +47,7 @@ const filters = [
 
 export default function ReservationsPage() {
   const [reservations, setReservations] = useState([]);
+  const [page,setPage] = useState(1);
 
   const [guests, setGuests] = useState([]);
 
@@ -55,11 +58,13 @@ export default function ReservationsPage() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const [submitting, setSubmitting] = useState(false);
+  const paymentInFlight = useRef(false);
+  const [payingId, setPayingId] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([getReservations(statusFilter || undefined), getGuests()])
+    Promise.all([getReservations(statusFilter || undefined, page), getGuests()])
       .then(([reservationResult, guestResult]) => {
         if (cancelled) {
           return;
@@ -83,13 +88,13 @@ export default function ReservationsPage() {
     return () => {
       cancelled = true;
     };
-  }, [statusFilter]);
+  }, [statusFilter, page]);
 
   async function refreshReservations() {
     setLoading(true);
 
     try {
-      const result = await getReservations(statusFilter || undefined);
+      const result = await getReservations(statusFilter || undefined, page);
 
       setReservations(result);
     } finally {
@@ -117,6 +122,10 @@ export default function ReservationsPage() {
   }
 
   async function handlePayment(reservation) {
+    if (paymentInFlight.current) return;
+    paymentInFlight.current = true;
+    setPayingId(reservation.id);
+    let redirecting = false;
     try {
       const result = await createCheckout(reservation.id);
 
@@ -127,11 +136,17 @@ export default function ReservationsPage() {
       }
 
       window.location.assign(result.checkoutUrl);
+      redirecting = true;
     } catch (error) {
       const message =
         error.response?.data?.message || 'Unable to start payment.';
 
       window.alert(Array.isArray(message) ? message.join(' ') : message);
+    } finally {
+      if (!redirecting) {
+        paymentInFlight.current = false;
+        setPayingId(null);
+      }
     }
   }
 
@@ -181,6 +196,7 @@ export default function ReservationsPage() {
               setLoading(true);
 
               setStatusFilter(filter.value);
+              setPage(1);
             }}
           >
             {filter.label}
@@ -236,12 +252,37 @@ export default function ReservationsPage() {
 
                   <td>
                     <div className="reservation-actions">
+                      <ReservationNotesEditor
+                        reservation={reservation}
+                        onSaved={refreshReservations}
+                      />
+                      {reservation.status === 'CONFIRMED' && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleStatus(reservation, 'CHECKED_IN')
+                          }
+                        >
+                          Check In
+                        </button>
+                      )}
+                      {reservation.status === 'CHECKED_IN' && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleStatus(reservation, 'CHECKED_OUT')
+                          }
+                        >
+                          Check Out
+                        </button>
+                      )}
                       {reservation.status === 'PENDING' && (
                         <button
                           type="button"
                           onClick={() => handlePayment(reservation)}
+                          disabled={payingId !== null}
                         >
-                          Pay
+                          {payingId === reservation.id ? 'Opening checkout...' : 'Pay'}
                         </button>
                       )}
 
@@ -264,6 +305,7 @@ export default function ReservationsPage() {
         </div>
       )}
 
+      <ListPagination label="Reservations" page={page} count={reservations.length} loading={loading} onChange={next=>{setLoading(true);setPage(next);}}/>
       {modalOpen && (
         <ReservationFormModal
           key="new-reservation"

@@ -1,0 +1,39 @@
+.reservation-notes-editor {
+  color: #234469;
+  font-size: 12px;
+  min-width: 0;
+}
+.reservation-notes-editor summary {
+  cursor: pointer;
+  padding: 8px 0;
+}
+.reservation-notes-fields {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  background: #f4f8fc;
+  border: 1px solid #dce7f1;
+  border-radius: 6px;
+}
+.reservation-notes-fields textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid #dce7f1;
+  border-radius: 5px;
+  padding: 8px;
+  font: inherit;
+  margin-top: 6px;
+  resize: vertical;
+}
+.reservation-notes-fields button {
+  border: 1px solid #123f6b;
+  background: #123f6b;
+  color: white;
+  border-radius: 5px;
+  padding: 9px;
+  cursor: pointer;
+}
+.reservation-notes-fields p {
+  color: #a63333;
+}

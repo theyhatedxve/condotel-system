@@ -16,6 +16,7 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 
 import './payments.css';
+import ReconcilePaymentAction from './ReconcilePaymentAction';
 
 const statusOptions = [
   {
@@ -524,6 +525,13 @@ export default function PaymentsPage() {
                   <p>{selectedPayment.failureReason}</p>
                 </div>
               )}
+              <ReconcilePaymentAction
+                payment={selectedPayment}
+                onSaved={async () => {
+                  setSelectedPayment(null);
+                  await refreshPayments();
+                }}
+              />
             </div>
           </div>
         </div>

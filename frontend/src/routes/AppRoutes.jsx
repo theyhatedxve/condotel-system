@@ -7,6 +7,7 @@ import DashboardPage from '../features/dashboard/DashboardPage';
 import PlaceholderPage from '../features/nfc/PlaceholderPage';
 
 import LoginPage from '../features/auth/LoginPage';
+import RegisterPage from '../features/auth/RegisterPage';
 
 import NotFoundPage from '../pages/shared/NotFoundPage';
 
@@ -47,6 +48,7 @@ export default function AppRoutes() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/rooms" element={<LandingPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/payment/success" element={<PaymentResultPage />} />
         <Route path="/payment/cancelled" element={<PaymentResultPage />} />
         <Route
@@ -62,6 +64,7 @@ export default function AppRoutes() {
       </Route>
 
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
       <Route path="/unauthorized" element={<UnauthorizedPage />} />
 

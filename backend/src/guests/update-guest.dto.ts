@@ -1,13 +1,24 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  ValidateIf,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class UpdateGuestDto {
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
+  @IsEmail()
+  @MaxLength(255)
+  email?: string;
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
   @MinLength(1)
   @MaxLength(100)
   firstName?: string;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
   @MinLength(1)
   @MaxLength(100)

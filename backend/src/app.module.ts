@@ -27,6 +27,7 @@ import { RoomsModule } from './rooms/rooms.module';
 import { SearchModule } from './search/search.module';
 
 import { SecurityModule } from './security/security.module';
+import { PrivacyReadinessService } from './security/privacy-readiness.service';
 
 import { SettingsModule } from './settings/settings.module';
 
@@ -40,6 +41,7 @@ import { UsersModule } from './users/users.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      ignoreEnvFile: process.env.NODE_ENV === 'test',
     }),
 
     PrismaModule,
@@ -75,6 +77,6 @@ import { UsersModule } from './users/users.module';
 
   controllers: [AppController],
 
-  providers: [AppService],
+  providers: [AppService, PrivacyReadinessService],
 })
 export class AppModule {}

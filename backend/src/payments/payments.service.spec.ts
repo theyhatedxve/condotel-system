@@ -1,12 +1,68 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
+import { PrivateDataService } from '../security/private-data.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { PaymongoService } from './paymongo.service';
+import { CheckoutRejectedException, PaymongoService } from './paymongo.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UserRole } from '../generated/prisma/enums';
 import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
 jest.mock('../prisma/prisma.service', () => ({ PrismaService: class {} }));
+
+describe('Checkout retry protection', () => {
+  it.each([
+    [new CheckoutRejectedException(), 'FAILED'],
+    [new Error('network timeout'), 'PENDING'],
+  ])(
+    'classifies failures without overwriting a paid record',
+    async (error, status) => {
+      const reservation = {
+        id: 'reservation-1',
+        guestId: 'guest-1',
+        status: 'PENDING',
+        payments: [],
+        referenceNo: 'RES-1',
+        totalAmountCentavos: 300000,
+        room: { roomNumber: '101' },
+      };
+      const tx = {
+        reservation: { findUnique: jest.fn().mockResolvedValue(reservation) },
+        payment: {
+          findFirst: jest.fn().mockResolvedValue(null),
+          create: jest.fn().mockResolvedValue({ id: 'payment-1' }),
+        },
+      };
+      const prisma = {
+        reservation: tx.reservation,
+        payment: { updateMany: jest.fn().mockResolvedValue({ count: 1 }) },
+        $transaction: jest
+          .fn()
+          .mockImplementation((callback: (client: typeof tx) => unknown) =>
+            callback(tx),
+          ),
+      };
+      const provider = {
+        createCheckoutSession: jest.fn().mockRejectedValue(error),
+      };
+      const service = new PaymentsService(
+        prisma as unknown as PrismaService,
+        {} as PrivateDataService,
+        provider as unknown as PaymongoService,
+        {} as NotificationsService,
+      );
+      await expect(
+        service.createCheckout(reservation.id, {
+          id: 'guest-1',
+          role: UserRole.CUSTOMER,
+        } as AuthenticatedUser),
+      ).rejects.toBe(error);
+      expect(prisma.payment.updateMany).toHaveBeenCalledWith({
+        where: { id: 'payment-1', status: 'PENDING' },
+        data: { status, failureReason: expect.any(String) },
+      });
+    },
+  );
+});
 
 describe('Verified checkout synchronization', () => {
   const customer = {
@@ -35,6 +91,7 @@ describe('Verified checkout synchronization', () => {
     const session = {
       id: 'cs_verified',
       attributes: {
+        reference_number: 'RES-1',
         payments: [
           {
             id: 'pay_verified',
@@ -100,6 +157,7 @@ describe('Verified checkout synchronization', () => {
     };
     const service = new PaymentsService(
       prisma as unknown as PrismaService,
+      {} as PrivateDataService,
       provider as unknown as PaymongoService,
       notifications as unknown as NotificationsService,
     );
@@ -152,6 +210,15 @@ describe('Verified checkout synchronization', () => {
     await service.syncCheckout('reservation-1', customer);
     expect(transaction.transaction.create).toHaveBeenCalledTimes(1);
     expect(provider.retrieveCheckoutSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects a verified session with a different reservation reference', async () => {
+    const { service, session, transaction } = setup();
+    session.attributes.reference_number = 'RES-OTHER';
+    await expect(
+      service.syncCheckout('reservation-1', customer),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(transaction.payment.updateMany).not.toHaveBeenCalled();
   });
 
   it('handles a webhook racing the browser status check without duplicate transactions', async () => {

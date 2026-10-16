@@ -223,7 +223,12 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="login-footer">Condotel NFC System with Payment</div>
+          {location.state?.registrationComplete && (
+            <p role="status">Account created. Sign in to continue.</p>
+          )}
+          <div className="login-footer">
+            New here? <Link to="/register">Create an account</Link>
+          </div>
         </div>
       </section>
     </main>

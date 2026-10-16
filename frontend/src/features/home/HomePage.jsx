@@ -70,7 +70,7 @@ const amenities = [
 
 export default function HomePage() {
   const [dialog, setDialog] = useState(null);
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -107,6 +107,14 @@ export default function HomePage() {
             >
               <Search size={21} />
             </Link>
+            {!isLoading && isAuthenticated && (
+              <Link
+                to={user?.role === 'CUSTOMER' ? '/profile' : '/admin/profile'}
+                className="coast-sign-in"
+              >
+                My Account
+              </Link>
+            )}
             {!isLoading &&
               (isAuthenticated ? (
                 <button

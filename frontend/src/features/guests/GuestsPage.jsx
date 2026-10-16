@@ -7,15 +7,18 @@ import { createGuest, getGuests, updateGuest } from './guestApi';
 import GuestFormModal from './GuestFormModal';
 
 import './guests.css';
+import ListPagination from '../../components/ListPagination';
 
 export default function GuestsPage() {
   const [guests, setGuests] = useState([]);
+  const [page,setPage] = useState(1);
 
   const [loading, setLoading] = useState(true);
 
   const [error, setError] = useState('');
 
   const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('');
 
   // Only submitted searches reach the API; typing alone does not reload the guest list.
   const [appliedSearch, setAppliedSearch] = useState('');
@@ -29,7 +32,7 @@ export default function GuestsPage() {
   useEffect(() => {
     let cancelled = false;
 
-    getGuests(appliedSearch || undefined)
+    getGuests(appliedSearch || undefined, status || undefined, page)
       .then((result) => {
         if (!cancelled) {
           setGuests(result);
@@ -50,13 +53,17 @@ export default function GuestsPage() {
     return () => {
       cancelled = true;
     };
-  }, [appliedSearch]);
+  }, [appliedSearch, status, page]);
 
   async function refreshGuests() {
     setLoading(true);
 
     try {
-      const result = await getGuests(appliedSearch || undefined);
+      const result = await getGuests(
+        appliedSearch || undefined,
+        status || undefined,
+        page,
+      );
 
       setGuests(result);
       setError('');
@@ -69,9 +76,13 @@ export default function GuestsPage() {
 
   function handleSearch(event) {
     event.preventDefault();
-
+    if (appliedSearch === search.trim()) {
+      void refreshGuests();
+      return;
+    }
     setLoading(true);
     setAppliedSearch(search.trim());
+    setPage(1);
   }
 
   function openCreate() {
@@ -129,12 +140,27 @@ export default function GuestsPage() {
         <input
           value={search}
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search by name, email, username, or phone..."
+          placeholder="Name/username or exact email/phone"
+          maxLength={255}
         />
 
         <button type="submit" className="primary-button">
           Search
         </button>
+        <select
+          aria-label="Guest status"
+          value={status}
+          onChange={(event) => {
+            setLoading(true);
+            setStatus(event.target.value);
+            setPage(1);
+          }}
+        >
+          <option value="">All Statuses</option>
+          <option>ACTIVE</option>
+          <option>INACTIVE</option>
+          <option>SUSPENDED</option>
+        </select>
       </form>
 
       {error && <div className="rooms-error">{error}</div>}
@@ -185,6 +211,7 @@ export default function GuestsPage() {
         </div>
       )}
 
+      <ListPagination label="Guests" page={page} count={guests.length} loading={loading} onChange={next=>{setLoading(true);setPage(next);}}/>
       {modalOpen && (
         <GuestFormModal
           key={selectedGuest?.id ?? 'new-guest'}

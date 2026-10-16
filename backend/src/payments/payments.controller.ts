@@ -1,5 +1,6 @@
 import {
   Controller,
+  Body,
   Get,
   Headers,
   HttpCode,
@@ -25,6 +26,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 
 import { PaymentsService } from './payments.service';
+import { ReconcilePaymentDto } from './reconcile-payment.dto';
 
 type RequestWithRawBody = Request & {
   rawBody?: Buffer;
@@ -33,6 +35,13 @@ type RequestWithRawBody = Request & {
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
+
+  @Post(':id/reconcile')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  reconcile(@Param('id') id: string, @Body() dto: ReconcilePaymentDto) {
+    return this.paymentsService.reconcile(id, dto.checkoutSessionId);
+  }
 
   @Post('reservations/:reservationId/checkout')
   @UseGuards(JwtAuthGuard)

@@ -5,6 +5,6 @@ export class SearchQueryDto {
   @MinLength(2, {
     message: 'Search requires at least 2 characters.',
   })
-  @MaxLength(100)
+  @MaxLength(255)
   q: string;
 }

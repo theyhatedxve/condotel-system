@@ -66,6 +66,7 @@ export default function GuestFormModal({
     event.preventDefault();
 
     const payload = {
+      email: form.email,
       firstName: form.firstName,
 
       lastName: form.lastName,
@@ -85,7 +86,7 @@ export default function GuestFormModal({
       emergencyContactPhone: form.emergencyContactPhone,
     };
 
-    // Account credentials belong to creation; the guest edit endpoint accepts profile fields only.
+    // Password and username provisioning belongs to account creation.
     if (!guest) {
       payload.email = form.email;
 
@@ -118,6 +119,18 @@ export default function GuestFormModal({
 
         <form onSubmit={handleSubmit} className="guest-form">
           <div className="guest-form-grid">
+            {guest && (
+              <label>
+                <span>Email</span>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(event) => updateField('email', event.target.value)}
+                  maxLength={255}
+                  required
+                />
+              </label>
+            )}
             {!guest && (
               <>
                 <label>

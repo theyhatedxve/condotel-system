@@ -23,6 +23,7 @@ import {
 } from './bookingUtils';
 import BookingSummary from './BookingSummary';
 import BookingSteps from './BookingSteps';
+import ReservationNotesEditor from '../reservations/ReservationNotesEditor';
 
 function SectionHeading({ icon: Icon, title, description }) {
   return (
@@ -182,6 +183,14 @@ export default function BookingForm({
       <BookingSteps activeStep={activeStep} />
       <form className="booking-layout" onSubmit={submit}>
         <div className="booking-fields">
+          {reservation && (
+            <section className="booking-panel">
+              <ReservationNotesEditor
+                reservation={reservation}
+                onSaved={onRefreshPayment}
+              />
+            </section>
+          )}
           {activeStep === 4 && (
             <section className="booking-panel booking-confirmed" role="status">
               <CheckCircle2 size={36} />

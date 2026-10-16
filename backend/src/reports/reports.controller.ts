@@ -11,6 +11,8 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { ReportRangeQueryDto } from './report-range-query.dto';
 
 import { ReportsService } from './reports.service';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -19,8 +21,11 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Get('dashboard')
-  getDashboard() {
-    return this.reportsService.getDashboard();
+  @Roles(UserRole.STAFF, UserRole.ADMIN, UserRole.CUSTOMER)
+  getDashboard(@CurrentUser() user: AuthenticatedUser) {
+    return user.role === UserRole.CUSTOMER
+      ? this.reportsService.getCustomerDashboard(user.id)
+      : this.reportsService.getDashboard();
   }
 
   @Get('summary')

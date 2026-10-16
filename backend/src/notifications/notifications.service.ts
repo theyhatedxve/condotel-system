@@ -104,11 +104,43 @@ export class NotificationsService {
   private async safelyCreate(input: CreateStaffNotificationInput) {
     try {
       await this.createForStaffAndAdmins(input);
-    } catch (error) {
-      this.logger.error(
-        'Unable to create notification.',
-        error instanceof Error ? error.stack : undefined,
-      );
+      const reservation =
+        input.entityType === 'Reservation'
+          ? await this.prisma.reservation.findUnique({
+              where: { id: input.entityId },
+              select: { id: true, guestId: true, roomId: true },
+            })
+          : input.entityType === 'Payment'
+            ? (
+                await this.prisma.payment.findUnique({
+                  where: { id: input.entityId },
+                  select: {
+                    reservation: {
+                      select: { id: true, guestId: true, roomId: true },
+                    },
+                  },
+                })
+              )?.reservation
+            : null;
+      if (reservation && input.dedupeKeyPrefix) {
+        const dedupeKey = `${input.dedupeKeyPrefix}:${reservation.guestId}`;
+        await this.prisma.notification.upsert({
+          where: { dedupeKey },
+          update: {},
+          create: {
+            userId: reservation.guestId,
+            type: input.type,
+            title: input.title,
+            message: input.message,
+            entityType: input.entityType,
+            entityId: input.entityId,
+            dedupeKey,
+            path: `/booking/${encodeURIComponent(reservation.roomId)}?reservationId=${encodeURIComponent(reservation.id)}`,
+          },
+        });
+      }
+    } catch {
+      this.logger.error('Unable to create notification.');
     }
   }
 
@@ -238,11 +270,8 @@ export class NotificationsService {
           dedupeKeyPrefix: `UPCOMING_CHECK_IN:${reservation.id}`,
         });
       }
-    } catch (error) {
-      this.logger.error(
-        'Unable to create upcoming check-in notifications.',
-        error instanceof Error ? error.stack : undefined,
-      );
+    } catch {
+      this.logger.error('Unable to create upcoming check-in notifications.');
     }
   }
 

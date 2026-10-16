@@ -30,12 +30,32 @@ import { UpdateManagedUserDto } from './update-managed-user.dto';
 import { UserManagementQueryDto } from './user-management-query.dto';
 
 import { UserManagementService } from './user-management.service';
+import {
+  CreateManagedUserDto,
+  ImportManagedUsersDto,
+} from './create-managed-user.dto';
 
 @Controller('admin/users')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class UserManagementController {
   constructor(private readonly userManagementService: UserManagementService) {}
+
+  @Post()
+  create(
+    @Body() dto: CreateManagedUserDto,
+    @CurrentUser() admin: AuthenticatedUser,
+  ) {
+    return this.userManagementService.create(dto, admin);
+  }
+
+  @Post('import')
+  importUsers(
+    @Body() dto: ImportManagedUsersDto,
+    @CurrentUser() admin: AuthenticatedUser,
+  ) {
+    return this.userManagementService.importUsers(dto.users, admin);
+  }
 
   @Get()
   findAll(
@@ -44,6 +64,9 @@ export class UserManagementController {
   ) {
     return this.userManagementService.findAll(query);
   }
+
+  @Get('summary')
+  summary() {return this.userManagementService.summary();}
 
   @Get(':id')
   findOne(

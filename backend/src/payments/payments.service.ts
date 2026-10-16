@@ -1,4 +1,8 @@
 import {
+  PrivateDataService,
+  contactSelect,
+} from '../security/private-data.service';
+import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
@@ -25,7 +29,7 @@ import type {
   PaymongoWebhookEvent,
 } from './paymongo.interface';
 
-import { PaymongoService } from './paymongo.service';
+import { CheckoutRejectedException, PaymongoService } from './paymongo.service';
 
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -33,6 +37,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 export class PaymentsService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly privacy: PrivateDataService,
 
     private readonly paymongoService: PaymongoService,
 
@@ -66,6 +71,43 @@ export class PaymentsService {
     }
   }
 
+  async reconcile(id: string, checkoutSessionId: string) {
+    const payment = await this.prisma.payment.findUnique({
+      where: { id },
+      include: { reservation: true },
+    });
+    if (!payment) throw new NotFoundException('Payment not found.');
+    const session =
+      await this.paymongoService.retrieveCheckoutSession(checkoutSessionId);
+    if (
+      (payment.paymongoCheckoutSessionId &&
+        payment.paymongoCheckoutSessionId !== session.id) ||
+      session.attributes?.reference_number !== payment.reservation.referenceNo
+    )
+      throw new BadRequestException('Checkout reference mismatch.');
+    const attempt = this.findPaidAttempt(session.attributes?.payments);
+    if (!attempt)
+      throw new ConflictException(
+        'The provider has not confirmed payment. Keep this checkout pending.',
+      );
+    if (
+      attempt.attributes.amount !== payment.amountCentavos ||
+      attempt.attributes.currency !== payment.currency
+    )
+      throw new BadRequestException('Checkout amount or currency mismatch.');
+    const other = await this.prisma.payment.findUnique({
+      where: { paymongoCheckoutSessionId: session.id },
+      select: { id: true },
+    });
+    if (other && other.id !== payment.id)
+      throw new ConflictException('Checkout is linked to another payment.');
+    await this.prisma.payment.update({
+      where: { id },
+      data: { paymongoCheckoutSessionId: session.id },
+    });
+    return this.recordPaidCheckout(session);
+  }
+
   async createCheckout(reservationId: string, user: AuthenticatedUser) {
     const reservation = await this.prisma.reservation.findUnique({
       where: {
@@ -78,7 +120,7 @@ export class PaymentsService {
             id: true,
             firstName: true,
             lastName: true,
-            email: true,
+            ...contactSelect,
           },
         },
 
@@ -132,18 +174,41 @@ export class PaymentsService {
       };
     }
 
-    const payment = await this.prisma.payment.create({
-      data: {
-        reservationId: reservation.id,
+    const payment = await this.prisma.$transaction(async (tx) => {
+      const latest = await tx.reservation.findUnique({
+        where: { id: reservationId },
+        select: { status: true },
+      });
+      if (latest?.status !== ReservationStatus.PENDING)
+        throw new ConflictException(
+          'Reservation changed. Reload before paying.',
+        );
+      if (
+        await tx.payment.findFirst({
+          where: {
+            reservationId,
+            status: { in: [PaymentStatus.PENDING, PaymentStatus.PAID] },
+          },
+          select: { id: true },
+        })
+      ) {
+        throw new ConflictException(
+          'An existing checkout requires payment-status verification before retrying.',
+        );
+      }
+      return tx.payment.create({
+        data: {
+          reservationId: reservation.id,
 
-        provider: 'PAYMONGO',
+          provider: 'PAYMONGO',
 
-        amountCentavos: reservation.totalAmountCentavos,
+          amountCentavos: reservation.totalAmountCentavos,
 
-        currency: 'PHP',
+          currency: 'PHP',
 
-        status: PaymentStatus.PENDING,
-      },
+          status: PaymentStatus.PENDING,
+        },
+      });
     });
 
     try {
@@ -179,20 +244,20 @@ export class PaymentsService {
         checkoutUrl: updatedPayment.checkoutUrl,
       };
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'PayMongo checkout creation failed.';
-
-      await this.prisma.payment.update({
+      const rejected = error instanceof CheckoutRejectedException;
+      await this.prisma.payment.updateMany({
         where: {
           id: payment.id,
+          status: PaymentStatus.PENDING,
         },
 
         data: {
-          status: PaymentStatus.FAILED,
+          // A provider timeout may have created a remote checkout. Do not create another.
+          status: rejected ? PaymentStatus.FAILED : PaymentStatus.PENDING,
 
-          failureReason: message,
+          failureReason: rejected
+            ? 'PayMongo rejected checkout creation. No checkout was created.'
+            : 'Checkout requires staff reconciliation before retrying.',
         },
       });
 
@@ -213,8 +278,30 @@ export class PaymentsService {
     // leaves the local records pending so cancellation can be retried.
     for (const payment of pendingPayments) {
       if (payment.paymongoCheckoutSessionId) {
+        const session = await this.paymongoService.retrieveCheckoutSession(
+          payment.paymongoCheckoutSessionId,
+        );
+        if (this.findPaidAttempt(session.attributes?.payments)) {
+          await this.recordPaidCheckout(session);
+          throw new ConflictException(
+            'Payment was received. This booking cannot be cancelled as unpaid.',
+          );
+        }
         await this.paymongoService.expireCheckoutSession(
           payment.paymongoCheckoutSessionId,
+        );
+        const afterExpiry = await this.paymongoService.retrieveCheckoutSession(
+          payment.paymongoCheckoutSessionId,
+        );
+        if (this.findPaidAttempt(afterExpiry.attributes?.payments)) {
+          await this.recordPaidCheckout(afterExpiry);
+          throw new ConflictException(
+            'Payment was received while cancelling. Reload this booking.',
+          );
+        }
+      } else {
+        throw new ConflictException(
+          'Checkout requires staff reconciliation before cancellation.',
         );
       }
     }
@@ -269,7 +356,7 @@ export class PaymentsService {
   }
 
   async findAll() {
-    return this.prisma.payment.findMany({
+    const rows = await this.prisma.payment.findMany({
       include: {
         reservation: {
           include: {
@@ -278,7 +365,7 @@ export class PaymentsService {
                 id: true,
                 firstName: true,
                 lastName: true,
-                email: true,
+                ...contactSelect,
               },
             },
 
@@ -293,6 +380,7 @@ export class PaymentsService {
         createdAt: 'desc',
       },
     });
+    return rows.map((row) => this.privacy.response(row));
   }
 
   async findByReservation(reservationId: string, user: AuthenticatedUser) {
@@ -445,6 +533,18 @@ export class PaymentsService {
       );
     }
 
+    if (
+      session.attributes?.reference_number !==
+        localPayment.reservation.referenceNo ||
+      (session.attributes?.metadata?.reservation_id &&
+        session.attributes.metadata.reservation_id !==
+          localPayment.reservationId)
+    ) {
+      throw new BadRequestException(
+        'PayMongo checkout reference does not match the stored reservation.',
+      );
+    }
+
     // Skip financial writes when a previous delivery has already marked this payment paid.
     // Retry the notification separately; its dedupe key prevents another notification row.
     if (localPayment.status === PaymentStatus.PAID) {
@@ -494,10 +594,7 @@ export class PaymentsService {
      * Optional but useful:
      * validate currency too.
      */
-    if (
-      paidAttempt.attributes.currency &&
-      paidAttempt.attributes.currency !== 'PHP'
-    ) {
+    if (paidAttempt.attributes.currency !== 'PHP') {
       throw new BadRequestException('Unexpected PayMongo payment currency.');
     }
 

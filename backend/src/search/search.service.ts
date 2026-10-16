@@ -1,3 +1,7 @@
+import {
+  PrivateDataService,
+  contactSelect,
+} from '../security/private-data.service';
 import { Injectable } from '@nestjs/common';
 
 import {
@@ -12,7 +16,10 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class SearchService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly privacy: PrivateDataService,
+  ) {}
 
   async search(query: string) {
     const normalizedQuery = query.trim();
@@ -54,9 +61,7 @@ export class SearchService {
                 },
               },
               {
-                email: {
-                  contains: normalizedQuery,
-                },
+                emailBlindIndex: this.privacy.index('email', normalizedQuery),
               },
               {
                 username: {
@@ -64,9 +69,7 @@ export class SearchService {
                 },
               },
               {
-                phone: {
-                  contains: normalizedQuery,
-                },
+                phoneBlindIndex: this.privacy.index('phone', normalizedQuery),
               },
             ],
           },
@@ -75,8 +78,7 @@ export class SearchService {
             id: true,
             firstName: true,
             lastName: true,
-            email: true,
-            phone: true,
+            ...contactSelect,
             status: true,
           },
 
@@ -158,9 +160,10 @@ export class SearchService {
                         },
                       },
                       {
-                        email: {
-                          contains: normalizedQuery,
-                        },
+                        emailBlindIndex: this.privacy.index(
+                          'email',
+                          normalizedQuery,
+                        ),
                       },
                     ],
                   },
@@ -200,7 +203,7 @@ export class SearchService {
               select: {
                 firstName: true,
                 lastName: true,
-                email: true,
+                ...contactSelect,
               },
             },
 
@@ -279,9 +282,10 @@ export class SearchService {
                                 },
                               },
                               {
-                                email: {
-                                  contains: normalizedQuery,
-                                },
+                                emailBlindIndex: this.privacy.index(
+                                  'email',
+                                  normalizedQuery,
+                                ),
                               },
                             ],
                           },
@@ -478,7 +482,7 @@ export class SearchService {
 
         title: `${guest.firstName} ${guest.lastName}`,
 
-        subtitle: guest.email,
+        subtitle: this.privacy.response(guest).email,
 
         status: guest.status,
 

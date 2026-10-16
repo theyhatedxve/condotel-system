@@ -8,6 +8,12 @@ datasource db {
   provider = "sqlite"
 }
 
+// Written only by explicit offline privacy maintenance, never HTTP endpoints.
+model PrivacyState {
+  id       Int    @id
+  keyCheck String
+}
+
 // ============================================================
 // ENUMS
 // ============================================================
@@ -107,9 +113,18 @@ enum NotificationType {
 
 model User {
   id           String  @id @default(cuid())
-  email        String  @unique
+  email        String? @unique
   username     String? @unique
   passwordHash String
+
+  emailCiphertext String?
+  emailIv         String?
+  emailAuthTag    String?
+  emailBlindIndex String? @unique
+  phoneCiphertext String?
+  phoneIv         String?
+  phoneAuthTag    String?
+  phoneBlindIndex String?
 
   firstName String
   lastName  String
@@ -135,6 +150,7 @@ model User {
   auditLogs     AuditLog[]     @relation("AuditActor")
   notifications Notification[]
 
+  @@index([phoneBlindIndex])
   @@index([role])
   @@index([status])
   @@index([lastName, firstName])
@@ -154,6 +170,25 @@ model GuestProfile {
   postalCode            String?
   emergencyContactName  String?
   emergencyContactPhone String?
+
+  addressCiphertext               String?
+  addressIv                       String?
+  addressAuthTag                  String?
+  cityCiphertext                  String?
+  cityIv                          String?
+  cityAuthTag                     String?
+  provinceCiphertext              String?
+  provinceIv                      String?
+  provinceAuthTag                 String?
+  postalCodeCiphertext            String?
+  postalCodeIv                    String?
+  postalCodeAuthTag               String?
+  emergencyContactNameCiphertext  String?
+  emergencyContactNameIv          String?
+  emergencyContactNameAuthTag     String?
+  emergencyContactPhoneCiphertext String?
+  emergencyContactPhoneIv         String?
+  emergencyContactPhoneAuthTag    String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -217,7 +252,10 @@ model Reservation {
 
   status ReservationStatus @default(PENDING)
 
-  specialRequests String?
+  specialRequests           String?
+  specialRequestsCiphertext String?
+  specialRequestsIv         String?
+  specialRequestsAuthTag    String?
 
   checkedInAt  DateTime?
   checkedOutAt DateTime?

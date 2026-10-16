@@ -1,490 +1,351 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-
-import { randomBytes } from 'node:crypto';
-
+import { randomBytes, randomUUID } from 'node:crypto';
 import {
   ReservationStatus,
   RoomStatus,
   UserRole,
   UserStatus,
 } from '../generated/prisma/enums';
-
 import { PrismaService } from '../prisma/prisma.service';
-
-import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
-
+import {
+  PrivateDataService,
+  contactSelect,
+} from '../security/private-data.service';
+import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 import { AvailabilityQueryDto } from './availability-query.dto';
-
 import { CreateReservationDto } from './create-reservation.dto';
-
 import { ReservationQueryDto } from './reservation-query.dto';
-
+import { UpdateReservationNotesDto } from './update-reservation-notes.dto';
 import { PaymentsService } from '../payments/payments.service';
-
 import { NotificationsService } from '../notifications/notifications.service';
 
-// Pending reservations also hold availability; cancelled and checked-out stays do not.
 const BLOCKING_STATUSES = [
   ReservationStatus.PENDING,
   ReservationStatus.CONFIRMED,
   ReservationStatus.CHECKED_IN,
 ];
+const relations = {
+  guest: {
+    select: { id: true, firstName: true, lastName: true, ...contactSelect },
+  },
+  room: true,
+  payments: { select: { id: true, status: true, amountCentavos: true } },
+} as const;
 
 @Injectable()
 export class ReservationsService {
   constructor(
     private readonly prisma: PrismaService,
-
+    private readonly privacy: PrivateDataService,
     private readonly paymentsService: PaymentsService,
-
     private readonly notificationsService: NotificationsService,
   ) {}
 
   private parseDates(checkInValue: string, checkOutValue: string) {
-    const checkIn = new Date(checkInValue);
-
-    const checkOut = new Date(checkOutValue);
-
-    if (Number.isNaN(checkIn.getTime()) || Number.isNaN(checkOut.getTime())) {
-      throw new BadRequestException('Invalid reservation dates.');
+    const checkIn = new Date(checkInValue),
+      checkOut = new Date(checkOutValue);
+    if (
+      !Number.isFinite(checkIn.getTime()) ||
+      !Number.isFinite(checkOut.getTime()) ||
+      checkOut <= checkIn ||
+      !Number.isInteger((checkOut.getTime() - checkIn.getTime()) / 86400000) ||
+      !checkInValue.startsWith(checkIn.toISOString().slice(0, 10)) ||
+      !checkOutValue.startsWith(checkOut.toISOString().slice(0, 10))
+    ) {
+      throw new BadRequestException(
+        'Choose valid check-in and check-out dates at least one night apart.',
+      );
     }
-
-    if (checkOut.getTime() <= checkIn.getTime()) {
-      throw new BadRequestException('Check-out must be after check-in.');
-    }
-
+    return { checkIn, checkOut };
+  }
+  private overlap(roomId: string, checkIn: Date, checkOut: Date) {
     return {
-      checkIn,
-      checkOut,
+      roomId,
+      status: { in: BLOCKING_STATUSES },
+      checkIn: { lt: checkOut },
+      checkOut: { gt: checkIn },
     };
   }
-
-  private calculateNights(checkIn: Date, checkOut: Date) {
-    const millisecondsPerDay = 24 * 60 * 60 * 1000;
-
-    return Math.ceil(
-      (checkOut.getTime() - checkIn.getTime()) / millisecondsPerDay,
-    );
+  private ensureAccess(guestId: string, user: AuthenticatedUser) {
+    if (user.role === UserRole.CUSTOMER && guestId !== user.id)
+      throw new ForbiddenException('You cannot access this reservation.');
   }
-
-  private async generateReferenceNo() {
-    for (let attempt = 0; attempt < 5; attempt += 1) {
-      const datePart = new Date()
-        .toISOString()
-        .slice(0, 10)
-        .replaceAll('-', '');
-
-      const randomPart = randomBytes(3).toString('hex').toUpperCase();
-
-      const referenceNo = `RES-${datePart}-${randomPart}`;
-
-      const existing = await this.prisma.reservation.findUnique({
-        where: {
-          referenceNo,
-        },
-      });
-
-      if (!existing) {
-        return referenceNo;
-      }
-    }
-
-    throw new Error('Unable to generate reservation reference number.');
+  private withArrival(notes: string | null, arrival?: string) {
+    return arrival
+      ? [notes, 'Estimated arrival: ' + arrival]
+          .filter((value) => value !== null && value !== '')
+          .join('\n')
+      : notes;
   }
-
   async findAvailableRooms(dto: AvailabilityQueryDto) {
     const { checkIn, checkOut } = this.parseDates(dto.checkIn, dto.checkOut);
-
     return this.prisma.room.findMany({
       where: {
         isActive: true,
-
-        status: {
-          not: RoomStatus.MAINTENANCE,
-        },
-
-        ...(dto.capacity
-          ? {
-              capacity: {
-                gte: dto.capacity,
-              },
-            }
-          : {}),
-
-        // Strict overlap allows one stay to check out exactly when another checks in.
+        status: { not: RoomStatus.MAINTENANCE },
+        ...(dto.capacity ? { capacity: { gte: dto.capacity } } : {}),
         reservations: {
           none: {
-            status: {
-              in: BLOCKING_STATUSES,
-            },
-
-            checkIn: {
-              lt: checkOut,
-            },
-
-            checkOut: {
-              gt: checkIn,
-            },
+            status: { in: BLOCKING_STATUSES },
+            checkIn: { lt: checkOut },
+            checkOut: { gt: checkIn },
           },
         },
       },
-
-      orderBy: {
-        roomNumber: 'asc',
-      },
+      orderBy: { roomNumber: 'asc' },
     });
   }
-
   async findAll(query: ReservationQueryDto) {
-    return this.prisma.reservation.findMany({
+    const rows = await this.prisma.reservation.findMany({
+      ...(query.page ? {take:50,skip:(query.page-1)*50} : {}),
       where: {
-        ...(query.status
-          ? {
-              status: query.status,
-            }
-          : {}),
-
-        ...(query.guestId
-          ? {
-              guestId: query.guestId,
-            }
-          : {}),
-
-        ...(query.roomId
-          ? {
-              roomId: query.roomId,
-            }
-          : {}),
+        ...(query.status ? { status: query.status } : {}),
+        ...(query.guestId ? { guestId: query.guestId } : {}),
+        ...(query.roomId ? { roomId: query.roomId } : {}),
       },
-
-      include: {
-        guest: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-          },
-        },
-
-        room: true,
-
-        payments: {
-          select: {
-            id: true,
-            status: true,
-            amountCentavos: true,
-          },
-        },
-      },
-
-      orderBy: {
-        createdAt: 'desc',
-      },
+      include: relations,
+      orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
     });
+    return rows.map((row) => this.privacy.response(row));
   }
-
   async findMine(userId: string) {
-    return this.prisma.reservation.findMany({
-      where: {
-        guestId: userId,
-      },
-
+    const rows = await this.prisma.reservation.findMany({
+      where: { guestId: userId },
       include: {
         room: true,
-
-        payments: {
-          select: {
-            id: true,
-            status: true,
-            amountCentavos: true,
-          },
-        },
+        payments: { select: { id: true, status: true, amountCentavos: true } },
       },
-
-      orderBy: {
-        createdAt: 'desc',
-      },
+      orderBy: { createdAt: 'desc' },
     });
+    return rows.map((row) => this.privacy.response(row));
   }
-
-  async findOne(id: string) {
-    const reservation = await this.prisma.reservation.findUnique({
-      where: {
-        id,
-      },
-
-      include: {
-        guest: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-            phone: true,
-          },
-        },
-
-        room: true,
-
-        payments: true,
-      },
+  private async stored(id: string) {
+    const row = await this.prisma.reservation.findUnique({
+      where: { id },
+      include: relations,
     });
-
-    if (!reservation) {
-      throw new NotFoundException('Reservation not found.');
-    }
-
-    return reservation;
+    if (!row) throw new NotFoundException('Reservation not found.');
+    return row;
   }
-
+  async findOneAuthorized(id: string, user: AuthenticatedUser) {
+    const row = await this.stored(id);
+    this.ensureAccess(row.guestId, user);
+    return this.privacy.response(row);
+  }
   async create(user: AuthenticatedUser, dto: CreateReservationDto) {
-    // Customers can book only for themselves; staff and admins may select another guest.
     const guestId = user.role === UserRole.CUSTOMER ? user.id : dto.guestId;
-
-    if (!guestId) {
-      throw new BadRequestException('A guest is required.');
-    }
-
-    const guest = await this.prisma.user.findFirst({
-      where: {
-        id: guestId,
-        role: UserRole.CUSTOMER,
-        status: UserStatus.ACTIVE,
-      },
-    });
-
-    if (!guest) {
-      throw new BadRequestException('Selected guest is unavailable.');
-    }
-
-    const room = await this.prisma.room.findUnique({
-      where: {
-        id: dto.roomId,
-      },
-    });
-
-    if (!room) {
-      throw new NotFoundException('Room not found.');
-    }
-
-    if (!room.isActive) {
-      throw new BadRequestException('Room is inactive.');
-    }
-
-    if (room.status === RoomStatus.MAINTENANCE) {
-      throw new BadRequestException('Room is currently under maintenance.');
-    }
-
-    const children = dto.children ?? 0;
-
-    const totalGuests = dto.adults + children;
-
-    if (totalGuests > room.capacity) {
-      throw new BadRequestException(
-        `Room capacity is ${room.capacity} guest(s).`,
-      );
-    }
-
+    if (!guestId) throw new BadRequestException('A guest is required.');
     const { checkIn, checkOut } = this.parseDates(dto.checkIn, dto.checkOut);
-
-    const conflictingReservation = await this.prisma.reservation.findFirst({
-      where: {
-        roomId: room.id,
-
-        status: {
-          in: BLOCKING_STATUSES,
+    const today = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10);
+    if (checkIn.toISOString().slice(0, 10) < today)
+      throw new BadRequestException('Check-in cannot be in the past.');
+    const id = randomUUID();
+    const encrypted = this.privacy.writeNotes(
+      id,
+      this.withArrival(
+        dto.specialRequests?.trim() || null,
+        dto.estimatedArrival,
+      ),
+    );
+    const row = await this.prisma.$transaction(async (tx) => {
+      const guest = await tx.user.findFirst({
+        where: {
+          id: guestId,
+          role: UserRole.CUSTOMER,
+          status: UserStatus.ACTIVE,
         },
-
-        checkIn: {
-          lt: checkOut,
-        },
-
-        checkOut: {
-          gt: checkIn,
-        },
-      },
-    });
-
-    if (conflictingReservation) {
-      throw new BadRequestException(
-        'Room is not available for the selected dates.',
-      );
-    }
-
-    const nights = this.calculateNights(checkIn, checkOut);
-
-    // Price the stay from the stored room rate, never from an amount supplied by the browser.
-    const totalAmountCentavos = nights * room.ratePerNightCentavos;
-
-    const referenceNo = await this.generateReferenceNo();
-
-    const createdReservation = await this.prisma.reservation.create({
-      data: {
-        referenceNo,
-
-        guestId,
-
-        roomId: room.id,
-
-        createdById: user.id,
-
-        checkIn,
-        checkOut,
-
-        adults: dto.adults,
-
-        children,
-
-        totalAmountCentavos,
-
-        status: ReservationStatus.PENDING,
-
-        specialRequests: dto.specialRequests?.trim() || null,
-      },
-
-      include: {
-        guest: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-
-        room: true,
-      },
-    });
-
-    await this.notificationsService.notifyReservationCreated({
-      reservationId: createdReservation.id,
-
-      referenceNo: createdReservation.referenceNo,
-
-      guestName: `${createdReservation.guest.firstName} ${createdReservation.guest.lastName}`,
-
-      roomNumber: createdReservation.room.roomNumber,
-    });
-
-    return createdReservation;
-  }
-
-  async updateStatus(id: string, newStatus: ReservationStatus) {
-    const reservation = await this.findOne(id);
-
-    // This manual status action only cancels eligible stays; payment confirmation
-    // is handled by the verified webhook, not by this endpoint.
-    const allowedTransitions: Record<ReservationStatus, ReservationStatus[]> = {
-      PENDING: [ReservationStatus.CANCELLED],
-
-      CONFIRMED: [ReservationStatus.CANCELLED],
-
-      CHECKED_IN: [],
-
-      CHECKED_OUT: [],
-
-      CANCELLED: [],
-    };
-
-    const allowed = allowedTransitions[reservation.status];
-
-    if (!allowed.includes(newStatus)) {
-      throw new BadRequestException(
-        `Cannot change reservation from ${reservation.status} to ${newStatus}.`,
-      );
-    }
-
-    if (newStatus === ReservationStatus.CANCELLED) {
-      await this.paymentsService.cancelPendingPaymentsForReservation(id);
-    }
-
-    const updatedReservation = await this.prisma.reservation.update({
-      where: {
-        id,
-      },
-
-      data: {
-        status: newStatus,
-
-        ...(newStatus === ReservationStatus.CANCELLED
-          ? {
-              cancelledAt: new Date(),
-            }
-          : {}),
-      },
-
-      include: {
-        guest: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-
-        room: true,
-      },
-    });
-    if (newStatus === ReservationStatus.CANCELLED) {
-      await this.notificationsService.notifyReservationCancelled({
-        reservationId: updatedReservation.id,
-
-        referenceNo: updatedReservation.referenceNo,
-
-        guestName: `${updatedReservation.guest.firstName} ${updatedReservation.guest.lastName}`,
+        select: { id: true },
       });
-    }
-
-    return updatedReservation;
+      if (!guest)
+        throw new BadRequestException('Selected guest is unavailable.');
+      const room = await tx.room.findUnique({ where: { id: dto.roomId } });
+      if (!room) throw new NotFoundException('Room not found.');
+      if (!room.isActive || room.status === RoomStatus.MAINTENANCE)
+        throw new BadRequestException('Room is unavailable.');
+      const children = dto.children ?? 0;
+      if (
+        !Number.isInteger(dto.adults) ||
+        dto.adults < 1 ||
+        !Number.isInteger(children) ||
+        children < 0 ||
+        dto.adults + children > room.capacity
+      )
+        throw new BadRequestException('Guest count exceeds room capacity.');
+      if (
+        await tx.reservation.findFirst({
+          where: this.overlap(room.id, checkIn, checkOut),
+          select: { id: true },
+        })
+      )
+        throw new ConflictException(
+          'Room is not available for the selected dates.',
+        );
+      return tx.reservation.create({
+        data: {
+          id,
+          referenceNo:
+            'RES-' +
+            today.replaceAll('-', '') +
+            '-' +
+            randomBytes(6).toString('hex').toUpperCase(),
+          guestId,
+          roomId: room.id,
+          createdById: user.id,
+          checkIn,
+          checkOut,
+          adults: dto.adults,
+          children,
+          totalAmountCentavos:
+            ((checkOut.getTime() - checkIn.getTime()) / 86400000) *
+            room.ratePerNightCentavos,
+          status: ReservationStatus.PENDING,
+          ...encrypted,
+        },
+        include: relations,
+      });
+    });
+    await this.notificationsService.notifyReservationCreated({
+      reservationId: row.id,
+      referenceNo: row.referenceNo,
+      guestName: row.guest.firstName + ' ' + row.guest.lastName,
+      roomNumber: row.room.roomNumber,
+    });
+    return this.privacy.response(row);
   }
-
-  async cancel(id: string, user: AuthenticatedUser) {
-    const reservation = await this.findOne(id);
-
-    if (user.role === UserRole.CUSTOMER && reservation.guestId !== user.id) {
-      throw new ForbiddenException('You cannot cancel this reservation.');
-    }
-
-    const cancellableStatuses: ReservationStatus[] = [
-      ReservationStatus.PENDING,
-      ReservationStatus.CONFIRMED,
-    ];
-
-    if (!cancellableStatuses.includes(reservation.status)) {
+  async updateNotes(
+    id: string,
+    user: AuthenticatedUser,
+    dto: UpdateReservationNotesDto,
+  ) {
+    const row = await this.stored(id);
+    this.ensureAccess(row.guestId, user);
+    if (row.status === 'CANCELLED' || row.status === 'CHECKED_OUT')
+      throw new BadRequestException(
+        'This reservation can no longer be edited.',
+      );
+    // Omitted notes preserve the stored text; null explicitly clears it.
+    const notes =
+      dto.specialRequests === undefined
+        ? this.privacy.readField('Reservation', id, 'specialRequests', row)
+        : dto.specialRequests;
+    if (dto.specialRequests === undefined && dto.estimatedArrival === undefined)
+      return this.privacy.response(row);
+    const data = this.privacy.writeNotes(
+      id,
+      this.withArrival(notes, dto.estimatedArrival),
+    );
+    const updated = await this.prisma.reservation.updateMany({
+      where: { id, status: row.status },
+      data,
+    });
+    if (!updated.count)
+      throw new ConflictException(
+        'Reservation changed. Reload before editing.',
+      );
+    return this.findOneAuthorized(id, user);
+  }
+  async updateStatus(id: string, newStatus: ReservationStatus) {
+    const row = await this.stored(id);
+    if (newStatus === 'CANCELLED') return this.cancelStored(row);
+    const allowed =
+      (row.status === 'CONFIRMED' && newStatus === 'CHECKED_IN') ||
+      (row.status === 'CHECKED_IN' && newStatus === 'CHECKED_OUT');
+    if (!allowed || !row.payments.some((payment) => payment.status === 'PAID'))
+      throw new BadRequestException(
+        'This transition requires a verified paid reservation.',
+      );
+    const updated = await this.prisma.$transaction(async (tx) => {
+      const changed = await tx.reservation.updateMany({
+        where: { id, status: row.status },
+        data: { status: newStatus },
+      });
+      if (!changed.count)
+        throw new ConflictException(
+          'Reservation changed. Reload before updating.',
+        );
+      if (newStatus === 'CHECKED_IN') {
+        if (
+          await tx.reservation.count({
+            where: {
+              roomId: row.roomId,
+              status: 'CHECKED_IN',
+              id: { not: id },
+            },
+          })
+        )
+          throw new ConflictException('Room already has a checked-in guest.');
+        await tx.room.update({
+          where: { id: row.roomId },
+          data: { status: 'OCCUPIED' },
+        });
+      } else {
+        const occupied = await tx.reservation.count({
+          where: { roomId: row.roomId, status: 'CHECKED_IN' },
+        });
+        if (!occupied)
+          await tx.room.updateMany({
+            where: { id: row.roomId, status: 'OCCUPIED' },
+            data: { status: 'AVAILABLE' },
+          });
+      }
+      return tx.reservation.findUniqueOrThrow({
+        where: { id },
+        include: relations,
+      });
+    });
+    return this.privacy.response(updated);
+  }
+  private async cancelStored(
+    row: Awaited<ReturnType<ReservationsService['stored']>>,
+  ) {
+    if (!['PENDING', 'CONFIRMED'].includes(row.status))
       throw new BadRequestException(
         'This reservation can no longer be cancelled.',
       );
-    }
-
-    await this.paymentsService.cancelPendingPaymentsForReservation(id);
-
-    const cancelledReservation = await this.prisma.reservation.update({
-      where: {
-        id,
-      },
-
-      data: {
-        status: ReservationStatus.CANCELLED,
-
-        cancelledAt: new Date(),
-      },
+    if (row.payments.some((payment) => payment.status === 'PAID'))
+      throw new BadRequestException(
+        'Paid reservations require staff payment/refund review.',
+      );
+    // Reconcile any existing hosted session before cancelling and releasing availability.
+    await this.paymentsService.cancelPendingPaymentsForReservation(row.id);
+    const cancelled = await this.prisma.$transaction(async (tx) => {
+      if (
+        await tx.payment.count({
+          where: { reservationId: row.id, status: 'PAID' },
+        })
+      )
+        throw new ConflictException(
+          'Payment was received. Reload the booking.',
+        );
+      const result = await tx.reservation.updateMany({
+        where: { id: row.id, status: row.status },
+        data: { status: 'CANCELLED', cancelledAt: new Date() },
+      });
+      if (!result.count)
+        throw new ConflictException(
+          'Reservation changed. Reload before cancelling.',
+        );
+      return tx.reservation.findUniqueOrThrow({
+        where: { id: row.id },
+        include: relations,
+      });
     });
     await this.notificationsService.notifyReservationCancelled({
-      reservationId: reservation.id,
-
-      referenceNo: reservation.referenceNo,
-
-      guestName: `${reservation.guest.firstName} ${reservation.guest.lastName}`,
+      reservationId: row.id,
+      referenceNo: row.referenceNo,
+      guestName: row.guest.firstName + ' ' + row.guest.lastName,
     });
-
-    return cancelledReservation;
+    return this.privacy.response(cancelled);
+  }
+  async cancel(id: string, user: AuthenticatedUser) {
+    const row = await this.stored(id);
+    this.ensureAccess(row.guestId, user);
+    return this.cancelStored(row);
   }
 }

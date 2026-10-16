@@ -1,12 +1,8 @@
 import apiClient from '../../services/apiClient';
 
-export async function getGuests(search) {
+export async function getGuests(search, status, page) {
   const response = await apiClient.get('/guests', {
-    params: search
-      ? {
-          search,
-        }
-      : {},
+    params: { ...(search ? { search } : {}), ...(status ? { status } : {}), ...(page ? {page}: {}) },
   });
 
   return response.data;

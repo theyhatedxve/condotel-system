@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  Matches,
   Min,
 } from 'class-validator';
 
@@ -38,4 +39,9 @@ export class CreateReservationDto {
   @IsString()
   @MaxLength(1000)
   specialRequests?: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d$/)
+  estimatedArrival?: string;
 }

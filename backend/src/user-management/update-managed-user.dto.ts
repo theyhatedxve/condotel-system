@@ -5,26 +5,27 @@ import {
   IsString,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 import { UserRole, UserStatus } from '../generated/prisma/enums';
 
 export class UpdateManagedUserDto {
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
   @MinLength(1)
   @MaxLength(80)
   firstName?: string;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsString()
   @MinLength(1)
   @MaxLength(80)
   lastName?: string;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsEmail()
-  @MaxLength(160)
+  @MaxLength(255)
   email?: string;
 
   @IsOptional()
@@ -37,11 +38,11 @@ export class UpdateManagedUserDto {
   @MaxLength(30)
   phone?: string | null;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsEnum(UserRole)
   role?: UserRole;
 
-  @IsOptional()
+  @ValidateIf((_, value) => value !== undefined)
   @IsEnum(UserStatus)
   status?: UserStatus;
 }

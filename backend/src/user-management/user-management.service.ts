@@ -1,4 +1,8 @@
 import {
+  PrivateDataService,
+  contactSelect,
+} from '../security/private-data.service';
+import {
   BadRequestException,
   ConflictException,
   Injectable,
@@ -6,6 +10,8 @@ import {
 } from '@nestjs/common';
 
 import * as argon2 from 'argon2';
+import { randomUUID } from 'node:crypto';
+import { CreateManagedUserDto } from './create-managed-user.dto';
 
 import type { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
@@ -22,12 +28,11 @@ import { UserManagementQueryDto } from './user-management-query.dto';
 const managedUserSelect = {
   id: true,
 
-  email: true,
+  ...contactSelect,
   username: true,
 
   firstName: true,
   lastName: true,
-  phone: true,
 
   role: true,
   status: true,
@@ -42,12 +47,79 @@ const managedUserSelect = {
 
 @Injectable()
 export class UserManagementService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly privacy: PrivateDataService,
+  ) {}
+
+  private async creationData(dto: CreateManagedUserDto) {
+    if (!dto.firstName.trim() || !dto.lastName.trim())
+      throw new BadRequestException('Account name is required.');
+    const id = randomUUID();
+    const role = dto.role ?? UserRole.CUSTOMER;
+    return {
+      id,
+      ...this.privacy.writeContacts(id, dto),
+      username: dto.username?.trim().toLowerCase() || null,
+      firstName: dto.firstName.trim(),
+      lastName: dto.lastName.trim(),
+      role,
+      passwordHash: await argon2.hash(dto.password, { type: argon2.argon2id }),
+      mustChangePassword: true,
+      ...(role === UserRole.CUSTOMER ? { guestProfile: { create: {} } } : {}),
+    };
+  }
+
+  async summary() {
+    const [totalUsers,totalStaff,totalCustomers,totalSuspended] = await Promise.all([
+      this.prisma.user.count(),this.prisma.user.count({where:{role:'STAFF'}}),
+      this.prisma.user.count({where:{role:'CUSTOMER'}}),this.prisma.user.count({where:{status:'SUSPENDED'}}),
+    ]);
+    return {totalUsers,totalStaff,totalCustomers,totalSuspended};
+  }
+
+  async create(dto: CreateManagedUserDto, admin: AuthenticatedUser) {
+    const data = await this.creationData(dto);
+    return this.prisma.$transaction(async (tx) => {
+      const row = await tx.user.create({ data, select: managedUserSelect });
+      await tx.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'USER_CREATED',
+          entityType: 'User',
+          entityId: row.id,
+        },
+      });
+      return this.privacy.response(row);
+    });
+  }
+
+  async importUsers(users: CreateManagedUserDto[], admin: AuthenticatedUser) {
+    // Sequential Argon2 work bounds memory. The database batch is all-or-nothing.
+    const records: Awaited<
+      ReturnType<UserManagementService['creationData']>
+    >[] = [];
+    for (const dto of users) records.push(await this.creationData(dto));
+    return this.prisma.$transaction(async (tx) => {
+      const ids: string[] = [];
+      for (const data of records)
+        ids.push((await tx.user.create({ data, select: { id: true } })).id);
+      await tx.auditLog.create({
+        data: {
+          actorId: admin.id,
+          action: 'USERS_IMPORTED',
+          entityType: 'User',
+          details: JSON.stringify({ count: ids.length }),
+        },
+      });
+      return { imported: ids.length, ids };
+    });
+  }
 
   async findAll(query: UserManagementQueryDto) {
     const search = query.search?.trim();
 
-    return this.prisma.user.findMany({
+    const rows = await this.prisma.user.findMany({
       where: {
         ...(query.role
           ? {
@@ -63,42 +135,14 @@ export class UserManagementService {
 
         ...(search
           ? {
-              OR: [
-                {
-                  firstName: {
-                    contains: search,
-                  },
-                },
-
-                {
-                  lastName: {
-                    contains: search,
-                  },
-                },
-
-                {
-                  email: {
-                    contains: search,
-                  },
-                },
-
-                {
-                  username: {
-                    contains: search,
-                  },
-                },
-
-                {
-                  phone: {
-                    contains: search,
-                  },
-                },
-              ],
+              OR: this.privacy.contactSearch(search),
             }
           : {}),
       },
 
       select: managedUserSelect,
+
+      ...(query.page ? { take: 50, skip: (query.page - 1) * 50 } : {}),
 
       orderBy: [
         {
@@ -114,6 +158,7 @@ export class UserManagementService {
         },
       ],
     });
+    return rows.map((row) => this.privacy.response(row));
   }
 
   async findOne(id: string) {
@@ -129,7 +174,7 @@ export class UserManagementService {
       throw new NotFoundException('User not found.');
     }
 
-    return user;
+    return this.privacy.response(user);
   }
 
   async update(
@@ -192,7 +237,7 @@ export class UserManagementService {
 
       const existingEmail = await this.prisma.user.findUnique({
         where: {
-          email,
+          emailBlindIndex: this.privacy.index('email', email),
         },
       });
 
@@ -255,21 +300,11 @@ export class UserManagementService {
               }
             : {}),
 
-          ...(email !== undefined
-            ? {
-                email,
-              }
-            : {}),
+          ...this.privacy.writeContacts(id, { email, phone: dto.phone }),
 
           ...(dto.username !== undefined
             ? {
                 username,
-              }
-            : {}),
-
-          ...(dto.phone !== undefined
-            ? {
-                phone: dto.phone?.trim() || null,
               }
             : {}),
 
@@ -306,7 +341,7 @@ export class UserManagementService {
         },
       });
 
-      return updatedUser;
+      return this.privacy.response(updatedUser);
     });
   }
 
@@ -391,7 +426,7 @@ export class UserManagementService {
       return {
         message: 'Password reset successfully.',
 
-        user: updatedUser,
+        user: this.privacy.response(updatedUser),
       };
     });
   }

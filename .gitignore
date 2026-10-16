@@ -1,4 +1,6 @@
 # Node
+backend/.test-artifacts/
+backend/backups/
 node_modules/
 
 # Environment variables

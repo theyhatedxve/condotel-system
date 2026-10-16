@@ -30,6 +30,7 @@ import { ReservationQueryDto } from './reservation-query.dto';
 import { UpdateReservationStatusDto } from './update-reservation-status.dto';
 
 import { ReservationsService } from './reservations.service';
+import { UpdateReservationNotesDto } from './update-reservation-notes.dto';
 
 @Controller('reservations')
 export class ReservationsController {
@@ -85,6 +86,22 @@ export class ReservationsController {
     dto: UpdateReservationStatusDto,
   ) {
     return this.reservationsService.updateStatus(id, dto.status);
+  }
+
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  findOne(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.reservationsService.findOneAuthorized(id, user);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  updateNotes(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: UpdateReservationNotesDto,
+  ) {
+    return this.reservationsService.updateNotes(id, user, dto);
   }
 
   @Patch(':id/cancel')

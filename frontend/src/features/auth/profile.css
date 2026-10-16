@@ -2,6 +2,36 @@
   width: 100%;
 }
 
+.customer-notifications {
+  margin-top: 20px;
+}
+.customer-notifications ul {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.customer-notifications li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-top: 1px solid var(--color-border);
+}
+.customer-notifications li p {
+  margin: 6px 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+.customer-notifications button {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  background: white;
+  color: var(--color-navy-950);
+  border-radius: 5px;
+  cursor: pointer;
+  align-self: start;
+}
+
 .profile-header {
   margin-bottom: 20px;
 }

@@ -12,6 +12,7 @@ import type {
   PaymongoCheckoutSession,
   PaymongoErrorResponse,
   PaymongoCheckoutSessionResource,
+  PaymongoWebhookEvent,
 } from './paymongo.interface';
 
 interface CreateCheckoutInput {
@@ -22,6 +23,16 @@ interface CreateCheckoutInput {
   roomNumber: string;
 
   totalAmountCentavos: number;
+}
+
+// Only an explicit provider rejection proves that no checkout was created.
+// Network failures, malformed responses and server errors remain uncertain.
+export class CheckoutRejectedException extends BadGatewayException {
+  constructor() {
+    super(
+      'PayMongo rejected the checkout request. Check the payment configuration before retrying.',
+    );
+  }
 }
 
 @Injectable()
@@ -79,6 +90,8 @@ export class PaymongoService {
       {
         method: 'POST',
 
+        signal: AbortSignal.timeout(15000),
+
         headers: {
           Authorization: this.getAuthorizationHeader(),
 
@@ -126,12 +139,34 @@ export class PaymongoService {
     const result = (await response.json()) as
       PaymongoCheckoutSession | PaymongoErrorResponse;
 
-    if (!response.ok || !('data' in result)) {
-      const detail =
-        'errors' in result ? result.errors?.[0]?.detail : undefined;
+    if (
+      [400, 401, 403, 422].includes(response.status) &&
+      !('data' in result) &&
+      'errors' in result &&
+      Array.isArray(result.errors) &&
+      result.errors.length > 0
+    ) {
+      throw new CheckoutRejectedException();
+    }
 
+    if (!response.ok || !('data' in result)) {
       throw new BadGatewayException(
-        detail ?? 'Unable to create PayMongo checkout session.',
+        'Unable to create PayMongo checkout session.',
+      );
+    }
+
+    try {
+      const url = new URL(result.data.attributes.checkout_url);
+      if (
+        url.protocol !== 'https:' ||
+        url.hostname !== 'checkout.paymongo.com' ||
+        url.username ||
+        url.password
+      )
+        throw new Error();
+    } catch {
+      throw new BadGatewayException(
+        'Payment provider returned an invalid checkout URL.',
       );
     }
 
@@ -156,8 +191,7 @@ export class PaymongoService {
     } & PaymongoErrorResponse;
     if (!response.ok || !result.data || result.data.id !== checkoutSessionId) {
       throw new BadGatewayException(
-        result.errors?.[0]?.detail ??
-          'Unable to verify PayMongo checkout status.',
+        'Unable to verify PayMongo checkout status.',
       );
     }
     return result.data;
@@ -169,6 +203,8 @@ export class PaymongoService {
       {
         method: 'POST',
 
+        signal: AbortSignal.timeout(15000),
+
         headers: {
           Authorization: this.getAuthorizationHeader(),
 
@@ -178,18 +214,8 @@ export class PaymongoService {
     );
 
     if (!response.ok) {
-      let detail: string | undefined;
-
-      try {
-        const result = (await response.json()) as PaymongoErrorResponse;
-
-        detail = result.errors?.[0]?.detail;
-      } catch {
-        detail = undefined;
-      }
-
       throw new BadGatewayException(
-        detail ?? 'Unable to expire PayMongo checkout session.',
+        'Unable to expire PayMongo checkout session.',
       );
     }
   }
@@ -217,7 +243,7 @@ export class PaymongoService {
 
     const providedSignature = this.webhookMode === 'live' ? parts.li : parts.te;
 
-    if (!timestamp || !providedSignature) {
+    if (!timestamp || !/^\d+$/.test(timestamp) || !providedSignature) {
       throw new UnauthorizedException('Invalid PayMongo signature header.');
     }
 
@@ -255,6 +281,18 @@ export class PaymongoService {
       !timingSafeEqual(expectedBuffer, providedBuffer)
     ) {
       throw new UnauthorizedException('Invalid PayMongo webhook signature.');
+    }
+    try {
+      const event = JSON.parse(
+        rawBody.toString('utf8'),
+      ) as PaymongoWebhookEvent;
+      const live = event.data?.attributes?.livemode;
+      if (live !== undefined && live !== (this.webhookMode === 'live'))
+        throw new Error();
+    } catch {
+      throw new UnauthorizedException(
+        'PayMongo webhook mode or payload is invalid.',
+      );
     }
   }
 }
