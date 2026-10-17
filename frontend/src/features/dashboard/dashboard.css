@@ -1,420 +1,496 @@
-/* Style .dashboard-header to control spacing and dimensions. */
-
+/* Dashboard overview; scoped to preserve other management pages. */
+.dashboard-page {
+  position: relative;
+  isolation: isolate;
+}
+.dashboard-page::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -24px;
+  right: -28px;
+  width: min(650px, 80%);
+  height: 250px;
+  background:
+    linear-gradient(90deg, #f3f5fa, #f3f5fa33),
+    url('../../assets/login-background.jpg') center 35% / cover;
+  opacity: 0.13;
+  mask-image: linear-gradient(#000, transparent);
+  pointer-events: none;
+}
 .dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-bottom: 28px;
+  padding: 8px 4px 0;
+}
+.admin-layout .admin-content .dashboard-header h1 {
+  margin: 10px 0 0;
+  color: #091f3a;
+  font-size: clamp(28px, 2.6vw, 38px);
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+.admin-layout .admin-content .dashboard-header > div > p {
+  margin: 10px 0 0;
+  color: #7185a4;
+  font-size: 15px;
+}
+.admin-layout .admin-content .dashboard-header .dashboard-eyebrow {
+  margin: 0;
+  color: #5e7a9d;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+}
+.dashboard-date {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-width: 300px;
+  padding: 18px 22px;
+  border: 1px solid #e7eff8;
+  border-radius: 11px;
+  background: #e9f2fc8c;
+}
+.dashboard-date > svg {
+  flex-shrink: 0;
+  color: #1682ed;
+}
+.dashboard-date time {
+  display: block;
+  color: #122d4d;
+  font-size: 14px;
+  font-weight: 650;
+}
+.dashboard-date span {
+  display: block;
+  margin-top: 6px;
+  color: #7288a5;
+  font-size: 12px;
+}
+.dashboard-page .stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
   margin-bottom: 24px;
 }
-
-/* Style .dashboard-header h1 to set text appearance. */
-
-.dashboard-header h1 {
-  margin: 0;
-
-  font-size: 26px;
-
-  color: var(--color-navy-950);
+.dashboard-page .stat-card {
+  --stat-accent: #247cf0;
+  --stat-tint: #e6f0ff;
+  display: block;
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #e9eff7;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 6px 24px #12345205;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
 }
-
-/* Style .dashboard-header p to set text appearance. */
-
-.dashboard-header p {
-  margin: 7px 0 0;
-
-  color: var(--color-text-muted);
-
-  font-size: 14px;
+.dashboard-page .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px #1234520f;
 }
-
-/* Style .stat-grid to arrange its contents. */
-
-.stat-grid {
+.dashboard-page .stat-card:focus-visible,
+.dashboard-page a:focus-visible,
+.dashboard-page button:focus-visible {
+  outline: 2px solid #247cf0;
+  outline-offset: 3px;
+}
+.dashboard-page .stat-card.green {
+  --stat-accent: #20a46c;
+  --stat-tint: #e1f4eb;
+}
+.dashboard-page .stat-card.orange {
+  --stat-accent: #ee8c3a;
+  --stat-tint: #fff0e1;
+}
+.dashboard-page .stat-card.purple {
+  --stat-accent: #9a5bdc;
+  --stat-tint: #efe6fa;
+}
+.stat-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.stat-icon {
   display: grid;
-
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-
-  gap: 16px;
-
-  margin-bottom: 22px;
-}
-
-/* Style .stat-card to arrange its contents, position it within the page, set text appearance. */
-
-.stat-card {
-  position: relative;
-  min-height: 126px;
-
-  display: flex;
-
-  justify-content: space-between;
-  align-items: flex-start;
-
-  padding: 19px;
-
-  border-radius: var(--radius-md);
-
-  color: #18354d;
-  border: 1px solid #e9edf3;
-
-  box-shadow: var(--shadow-card);
-}
-
-/* Style .stat-card > div to arrange its contents. */
-
-.stat-card > div {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Style .stat-card strong to set text appearance. */
-
-.stat-card strong {
-  margin-top: 12px;
-
-  font-size: 27px;
-  letter-spacing: -0.7px;
-  padding-bottom: 10px;
-  border-bottom: 4px solid var(--stat-accent);
-}
-
-/* Style .stat-card small to set text appearance. */
-
-.stat-card small {
-  margin-top: 14px;
-
-  font-size: 11px;
-
+  place-items: center;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--stat-tint);
   color: var(--stat-accent);
-  padding-right: 26px;
 }
-
-/* Style .stat-card svg to position it within the page, set text appearance. */
-
-.stat-card svg {
-  position: absolute;
-  bottom: 17px;
-  right: 18px;
-  width: 21px;
-  height: 21px;
-  color: var(--stat-accent);
-  opacity: 0.65;
-}
-
-/* Style .stat-card.blue to define reusable design values, style the surface and boundaries. */
-
-.stat-card.blue {
-  --stat-accent: #337bc0;
-  background: #ffffff;
-}
-
-/* Style .stat-card.green to define reusable design values, style the surface and boundaries. */
-
-.stat-card.green {
-  --stat-accent: #15905e;
-  background: #ffffff;
-}
-
-/* Style .stat-card.orange to define reusable design values, style the surface and boundaries. */
-
-.stat-card.orange {
-  --stat-accent: #bf7b17;
-  background: #ffffff;
-}
-
-/* Style .stat-card.purple to define reusable design values, style the surface and boundaries. */
-
-.stat-card.purple {
-  --stat-accent: #8958b4;
-  background: #ffffff;
-}
-
-/* Style .stat-title to set text appearance. */
-
 .stat-title {
-  font-size: 12px;
+  color: #496487;
+  font-size: 13px;
   font-weight: 600;
+  line-height: 1.5;
 }
-
-/* Style .dashboard-grid to arrange its contents. */
-
+.stat-watermark {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--stat-accent);
+  opacity: 0.3;
+}
+.stat-value {
+  display: block;
+  margin: 8px 0 0 66px;
+  color: #091f3a;
+  font-size: clamp(26px, 2.3vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.stat-meter {
+  height: 8px;
+  margin-top: 18px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--stat-tint);
+}
+.stat-meter span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--stat-accent);
+}
+.stat-meter.is-decorative span {
+  width: 100%;
+  background: linear-gradient(90deg, var(--stat-accent), var(--stat-tint));
+}
+.stat-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--stat-accent);
+  font-size: 12px;
+}
+.stat-chevron {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #e5edf6;
+  border-radius: 50%;
+  background: #f4f8fc;
+  color: #5a789b;
+}
 .dashboard-grid {
   display: grid;
-
-  grid-template-columns:
-    minmax(0, 1fr)
-    290px;
-
-  gap: 18px;
+  grid-template-columns: minmax(0, 2.45fr) minmax(280px, 1fr);
+  gap: 20px;
+  align-items: stretch;
 }
-
-/* Style .dashboard-panel to style the surface and boundaries. */
-
 .dashboard-panel {
-  padding: 20px;
-
-  border: 1px solid var(--color-border);
-
-  border-radius: var(--radius-md);
-
-  background: var(--color-surface);
-
-  box-shadow: var(--shadow-card);
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid #e9eff7;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 6px 24px #12345205;
 }
-
-/* Style .panel-heading to arrange its contents. */
-
-.panel-heading {
+.dashboard-page .panel-heading {
   display: flex;
-
-  justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 16px;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
 }
-
-/* Style .dashboard-panel h2 to set text appearance. */
-
-.dashboard-panel h2 {
+.dashboard-page .panel-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin: 0;
-
-  font-size: 15px;
-
-  color: var(--color-navy-950);
+  color: #0d2846;
+  font-size: 19px;
+  letter-spacing: -0.3px;
 }
-
-/* Style .panel-heading button to set text appearance, style the surface and boundaries. */
-
-.panel-heading button {
-  border: none;
-  background: transparent;
-
-  color: var(--color-blue-700);
-
-  font-size: 12px;
+.panel-heading h2 svg {
+  flex-shrink: 0;
+  color: #4c6d91;
 }
-
-/* Style .table-wrapper to control spacing and dimensions. */
-
-.table-wrapper {
+.dashboard-page .panel-heading > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  color: #087bfa;
+  font-size: 13px;
+  font-weight: 600;
+}
+.dashboard-page .table-wrapper {
   overflow-x: auto;
 }
-
-/* Style .dashboard-table to set text appearance. */
-
 .dashboard-table {
   width: 100%;
-
-  border-collapse: collapse;
-
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #365172;
   font-size: 12px;
 }
-
-/* Style .dashboard-table th, .dashboard-table td to control spacing and dimensions. */
-
 .dashboard-table th,
 .dashboard-table td {
-  padding: 13px 9px;
-
+  padding: 18px 14px;
   text-align: left;
-
-  border-bottom: 1px solid #edf2f6;
-
   white-space: nowrap;
+  border-bottom: 1px solid #edf2f8;
 }
-
-/* Style .dashboard-table th to set text appearance. */
-
 .dashboard-table th {
-  color: #63798e;
-
-  font-weight: 600;
+  padding-block: 16px;
+  background: #f2f7fc;
+  color: #46638a;
+  font-weight: 650;
+  border-bottom: 0;
 }
-
-/* Style .status-badge to arrange its contents, set text appearance. */
-
-.status-badge {
+.dashboard-table th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.dashboard-table th:last-child {
+  border-radius: 0 8px 8px 0;
+}
+.dashboard-table tbody tr:hover {
+  background: #f8fbff;
+}
+.dashboard-page .status-badge {
   display: inline-flex;
-
-  padding: 4px 8px;
-
-  border-radius: 999px;
-
+  justify-content: center;
+  min-width: 88px;
+  padding: 7px 12px;
+  border-radius: 20px;
+  background: #edf2f7;
+  color: #607892;
   font-size: 10px;
-
-  font-weight: 600;
+  font-weight: 650;
 }
-
-/* Style .status-badge.checked-in to set text appearance, style the surface and boundaries. */
-
-.status-badge.checked-in {
-  background: #dcf6eb;
-
-  color: #11845b;
+.dashboard-page .status-badge.checked-in,
+.dashboard-page .status-badge.checked-out {
+  background: #e6f6ee;
+  color: #0d8149;
 }
-
-/* Style .status-badge.confirmed to set text appearance, style the surface and boundaries. */
-
-.status-badge.confirmed {
-  background: #dceeff;
-
-  color: #1374b9;
+.dashboard-page .status-badge.confirmed {
+  background: #e4f1ff;
+  color: #1871b7;
 }
-
-/* Style .status-badge.pending to set text appearance, style the surface and boundaries. */
-
-.status-badge.pending {
-  background: #fff0d4;
-
-  color: #c97804;
+.dashboard-page .status-badge.pending {
+  background: #fff1d9;
+  color: #aa6b08;
 }
-
-/* Style .occupancy-panel to arrange its contents. */
-
+.dashboard-page .status-badge.cancelled {
+  background: #ffe5e8;
+  color: #c92d40;
+}
 .occupancy-panel {
   display: flex;
   flex-direction: column;
 }
-
-/* Style .occupancy-circle to arrange its contents, style the surface and boundaries. */
-
 .occupancy-circle {
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-
-  margin: 28px auto;
-
   display: grid;
   place-items: center;
-
+  flex-shrink: 0;
+  width: 184px;
+  height: 184px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
   background: conic-gradient(
-    #236daf 0 var(--occupancy),
-    #e6edf4 var(--occupancy) 100%
+    #247cf0 0 var(--occupancy),
+    #e3ebf5 var(--occupancy) 100%
   );
 }
-
-/* Style .dashboard-loading, .dashboard-empty to set text appearance. */
-
-.dashboard-loading,
-.dashboard-empty {
-  padding: 30px;
-
-  color: var(--color-text-muted);
-
-  text-align: center;
-}
-
-/* Style .occupancy-circle::before to position it within the page. */
-
-.occupancy-circle::before {
-  content: '';
-
-  position: absolute;
-}
-
-/* Style .occupancy-circle > div to arrange its contents, style the surface and boundaries. */
-
 .occupancy-circle > div {
-  width: 112px;
-  height: 112px;
-
   display: flex;
   flex-direction: column;
-
   align-items: center;
   justify-content: center;
-
+  width: 136px;
+  height: 136px;
   border-radius: 50%;
-
   background: #ffffff;
 }
-
-/* Style .occupancy-circle strong to set text appearance. */
-
 .occupancy-circle strong {
-  font-size: 27px;
-
-  color: var(--color-navy-950);
+  color: #254467;
+  font-size: 34px;
+  letter-spacing: -1px;
 }
-
-/* Style .occupancy-circle span to set text appearance. */
-
 .occupancy-circle span {
-  color: var(--color-text-muted);
-
-  font-size: 11px;
+  margin-top: 4px;
+  color: #6b83a2;
+  font-size: 13px;
 }
-
-/* Style .occupancy-legend to arrange its contents, set text appearance. */
-
 .occupancy-legend {
-  display: flex;
-  flex-direction: column;
-
-  gap: 11px;
-
-  font-size: 11px;
-}
-
-/* Style .occupancy-legend span to arrange its contents. */
-
-.occupancy-legend span {
   display: grid;
-
-  grid-template-columns: 10px 1fr auto;
-
-  align-items: center;
-
-  gap: 8px;
+  gap: 13px;
+  margin: 0;
+  color: #365172;
+  font-size: 13px;
 }
-
-/* Style .occupancy-legend i to control spacing and dimensions. */
-
+.occupancy-legend > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.occupancy-legend dt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.occupancy-legend dd {
+  margin: 0;
+  color: #0d2846;
+  font-weight: 700;
+}
 .occupancy-legend i {
-  width: 7px;
-  height: 7px;
-
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
 }
-
-/* Style .occupied-dot to style the surface and boundaries. */
-
 .occupied-dot {
-  background: #0874c9;
+  background: #247cf0;
 }
-
-/* Style .available-dot to style the surface and boundaries. */
-
 .available-dot {
-  background: #14ae78;
+  background: #20a46c;
 }
-
-/* Style .maintenance-dot to style the surface and boundaries. */
-
 .maintenance-dot {
-  background: #9aaabb;
+  background: #aebed0;
 }
-
-/* Apply the following layout adjustments when (max-width: 1150px). */
-
-@media (max-width: 1150px) {
-  /* Style .stat-grid to arrange its contents. */
-  .stat-grid {
+.occupancy-insight {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 10px;
+  background: #ebf8f2;
+  color: #15544d;
+}
+.occupancy-insight > span {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #20a46c;
+  color: #ffffff;
+}
+.occupancy-insight strong {
+  display: block;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.occupancy-insight p {
+  margin: 4px 0 0;
+  color: #6c829d;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.occupancy-insight.has-guests {
+  background: #edf5ff;
+}
+.occupancy-insight.has-guests > span {
+  background: #247cf0;
+}
+.dashboard-empty {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 14px;
+  min-height: 300px;
+  color: #7a8ea9;
+  text-align: center;
+}
+.dashboard-empty h3 {
+  margin: 0;
+  color: #365172;
+  font-size: 17px;
+}
+.dashboard-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+.dashboard-empty a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #087bfa;
+  font-size: 12px;
+}
+.dashboard-error {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  padding: 60px 20px;
+  border: 1px solid #e9eff7;
+  border-radius: 14px;
+  background: #ffffff;
+  text-align: center;
+}
+.dashboard-error h1,
+.dashboard-error p {
+  margin: 0;
+}
+.dashboard-error p {
+  color: #7288a5;
+}
+.dashboard-error button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 8px;
+  background: #13466f;
+  color: #ffffff;
+}
+@media (max-width: 1250px) {
+  .dashboard-page .stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-
-  /* Style .dashboard-grid to arrange its contents. */
-
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1.7fr) minmax(260px, 1fr);
+  }
+}
+@media (max-width: 1050px) {
   .dashboard-grid {
     grid-template-columns: 1fr;
   }
 }
-
-/* Apply the following layout adjustments when (max-width: 650px). */
-
 @media (max-width: 650px) {
-  /* Style .stat-grid to arrange its contents. */
-  .stat-grid {
+  .dashboard-page::before {
+    right: 0;
+  }
+  .dashboard-page .stat-grid {
     grid-template-columns: 1fr;
+  }
+  .dashboard-date {
+    min-width: 0;
+    width: 100%;
+    padding: 16px;
+  }
+  .dashboard-panel {
+    padding: 20px 16px;
+  }
+  .dashboard-page .panel-heading h2 {
+    font-size: 16px;
+  }
+  .dashboard-page .panel-heading > a {
+    font-size: 11px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page .stat-card {
+    transition: none;
   }
 }
